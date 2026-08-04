@@ -238,14 +238,14 @@ function CashPaymentActions({
   }
 
   return (
-    <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-5">
+    <div className="mt-4 bg-warning/10 border border-warning/30 rounded-xl p-5">
       <div className="flex items-center gap-2 mb-4">
         <AlertTriangle className="w-5 h-5 text-warning" />
         <h3 className="font-semibold text-text-primary">Acción requerida — Pago en efectivo</h3>
       </div>
 
       {error && (
-        <p className="text-sm text-error bg-red-50 border border-error/20 rounded-lg px-3 py-2 mb-4">
+        <p className="text-sm text-error bg-error/10 border border-error/20 rounded-lg px-3 py-2 mb-4">
           {error}
         </p>
       )}
@@ -347,7 +347,7 @@ function CartaActions({
   }
 
   return (
-    <div className="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-5">
+    <div className="mt-4 bg-accent/10 border border-accent/30 rounded-xl p-5">
       <div className="flex items-center gap-2 mb-4">
         <FileText className="w-5 h-5 text-accent" />
         <h3 className="font-semibold text-text-primary">Revisión de carta de acreditación</h3>
@@ -366,7 +366,7 @@ function CartaActions({
       )}
 
       {error && (
-        <p className="text-sm text-error bg-red-50 border border-error/20 rounded-lg px-3 py-2 mb-4">
+        <p className="text-sm text-error bg-error/10 border border-error/20 rounded-lg px-3 py-2 mb-4">
           {error}
         </p>
       )}

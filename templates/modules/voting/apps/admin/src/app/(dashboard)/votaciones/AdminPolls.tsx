@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { db } from '@/lib/firebase'
+import { useAuth } from '@/lib/auth'
 import { doc, onSnapshot } from 'firebase/firestore'
 import { Vote, Plus, Play, Square, Loader2, Award, ExternalLink, BarChart3, AlertCircle, Trash2, CheckCircle2, Maximize, Minimize } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
@@ -11,6 +12,7 @@ import { Input } from '@/components/ui/Input'
 const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001'
 
 export function AdminPolls() {
+  const { getToken } = useAuth()
   // Datos
   const [polls, setPolls] = useState<any[]>([])
   const [activePoll, setActivePoll] = useState<any>(null)
@@ -28,7 +30,7 @@ export function AdminPolls() {
   const [projectorMode, setProjectorMode] = useState(false)
 
   useEffect(() => {
-    fetchPolls()
+    void fetchPolls()
 
     // Suscribirse al documento activo en tiempo real
     const activeDocRef = doc(db, 'polls', 'active')
@@ -48,8 +50,8 @@ export function AdminPolls() {
   async function fetchPolls() {
     setLoading(true)
     setError(null)
-    const token = localStorage.getItem('adminToken') || ''
     try {
+      const token = await getToken()
       const res = await fetch(`${API_URL}/admin/polls`, {
         headers: {
           'Content-Type': 'application/json',
@@ -80,9 +82,9 @@ export function AdminPolls() {
     setSubmitting(true)
     setError(null)
     setSuccess(null)
-    const token = localStorage.getItem('adminToken') || ''
 
     try {
+      const token = await getToken()
       const res = await fetch(`${API_URL}/admin/polls`, {
         method: 'POST',
         headers: {
@@ -115,9 +117,9 @@ export function AdminPolls() {
     setSubmitting(true)
     setError(null)
     setSuccess(null)
-    const token = localStorage.getItem('adminToken') || ''
 
     try {
+      const token = await getToken()
       const res = await fetch(`${API_URL}/admin/polls/${pollId}/toggle`, {
         method: 'POST',
         headers: {

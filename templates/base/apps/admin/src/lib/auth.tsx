@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function getToken(): Promise<string> {
     if (!user) throw new Error('Not authenticated')
-    return user.getIdToken()
+    return user.getIdToken(true)
   }
 
   return (
