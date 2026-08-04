@@ -1,0 +1,72 @@
+{
+  "serverless": {
+    "functions": {
+      "getRoomStatus": {
+        "handler": "src/handlers/rooms/status.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/logistic/rooms/status",
+              "method": "get"
+            }
+          }
+        ]
+      },
+      "createRoom": {
+        "handler": "src/handlers/rooms/create.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/logistic/rooms/create",
+              "method": "post"
+            }
+          }
+        ]
+      },
+      "joinRoom": {
+        "handler": "src/handlers/rooms/join.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/logistic/rooms/join",
+              "method": "post"
+            }
+          }
+        ]
+      },
+      "listRoomRequests": {
+        "handler": "src/handlers/rooms/requests.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/logistic/rooms/requests",
+              "method": "get"
+            }
+          }
+        ]
+      },
+      "respondRoomRequest": {
+        "handler": "src/handlers/rooms/respond.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/logistic/rooms/requests/respond",
+              "method": "post"
+            }
+          }
+        ]
+      },
+      "leaveRoom": {
+        "handler": "src/handlers/rooms/leave.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/logistic/rooms/leave",
+              "method": "post"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

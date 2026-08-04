@@ -1,0 +1,15 @@
+# <%= eventName %> - Plataforma de Registro
+
+Plataforma de registro y acreditacion de eventos generada con `unbj-echo`.
+
+## Arquitectura
+- **Frontend:** Next.js (App Router) en `apps/portal` (Portal de Registrantes) y `apps/admin` (Panel de Control).
+- **Backend:** Serverless API (AWS Lambda + API Gateway) en `packages/api`.
+- **Persistencia:** Firebase Firestore, Storage y Auth.
+- **Pagos:** Stripe.
+
+## Primeros Pasos
+1. Configura tus credenciales de Firebase en `apps/portal`, `apps/admin` y `packages/api`.
+2. Configura las variables de entorno en los archivos `.env.example` (renómbralos a `.env`).
+3. Instala las dependencias: `pnpm install`.
+4. Ejecuta el modo de desarrollo: `pnpm dev`.

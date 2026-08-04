@@ -1,0 +1,146 @@
+import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
+import { z } from 'zod'
+import { v4 as uuidv4 } from 'uuid'
+import { getDb } from '../../lib/firebase'
+import { ok, badRequest, serverError } from '../../lib/response'
+import { confirmationEmailHtml } from '../../lib/email-html'
+import type { Registration, RegistrationStatus } from '@plenarias/shared'
+
+const schema = z.object({
+  fullName: z.string().min(2).max(120),
+  email: z.string().email(),
+  phone: z.string().min(8).max(20),
+  birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  extraFields: z.record(z.string()).optional().default({}),
+  <% if (archetype === 'plenarias') { %>
+  conventionId: z.string().min(1),
+  conventionName: z.string().min(1),
+  conventionCode: z.string(),
+  conventionNotListed: z.boolean().optional(),
+  conventionNotListedName: z.string().optional(),
+  churchId: z.string().min(1),
+  churchName: z.string().min(1),
+  churchCode: z.string().nullable(),
+  churchNotListed: z.boolean().optional(),
+  churchNotListedName: z.string().optional(),
+  <% } else if (archetype === 'roles') { %>
+  ticketTier: z.enum(['general', 'student', 'vip']),
+  <% } %>
+})
+
+function calcularEdad(birthDate: string): number {
+  const hoy = new Date()
+  const nac = new Date(birthDate)
+  let edad = hoy.getFullYear() - nac.getFullYear()
+  const m = hoy.getMonth() - nac.getMonth()
+  if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--
+  return edad
+}
+
+export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+  let body: unknown
+  try {
+    body = JSON.parse(event.body ?? '{}')
+  } catch {
+    return badRequest('Invalid JSON')
+  }
+
+  const parsed = schema.safeParse(body)
+  if (!parsed.success) {
+    return badRequest(parsed.error.issues[0]?.message ?? 'Invalid input')
+  }
+
+  const data = parsed.data
+  const db = getDb()
+
+  try {
+    // Verificar que el registro esté abierto
+    const configSnap = await db.collection('config').doc('global').get()
+    const config = configSnap.data()
+
+    if (!config?.registrationOpen) {
+      return badRequest('El registro está cerrado')
+    }
+
+    const now = new Date()
+    if (config.registrationDeadline && now > new Date(config.registrationDeadline)) {
+      return badRequest('La fecha límite de registro ha pasado')
+    }
+
+    const registrationRef = db.collection('registrations').doc()
+    const qrToken = uuidv4()
+    const token = uuidv4()
+    const timestamp = new Date().toISOString()
+
+    const registration: Registration = {
+      id: registrationRef.id,
+      token,
+      qrToken,
+      status: 'pending_payment' as RegistrationStatus,
+      fullName: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      birthDate: data.birthDate,
+      age: calcularEdad(data.birthDate),
+      extraFields: data.extraFields,
+      <% if (archetype === 'plenarias') { %>
+      delegateType: null,
+      churchId: data.churchId,
+      churchName: data.churchName,
+      churchCode: data.churchCode,
+      ...(data.churchNotListed ? { churchNotListed: true } : {}),
+      ...(data.churchNotListedName ? { churchNotListedName: data.churchNotListedName } : {}),
+      conventionId: data.conventionId,
+      conventionName: data.conventionName,
+      conventionCode: data.conventionCode,
+      ...(data.conventionNotListed ? { conventionNotListed: true } : {}),
+      ...(data.conventionNotListedName ? { conventionNotListedName: data.conventionNotListedName } : {}),
+      <% } else if (archetype === 'roles') { %>
+      ticketTier: data.ticketTier,
+      <% } %>
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    }
+
+    await registrationRef.set(registration)
+
+    // Enviar correo de confirmación antes de retornar (Lambda congela el event loop al retornar)
+    await sendConfirmationEmail(registration).catch((err) =>
+      console.error('Email send failed:', err)
+    )
+
+    return ok({
+      token: registration.token,
+      registrationId: registration.id,
+    })
+  } catch (err) {
+    console.error('Create registration error:', err)
+    return serverError()
+  }
+}
+
+async function sendConfirmationEmail(registration: Registration): Promise<void> {
+  const { Resend } = await import('resend')
+  const resend = new Resend(process.env['RESEND_API_KEY'])
+
+  const portalUrl = `${process.env['PORTAL_URL']}/portal/${registration.token}`
+  const fromAddress = process.env['RESEND_FROM_EMAIL'] ?? 'onboarding@resend.dev'
+  const toAddress = process.env['RESEND_DEV_TO'] || registration.email
+  console.log('[Email] from:', fromAddress, '| to:', toAddress)
+
+  const emailResult = await resend.emails.send({
+    from: `<%= eventName %> <${fromAddress}>`,
+    to: toAddress,
+    subject: 'Confirmación de registro — <%= eventName %>',
+    html: confirmationEmailHtml({
+      fullName: registration.fullName,
+      portalUrl,
+      eventName: '<%= eventName %>',
+      <% if (archetype === 'plenarias') { %>
+      churchName: registration.churchName,
+      conventionName: registration.conventionName,
+      <% } %>
+    }),
+  })
+  console.log('[Email] result:', JSON.stringify(emailResult))
+}

@@ -1,0 +1,284 @@
+CORRECCIONES DE DISEÑO — PLENARIAS CNBM 2026
+Archivo: pencil-new.pen
+Fecha de revisión: Mayo 2026
+============================================================
+
+Este documento lista las correcciones puntuales a realizar en el archivo
+de diseño de Pencil. Están organizadas por pantalla y ordenadas por
+prioridad (las más críticas para el flujo del usuario van primero).
+
+============================================================
+CORRECCIÓN 1 — Nombrar frame A9 (Gestión de Administradores)
+============================================================
+
+FRAME: XsCJF (actualmente sin nombre)
+ACCIÓN: Asignar nombre "A9 — Gestión de Administradores"
+
+El diseño de esta pantalla ya existe y está completo (lista de admins +
+formulario de creación). Solo falta el nombre para mantener consistencia
+con el resto de frames del panel de administración.
+
+============================================================
+CORRECCIÓN 2 — A4: Agregar sección "Estado de Check-in"
+============================================================
+
+FRAME: pSOnC (A4 — Detalle de Registro)
+UBICACIÓN: Parte inferior de la columna izquierda, debajo de Gestión de Pago
+
+AGREGAR sección "Estado de Check-in" con dos estados visuales:
+
+  ESTADO: Sin check-in (default)
+    - Ícono de QR o reloj en color gris
+    - Texto: "Aún no ha realizado check-in"
+    - Sin acciones disponibles
+
+  ESTADO: Check-in realizado
+    - Ícono de check doble en color verde
+    - Texto: "Check-in realizado"
+    - Fecha y hora del check-in (ej. "15 de octubre, 2026 — 09:32 AM")
+    - Nombre del admin que lo registró (ej. "Registrado por: Juan Rodríguez")
+
+============================================================
+CORRECCIÓN 3 — A4: Agregar modal de rechazo
+============================================================
+
+FRAME: pSOnC (A4 — Detalle de Registro)
+ACCIÓN: Diseñar modal overlay que se muestra al presionar "Rechazar pago"
+        o "Rechazar carta"
+
+CONTENIDO DEL MODAL:
+  - Título dinámico: "Rechazar pago" o "Rechazar carta"
+  - Texto informativo: "El registrante recibirá un correo con este motivo"
+  - Campo de texto obligatorio (textarea):
+      Label: "Motivo del rechazo"
+      Placeholder: "Describe el motivo del rechazo..."
+  - Botón primario rojo: "Confirmar rechazo"
+  - Botón secundario: "Cancelar"
+  - Fondo con overlay oscuro semitransparente
+
+============================================================
+CORRECCIÓN 4 — A6: Agregar estado "Ya fue escaneado" (amarillo)
+============================================================
+
+FRAME: FrCGf (A6 — Check-in Móvil)
+ACCIÓN: Agregar un nuevo frame o estado visual debajo del frame actual
+
+DISEÑO del estado amarillo / naranja:
+  - Fondo: color de advertencia (amarillo/naranja)
+  - Ícono grande de advertencia (triángulo con !)
+  - Texto prominente: "ESTE CÓDIGO YA FUE ESCANEADO"
+  - Nombre del asistente (fuente grande)
+  - Iglesia
+  - Tipo de delegado (Mensajero / Fraternal)
+  - Fecha y hora del check-in previo (ej. "Escaneado el 15 oct — 08:15 AM")
+  - Botón: "Escanear siguiente"
+
+============================================================
+CORRECCIÓN 5 — A6: Agregar estado "Código no válido" (rojo)
+============================================================
+
+FRAME: FrCGf (A6 — Check-in Móvil)
+ACCIÓN: Agregar estado de error
+
+DISEÑO del estado rojo:
+  - Fondo: color de error (rojo)
+  - Ícono grande de X
+  - Texto prominente: "CÓDIGO NO VÁLIDO"
+  - Texto secundario: "Este código no corresponde a un registro activo"
+  - Botón: "Intentar de nuevo"
+
+============================================================
+CORRECCIÓN 6 — A6: Agregar estado "Sin conexión" (gris)
+============================================================
+
+FRAME: FrCGf (A6 — Check-in Móvil)
+ACCIÓN: Agregar estado de sin red
+
+DISEÑO del estado gris:
+  - Fondo: gris oscuro
+  - Ícono de wifi apagado o nube con X
+  - Texto: "Sin conexión a internet"
+  - Texto secundario: "Verifica tu conexión e intenta de nuevo"
+  - Botón: "Reintentar"
+
+NOTA: Los tres estados de resultado (correcciones 4, 5 y 6) pueden
+diseñarse como frames separados al lado del frame principal A6, o
+como anotaciones/variantes dentro del mismo frame usando el espacio
+disponible debajo del área del escáner.
+
+============================================================
+CORRECCIÓN 7 — P2 Paso 1: Agregar estado "Iglesia no encontrada"
+============================================================
+
+FRAME: n5MNg (P2 — Búsqueda de iglesia)
+ACCIÓN: Agregar variante del estado de búsqueda sin resultados
+
+DISEÑO del estado "no encontrada":
+  - Campo de búsqueda con texto escrito (ej. "Iglesia Bautista XYZ")
+  - Lista de resultados vacía o mensaje "No se encontraron resultados"
+  - Caja informativa (fondo amarillo claro o azul claro):
+      Ícono de teléfono
+      Texto: "Tu iglesia no aparece en nuestro registro"
+      Texto secundario: "Llama a este número para que puedan ayudarte:"
+      Número de teléfono destacado (ej. "+52 (55) 1234-5678")
+  - SIN botón "Continuar" (el flujo se detiene hasta resolución)
+
+PUEDE diseñarse como un frame separado al lado del frame n5MNg,
+etiquetado como "P2 Paso 1 — Estado: no encontrada".
+
+============================================================
+CORRECCIÓN 8 — P4: Agregar estado "Voucher OXXO generado"
+============================================================
+
+FRAME: X4FvZ5 (P4 — Portal personal)
+SECCIÓN: Bloque de acción activo (columna derecha)
+
+DISEÑO:
+  - Título: "Paga en OXXO"
+  - Caja destacada con:
+      Número de referencia / código de barras (formato visual)
+      Monto exacto: "$500 MXN"
+      Fecha límite: "Paga antes del [fecha — 3 días después]"
+  - Instrucciones en lista numerada para pagar en tienda
+  - Botón: "Descargar voucher"
+  - Mensaje informativo: "Una vez que pagues, tu registro se actualizará
+    automáticamente en las próximas horas"
+
+PUEDE diseñarse como un frame separado al lado o debajo de X4FvZ5,
+etiquetado como "P4 — Estado: OXXO pendiente".
+
+============================================================
+CORRECCIÓN 9 — P4: Agregar estado "Pago rechazado"
+============================================================
+
+FRAME: X4FvZ5 (P4 — Portal personal)
+SECCIÓN: Bloque de acción activo (columna derecha)
+
+DISEÑO:
+  - Ícono de error (X en círculo rojo)
+  - Título: "Tu pago fue rechazado"
+  - Caja con motivo del rechazo (texto del admin)
+  - Botón principal: "Intentar de nuevo"
+  - Al presionar "Intentar de nuevo" vuelve al estado de pago pendiente
+
+PUEDE diseñarse como frame separado etiquetado "P4 — Estado: pago rechazado".
+
+============================================================
+CORRECCIÓN 10 — P4: Agregar estado "Subir carta de acreditación"
+============================================================
+
+FRAME: X4FvZ5 (P4 — Portal personal, solo para Mensajero Acreditado)
+SECCIÓN: Bloque de acción activo (columna derecha)
+CONDICIÓN: Se muestra después de que el pago es aprobado
+
+DISEÑO:
+  - Título: "Sube tu carta de acreditación"
+  - Descripción: "Sube la carta oficial de tu iglesia que te acredita
+    como mensajero"
+  - Zona de upload (drag & drop):
+      Ícono de nube con flecha hacia arriba
+      Texto: "Arrastra tu archivo aquí o haz clic para seleccionar"
+      Formatos aceptados: "PDF, JPG, PNG — máximo 10 MB"
+  - Vista previa del archivo una vez seleccionado (nombre + ícono)
+  - Botón principal: "Enviar carta"
+  - Nota: "Tu carta será revisada por el equipo de la convención"
+
+PUEDE diseñarse como frame separado etiquetado "P4 — Estado: subir carta".
+
+============================================================
+CORRECCIÓN 11 — P4: Agregar estado "Carta en revisión"
+============================================================
+
+FRAME: X4FvZ5 (P4 — Portal personal)
+SECCIÓN: Bloque de acción activo (columna derecha)
+
+DISEÑO:
+  - Ícono de reloj o documento en color amarillo
+  - Título: "Tu carta está siendo revisada"
+  - Nombre del archivo enviado
+  - Indicador de progreso o spinner
+  - Texto informativo: "Recibirás un correo cuando se haya procesado"
+  - Sin acciones disponibles (solo lectura)
+
+============================================================
+CORRECCIÓN 12 — P4: Agregar estado "Carta rechazada"
+============================================================
+
+FRAME: X4FvZ5 (P4 — Portal personal)
+SECCIÓN: Bloque de acción activo (columna derecha)
+
+DISEÑO:
+  - Ícono de error en color rojo
+  - Título: "Tu carta fue rechazada"
+  - Caja con motivo del rechazo (texto del admin)
+  - Botón principal: "Subir nueva carta"
+  - Al presionar regresa al estado de upload (Corrección 10)
+
+============================================================
+CORRECCIÓN 13 — P4: Agregar estado "Totalmente aprobado" (fully_approved)
+============================================================
+
+FRAME: X4FvZ5 (P4 — Portal personal)
+SECCIÓN: Bloque de acción activo (columna derecha) + Sección de descarga
+
+DISEÑO del bloque de acción:
+  - Ícono de celebración (confeti o estrella) en verde
+  - Título: "¡Estás listo para las plenarias!"
+  - Texto: "Tu hoja de nombramiento fue enviada a [correo]"
+
+DISEÑO de la sección de descarga (S4.3 — Hoja de Nombramiento):
+  - Tarjeta visible (antes estaba oculta):
+      Título: "Tu Hoja de Nombramiento"
+      Thumbnail del PDF (placeholder de documento)
+      Nombre, iglesia, tipo del delegado
+      Vista previa pequeña del código QR
+  - Botón principal: "Descargar PDF"
+  - Texto: "Presenta este documento (impreso o en pantalla) el día
+    del evento"
+
+NOTA: En este estado el tracker de "Tu progreso" debe mostrar todos
+los pasos completados (checks verdes en todos).
+
+============================================================
+CORRECCIÓN 14 — P4: Agregar tracker para Fraternal (3 pasos)
+============================================================
+
+FRAME: X4FvZ5 (P4 — Portal personal)
+SECCIÓN: Columna izquierda "Tu progreso"
+
+El tracker actual muestra 4 pasos (flujo de Mensajero Acreditado):
+  1. Registro
+  2. Pago
+  3. Carta de acreditación
+  4. Nombramiento
+
+Para Fraternal el flujo es de 3 pasos (sin carta):
+  1. Registro
+  2. Pago
+  3. Nombramiento
+
+ACCIÓN: Diseñar una variante del frame P4 (o del componente del tracker)
+que muestre solo 3 pasos, etiquetado "P4 — Fraternal".
+
+Este tracker de 3 pasos aplica a todos los estados de P4 cuando el
+tipo del registrante es Fraternal.
+
+============================================================
+RESUMEN DE CORRECCIONES
+============================================================
+
+Total de correcciones: 14
+
+  Correcciones de nombrado:   1  (Corrección 1)
+  Correcciones en Admin:      3  (Correcciones 2, 3)
+  Estados faltantes A6:       3  (Correcciones 4, 5, 6)
+  Estados faltantes P2:       1  (Corrección 7)
+  Estados faltantes P4:       7  (Correcciones 8–14)
+
+Pantallas que no requieren cambios:
+  A1, A2, A3, A5, A7, A8 — Completos
+  P1, P2 Paso 2, P2 Paso 3, P3, P5 — Completos
+
+============================================================
+FIN DEL DOCUMENTO
+============================================================

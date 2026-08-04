@@ -1,0 +1,25 @@
+node_modules
+.next
+.serverless
+.esbuild
+dist
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+.env.production
+.DS_Store
+coverage
+.turbo
+CLAUDE.md
+docs/
+
+# pnpm
+pnpm-debug.log*
+
+# Serverless
+serverless.debug.yml
+
+# Logs
+*.log
+logs/

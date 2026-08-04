@@ -1,0 +1,61 @@
+{
+  "serverless": {
+    "functions": {
+      "getActivePoll": {
+        "handler": "src/handlers/polls/active.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/polls/active",
+              "method": "get"
+            }
+          }
+        ]
+      },
+      "submitVote": {
+        "handler": "src/handlers/polls/vote.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/polls/vote",
+              "method": "post"
+            }
+          }
+        ]
+      },
+      "adminListPolls": {
+        "handler": "src/handlers/polls/admin-list.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/admin/polls",
+              "method": "get"
+            }
+          }
+        ]
+      },
+      "adminCreatePoll": {
+        "handler": "src/handlers/polls/admin-create.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/admin/polls",
+              "method": "post"
+            }
+          }
+        ]
+      },
+      "adminTogglePoll": {
+        "handler": "src/handlers/polls/admin-toggle.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/admin/polls/{id}/toggle",
+              "method": "post"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

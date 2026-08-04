@@ -1,0 +1,21 @@
+{
+  "name": "e2e-test-project",
+  "private": true,
+  "scripts": {
+    "dev:portal": "pnpm --filter portal dev",
+    "dev:admin": "pnpm --filter admin dev",
+    "dev:api": "pnpm --filter api dev",
+    "build:portal": "pnpm --filter portal build",
+    "build:admin": "pnpm --filter admin build",
+    "typecheck": "pnpm -r typecheck",
+    "mock:corporate": "node scripts/mock-corporate-api.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "description": "Registration platform generated for E2E Test Platform"
+}

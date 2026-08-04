@@ -1,0 +1,120 @@
+export type DelegateType = 'mensajero_acreditado' | 'fraternal'
+
+export interface Convention {
+  id: string
+  name: string
+  code: string
+}
+
+export interface Church {
+  id: string
+  name: string
+  code: string | null
+  conventionId: string
+}
+
+export type RegistrationStatus =
+  | 'pending_payment'
+  | 'payment_submitted'
+  | 'payment_approved'
+  | 'payment_rejected'
+  | 'carta_pending'
+  | 'carta_submitted'
+  | 'carta_rejected'
+  | 'fully_approved'
+  | 'checked_in'
+  | 'pending_onsite_payment'
+
+export type PaymentMethod = 'card' | 'oxxo' | 'google_pay' | 'apple_pay' | 'cash'
+
+export interface FormField {
+  id: string
+  label: string
+  type: 'text' | 'email' | 'tel' | 'date' | 'select' | 'textarea'
+  required: boolean
+  options?: string[]
+  isBase: boolean
+  order: number
+}
+
+export interface Registration {
+  id: string
+  token: string
+  status: RegistrationStatus
+  delegateType?: DelegateType | null
+
+  // Datos personales
+  fullName: string
+  email: string
+  phone: string
+  birthDate: string
+  age: number
+  extraFields: Record<string, string>
+
+  // Iglesia (Plenarias)
+  churchId?: string
+  churchName?: string
+  churchCode?: string | null
+  churchNotListed?: boolean
+  churchNotListedName?: string
+  
+  // Convención
+  conventionId?: string
+  conventionName?: string
+  conventionCode?: string
+  conventionNotListed?: boolean
+  conventionNotListedName?: string
+
+  // Entrada (Roles)
+  ticketTier?: 'general' | 'student' | 'vip'
+
+  // Pago
+  paymentMethod?: PaymentMethod
+  paymentAmount?: number
+  stripePaymentIntentId?: string
+  stripeOxxoVoucherUrl?: string
+  stripeOxxoExpiresAt?: string
+  paymentRejectedReason?: string
+  paymentApprovedAt?: string
+  paymentApprovedBy?: string
+
+  // Carta (Plenarias)
+  cartaFileUrl?: string
+  cartaFileName?: string
+  cartaSubmittedAt?: string
+  cartaRejectedReason?: string
+  cartaApprovedAt?: string
+  cartaApprovedBy?: string
+
+  // Nombramiento / Pase
+  nominationPdfUrl?: string
+  nominationGeneratedAt?: string
+
+  // Check-in
+  checkedInAt?: string
+  checkedInBy?: string
+
+  // QR
+  qrToken: string
+
+  // Módulos Adicionales (Opcionales)
+  selectedWorkshops?: string[]
+  workshopsSelectedAt?: string
+  roomId?: string | null
+  roomRole?: 'responsible' | 'member' | 'companion' | null
+  companionName?: string | null
+  tshirtSize?: string
+  votedPolls?: string[]
+
+  // Timestamps
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CheckInResult {
+  status: 'valid' | 'already_scanned' | 'invalid' | 'offline'
+  registration?: Pick<
+    Registration,
+    'fullName' | 'churchName' | 'delegateType' | 'checkedInAt' | 'checkedInBy'
+  >
+}

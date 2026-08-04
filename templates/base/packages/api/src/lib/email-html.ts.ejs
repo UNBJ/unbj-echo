@@ -1,0 +1,223 @@
+export function confirmationEmailHtml(opts: {
+  fullName: string
+  portalUrl: string
+  eventName: string
+  churchName?: string | null
+  conventionName?: string | null
+}): string {
+  const { fullName, portalUrl, eventName, churchName, conventionName } = opts
+  
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F8F9FB;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8F9FB;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #E5E7EB;">
+
+        <!-- Accent line -->
+        <tr><td style="height:3px;background:linear-gradient(90deg,#2563EB,#3B82F6,#2563EB);font-size:0;">&nbsp;</td></tr>
+
+        <!-- Header -->
+        <tr><td style="background:#1E293B;padding:20px 32px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+                <span style="color:#F8FAFC;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">${eventName}</span>
+              </td>
+            </tr>
+          </table>
+        </td></tr>
+
+        <!-- Content -->
+        <tr><td style="padding:36px 32px 28px;">
+
+          <!-- Success icon row -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+            <tr>
+              <td>
+                <div style="display:inline-block;background:#E0F2FE;color:#0369A1;border-radius:50%;width:48px;height:48px;line-height:48px;text-align:center;font-size:22px;font-weight:bold;">✓</div>
+              </td>
+            </tr>
+          </table>
+
+          <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#1F2937;">¡Tu registro fue exitoso!</h1>
+          <p style="margin:0 0 20px;font-size:15px;color:#4B5563;">Hola <strong style="color:#1F2937;">${fullName}</strong>,</p>
+          <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.6;">
+            Tu registro para el evento <strong>${eventName}</strong> ha sido recibido correctamente.
+          </p>
+
+          ${(churchName || conventionName) ? `
+          <!-- Info box -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:8px;border:1px solid #E2E8F0;margin:0 0 24px;">
+            <tr><td style="padding:16px 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                ${churchName ? `
+                <tr>
+                  <td style="padding:6px 0;${conventionName ? 'border-bottom:1px solid #E2E8F0;' : ''}">
+                    <span style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;">Organización / Iglesia</span><br>
+                    <span style="font-size:14px;color:#1E293B;font-weight:600;">${churchName}</span>
+                  </td>
+                </tr>
+                ` : ''}
+                ${conventionName ? `
+                <tr>
+                  <td style="padding:6px 0;">
+                    <span style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;">Asociación / Convención</span><br>
+                    <span style="font-size:14px;color:#1E293B;font-weight:600;">${conventionName}</span>
+                  </td>
+                </tr>
+                ` : ''}
+              </table>
+            </td></tr>
+          </table>
+          ` : ''}
+
+          <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.6;">
+            El siguiente paso es completar tu pago e información adicional en tu portal personal.
+          </p>
+
+          <!-- Button -->
+          <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+            <tr>
+              <td style="background:#2563EB;border-radius:8px;">
+                <a href="${portalUrl}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;letter-spacing:0.3px;">
+                  Acceder a mi portal personal →
+                </a>
+              </td>
+            </tr>
+          </table>
+
+          <p style="margin:0;font-size:12px;color:#64748B;line-height:1.6;">
+            Guarda este correo — el enlace de arriba es tu acceso personal al proceso de registro.
+            No lo compartas con nadie más.
+          </p>
+
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="background:#F8FAFC;border-top:1px solid #E2E8F0;padding:16px 32px;text-align:center;">
+          <p style="margin:0;font-size:11px;color:#64748B;letter-spacing:0.5px;">
+            ${eventName} · Todos los derechos reservados.
+          </p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+}
+
+export function approvalEmailHtml(opts: {
+  fullName: string
+  eventName: string
+  pdfUrl: string
+  churchName?: string | null
+  conventionName?: string | null
+  delegateLabel?: string | null
+}): string {
+  const { fullName, eventName, pdfUrl, churchName, conventionName, delegateLabel } = opts
+  
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F8F9FB;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8F9FB;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #E5E7EB;">
+
+        <!-- Accent line -->
+        <tr><td style="height:3px;background:linear-gradient(90deg,#2563EB,#3B82F6,#2563EB);font-size:0;">&nbsp;</td></tr>
+
+        <!-- Header -->
+        <tr><td style="background:#1E293B;padding:20px 32px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+                <span style="color:#F8FAFC;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">${eventName}</span>
+              </td>
+            </tr>
+          </table>
+        </td></tr>
+
+        <!-- Content -->
+        <tr><td style="padding:36px 32px 28px;">
+
+          <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#1F2937;">¡Tu registro está aprobado!</h1>
+          <p style="margin:0 0 20px;font-size:15px;color:#4B5563;">Hola <strong style="color:#1F2937;">${fullName}</strong>,</p>
+          <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.6;">
+            Tu registro para el evento <strong>${eventName}</strong> ha sido confirmado por el equipo administrativo.
+          </p>
+
+          ${(churchName || conventionName || delegateLabel) ? `
+          <!-- Info box -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:8px;border:1px solid #E2E8F0;margin:0 0 24px;">
+            <tr><td style="padding:16px 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                ${churchName ? `
+                <tr>
+                  <td style="padding:6px 0;${(conventionName || delegateLabel) ? 'border-bottom:1px solid #E2E8F0;' : ''}">
+                    <span style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;">Organización / Iglesia</span><br>
+                    <span style="font-size:14px;color:#1E293B;font-weight:600;">${churchName}</span>
+                  </td>
+                </tr>
+                ` : ''}
+                ${conventionName ? `
+                <tr>
+                  <td style="padding:6px 0;${delegateLabel ? 'border-bottom:1px solid #E2E8F0;' : ''}">
+                    <span style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;">Asociación / Convención</span><br>
+                    <span style="font-size:14px;color:#1E293B;font-weight:600;">${conventionName}</span>
+                  </td>
+                </tr>
+                ` : ''}
+                ${delegateLabel ? `
+                <tr>
+                  <td style="padding:6px 0;">
+                    <span style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;">Tipo de Acceso / Asistente</span><br>
+                    <span style="font-size:14px;color:#1E293B;font-weight:600;">${delegateLabel}</span>
+                  </td>
+                </tr>
+                ` : ''}
+              </table>
+            </td></tr>
+          </table>
+          ` : ''}
+
+          <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#1F2937;text-transform:uppercase;letter-spacing:1px;">
+            Tu pase de acceso
+          </p>
+          <p style="margin:0 0 20px;font-size:14px;color:#374151;line-height:1.6;">
+            Tu pase oficial de acceso en formato PDF ha sido generado. Preséntalo impreso o en pantalla el día del evento.
+          </p>
+
+          <!-- Button -->
+          <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+            <tr>
+              <td style="background:#2563EB;border-radius:8px;">
+                <a href="${pdfUrl}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;letter-spacing:0.3px;">
+                  Descargar Pase de Entrada →
+                </a>
+              </td>
+            </tr>
+          </table>
+
+          <p style="margin:0;font-size:12px;color:#64748B;line-height:1.6;">
+            Te esperamos en el evento.
+          </p>
+
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="background:#F8FAFC;border-top:1px solid #E2E8F0;padding:16px 32px;text-align:center;">
+          <p style="margin:0;font-size:11px;color:#64748B;letter-spacing:0.5px;">
+            ${eventName} · Todos los derechos reservados.
+          </p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+}

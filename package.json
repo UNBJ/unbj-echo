@@ -1,0 +1,48 @@
+{
+  "name": "unbj-echo",
+  "version": "1.0.0",
+  "description": "CLI tool to generate customized event registration platforms",
+  "main": "dist/index.js",
+  "bin": {
+    "unbj-echo": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs --clean --minify",
+    "dev": "tsup src/index.ts --format cjs --watch",
+    "start": "node dist/index.js",
+    "preview:clean": "node scripts/preview-project.mjs clean",
+    "preview:generate": "node scripts/preview-project.mjs generate",
+    "preview:install": "pnpm install --dir preview-project",
+    "preview:refresh": "node scripts/preview-project.mjs refresh",
+    "preview:typecheck": "pnpm --dir preview-project run typecheck",
+    "preview:dev:portal": "pnpm --dir preview-project run dev:portal",
+    "preview:dev:admin": "pnpm --dir preview-project run dev:admin",
+    "preview:dev:api": "pnpm --dir preview-project run dev:api"
+  },
+  "keywords": [
+    "cli",
+    "generator",
+    "event",
+    "registration",
+    "serverless",
+    "nextjs",
+    "firebase"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "chalk": "^4.1.2",
+    "commander": "^12.0.0",
+    "ejs": "^3.1.9",
+    "fs-extra": "^11.2.0",
+    "picocolors": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.0.3",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.11.24",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
+  }
+}

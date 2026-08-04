@@ -1,0 +1,47 @@
+version: 1
+applications:
+  - appRoot: apps/portal
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - corepack enable
+            - corepack prepare pnpm@10.33.0 --activate
+            - pnpm install --frozen-lockfile
+        build:
+          commands:
+            - pnpm build
+            - mkdir -p .next/node_modules && cp -rL ../../node_modules/next .next/node_modules/next
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+          - 'node_modules/**'
+      cache:
+        paths:
+          - .next/cache/**/*
+          - node_modules/**/*
+          - ../../node_modules/**/*
+
+  - appRoot: apps/admin
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - corepack enable
+            - corepack prepare pnpm@10.33.0 --activate
+            - pnpm install --frozen-lockfile
+        build:
+          commands:
+            - pnpm build
+            - mkdir -p .next/node_modules && cp -rL ../../node_modules/next .next/node_modules/next
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+          - 'node_modules/**'
+      cache:
+        paths:
+          - .next/cache/**/*
+          - node_modules/**/*
+          - ../../node_modules/**/*

@@ -1,0 +1,28 @@
+{
+  "serverless": {
+    "functions": {
+      "getShirtSizeStatus": {
+        "handler": "src/handlers/users/get-shirt-size.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/users/shirt-size/status",
+              "method": "get"
+            }
+          }
+        ]
+      },
+      "selectShirtSize": {
+        "handler": "src/handlers/users/select-shirt-size.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/users/shirt-size/select",
+              "method": "post"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

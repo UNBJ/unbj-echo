@@ -1,0 +1,39 @@
+{
+  "serverless": {
+    "functions": {
+      "getWorkshops": {
+        "handler": "src/handlers/workshops/get.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/logistic/studios",
+              "method": "get"
+            }
+          }
+        ]
+      },
+      "getMyWorkshops": {
+        "handler": "src/handlers/workshops/get-my.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/logistic/my-studios",
+              "method": "get"
+            }
+          }
+        ]
+      },
+      "selectWorkshops": {
+        "handler": "src/handlers/workshops/select.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/logistic/studios/select",
+              "method": "post"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

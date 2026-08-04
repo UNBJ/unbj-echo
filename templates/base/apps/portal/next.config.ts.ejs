@@ -1,0 +1,12 @@
+import type { NextConfig } from 'next'
+<% if (languages === 'es-en') { %>
+import createNextIntlPlugin from 'next-intl/plugin'
+
+const withNextIntl = createNextIntlPlugin()
+<% } %>
+
+const nextConfig: NextConfig = {
+  transpilePackages: ['@plenarias/shared'],
+}
+
+export default <% if (languages === 'es-en') { %>withNextIntl(<% } %>nextConfig<% if (languages === 'es-en') { %>)<% } %>

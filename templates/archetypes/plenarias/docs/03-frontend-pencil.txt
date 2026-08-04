@@ -1,0 +1,830 @@
+PLATAFORMA DE REGISTRO — PLENARIAS CNBM 2026
+ESPECIFICACIÓN DE INTERFACES PARA DISEÑO
+============================================================
+Versión: 1.0 | Mayo 2026
+Idioma de la interfaz: Español
+Aplicaciones: Portal del Registrante + Panel de Administración
+============================================================
+
+CONVENCIONES DE ESTE DOCUMENTO
+- PANTALLA: Cada vista o ruta de la aplicación
+- SECCIÓN: Bloque visual dentro de una pantalla
+- COMPONENTE: Elemento UI reutilizable
+- ACCIÓN: Interacción del usuario
+- FLUJO: Navegación entre pantallas
+- ESTADO: Variante visual de la pantalla según contexto
+- CONEXIÓN: Llamada a API o dependencia de datos
+
+============================================================
+APLICACIÓN 1: PORTAL DEL REGISTRANTE
+URL base: plenarias.cnbm.org.mx
+Dispositivos objetivo: Desktop y móvil (responsive)
+============================================================
+
+------------------------------------------------------------
+PANTALLA P1: LANDING / INICIO
+Ruta: /
+------------------------------------------------------------
+
+SECCIÓN S1.1 — ENCABEZADO (Header)
+  - Logo de la Convención Nacional Bautista de México
+  - Nombre del evento: "Plenarias CNBM 2026"
+  - Año del evento
+  - Botón CTA principal: "Registrarme" → navega a /registro
+  - Indicador de fechas clave (opcional, visible si están configuradas):
+    "Registro abierto hasta [fecha límite]"
+
+SECCIÓN S1.2 — HERO
+  - Título principal: "Plenarias de la Convención Nacional Bautista de México"
+  - Subtítulo: Breve descripción del evento (fecha, lugar si está disponible)
+  - Botón CTA: "Registrarme ahora" → navega a /registro
+  - Botón secundario: "Ya me registré, ver mi estado" → navega a /mi-registro
+
+SECCIÓN S1.3 — INFORMACIÓN DEL EVENTO
+  - Tarjetas informativas:
+    * Mensajeros Acreditados: qué son, quiénes califican, qué necesitan (pago + carta)
+    * Fraternales: qué son, quiénes son, qué necesitan (solo pago)
+  - Precio del registro (obtenido de API /config/public)
+  - Fechas límite importantes:
+    * Fecha límite de registro
+    * Fecha límite de pago
+    * Fecha límite de subir carta (para mensajeros)
+
+SECCIÓN S1.4 — PASOS DEL PROCESO
+  - Línea de tiempo visual de 3 pasos:
+    1. Llena el formulario de registro
+    2. Realiza tu pago
+    3. Sube tu carta y descarga tu hoja de nombramiento
+  - Indicación visual de cuál aplica según tipo (mensajero / fraternal)
+
+SECCIÓN S1.5 — FOOTER
+  - Logo CNBM
+  - Información de contacto
+  - Número telefónico para iglesias no encontradas en el sistema
+
+ESTADOS DE P1:
+  - Registro abierto: muestra CTA de registro activo
+  - Registro cerrado: reemplaza CTA por mensaje "El período de registro ha cerrado"
+  - Pago cerrado: banner informativo "El período de pago ha cerrado"
+
+CONEXIONES:
+  - GET /config/public → precio, fechas límite, estado del sistema
+
+------------------------------------------------------------
+PANTALLA P2: FORMULARIO DE REGISTRO (MULTI-STEP)
+Ruta: /registro
+Pasos: 3 pasos + confirmación
+------------------------------------------------------------
+
+COMPONENTE — BARRA DE PROGRESO
+  - Indicador de 3 pasos visible en toda la pantalla
+  - Paso actual destacado
+  - Pasos completados marcados con ícono de check
+  - Etiquetas: "1. Tu iglesia" / "2. Tus datos" / "3. Confirmar"
+
+PASO 1 — BÚSQUEDA DE IGLESIA
+
+  SECCIÓN S2.1 — BUSCADOR DE IGLESIA
+    - Título: "¿A qué iglesia perteneces?"
+    - Campo de búsqueda de texto con placeholder "Escribe el nombre de tu iglesia"
+    - Búsqueda en tiempo real (debounce 300ms) mientras escribe
+    - Spinner de carga mientras busca
+
+  ESTADO: Resultados encontrados
+    - Lista de iglesias que coinciden con la búsqueda
+    - Cada resultado: nombre de iglesia + nombre de convención
+    - El usuario selecciona su iglesia de la lista
+    - Al seleccionar: muestra tarjeta de confirmación con nombre y convención
+    - Botón "Continuar" se activa al seleccionar
+
+  ESTADO: No encontrada
+    - Mensaje: "Tu iglesia no aparece en nuestro registro"
+    - Caja informativa con número telefónico de contacto
+    - Instrucción: "Llama a este número para que puedan ayudarte a completar tu registro"
+    - Sin botón de continuar (el flujo se detiene)
+
+  ESTADO: Escribiendo (menos de 3 caracteres)
+    - Mensaje suave: "Escribe al menos 3 caracteres para buscar"
+
+  CONEXIONES:
+    - POST /churches/search (con debounce) → lista de iglesias
+
+  FLUJO: Iglesia seleccionada → Paso 2
+
+PASO 2 — DATOS PERSONALES
+
+  SECCIÓN S2.2 — BADGE DE TIPO ASIGNADO
+    - Badge visible: "Mensajero Acreditado" (azul) o "Fraternal" (verde)
+    - Texto explicativo breve según el tipo:
+      * Mensajero: "Tu iglesia tiene cupo disponible. Necesitarás pagar y subir tu carta de acreditación."
+      * Fraternal: "Tu iglesia ya completó sus cupos de mensajeros. Podrás asistir como fraternal pagando tu registro."
+
+  SECCIÓN S2.3 — FORMULARIO DE DATOS
+    - Campos renderizados dinámicamente según configuración del sistema
+    - Campos base (siempre presentes):
+      * Nombre completo (texto, obligatorio)
+      * Correo electrónico (email, obligatorio) — se usará para enviar el enlace de acceso
+      * Teléfono (teléfono, obligatorio)
+      * Fecha de nacimiento (date picker, obligatorio)
+      * Edad (número, obligatorio, autocompletado al seleccionar fecha de nacimiento)
+    - Campos adicionales renderizados según config (pueden ser texto, select, número, etc.)
+    - Validación en tiempo real por campo
+    - Mensajes de error bajo cada campo inválido
+    - Botón "Atrás" → vuelve a Paso 1
+    - Botón "Continuar" → activo solo cuando todos los campos requeridos son válidos
+
+PASO 3 — CONFIRMACIÓN
+
+  SECCIÓN S2.4 — RESUMEN DEL REGISTRO
+    - Título: "Revisa tu información"
+    - Tarjeta resumen con todos los datos ingresados:
+      * Nombre
+      * Iglesia / Convención
+      * Tipo asignado (Mensajero Acreditado / Fraternal)
+      * Correo electrónico
+      * Teléfono
+      * Otros campos
+    - Aviso: "Recibirás un correo en [email] con el enlace para continuar tu proceso"
+    - Precio del registro: "$XXX MXN"
+    - Botón "Atrás" → vuelve a Paso 2
+    - Botón principal "Confirmar registro" → envía el formulario
+
+  ESTADO: Enviando
+    - Botón en estado loading / spinner
+    - Formulario bloqueado para evitar doble envío
+
+  ESTADO: Error de envío
+    - Mensaje de error descriptivo bajo el botón
+    - Botón disponible para reintentar
+
+  FLUJO: Registro exitoso → Pantalla P3 (Confirmación)
+
+  CONEXIONES:
+    - POST /registrations → crea el registro, retorna registrationId y accessToken
+
+ESTADO DE P2 COMPLETO — Registro cerrado:
+  - Mensaje de aviso que el período de registro ha cerrado
+  - Sin formulario visible
+  - Botón "Ver mi registro" → navega a /mi-registro
+
+------------------------------------------------------------
+PANTALLA P3: REGISTRO EXITOSO (CONFIRMACIÓN)
+Ruta: /registro/exitoso
+------------------------------------------------------------
+
+SECCIÓN S3.1 — MENSAJE DE ÉXITO
+  - Ícono grande de check o celebración
+  - Título: "¡Registro completado!"
+  - Texto: "Hemos enviado un correo a [email del registrante] con tu enlace de acceso personal."
+  - Instrucción: "Revisa tu bandeja de entrada (y la carpeta de spam) para continuar con el pago."
+
+SECCIÓN S3.2 — RESUMEN RÁPIDO
+  - Nombre del registrante
+  - Iglesia
+  - Tipo asignado (con badge visual)
+  - Próximo paso según tipo:
+    * Mensajero: "1. Paga tu registro → 2. Sube tu carta de acreditación"
+    * Fraternal: "1. Paga tu registro"
+
+SECCIÓN S3.3 — ACCESO DIRECTO (si el token está disponible en URL)
+  - Botón: "Ver mi registro" → navega a /mi-registro con los parámetros correctos
+
+------------------------------------------------------------
+PANTALLA P4: PORTAL PERSONAL DEL REGISTRANTE
+Ruta: /mi-registro?id={registrationId}&token={accessToken}
+------------------------------------------------------------
+
+Esta es la pantalla central donde el registrante sigue y completa su proceso.
+
+COMPONENTE — HEADER PERSONAL
+  - Nombre del registrante
+  - Badge de tipo: "Mensajero Acreditado" (azul) o "Fraternal" (verde)
+  - Iglesia y convención
+  - Enlace para reenviar correo de acceso si el token expiró
+
+SECCIÓN S4.1 — TRACKER DE ESTADO (LÍNEA DE TIEMPO)
+  - Línea de progreso vertical con los pasos del proceso
+  - Cada paso tiene: ícono, título, descripción, estado visual
+
+  Para Mensajero Acreditado:
+    Paso 1: Registro → completado
+    Paso 2: Pago → [pendiente / en proceso / aprobado / rechazado]
+    Paso 3: Carta de acreditación → [bloqueado / pendiente / enviada / aprobada / rechazada]
+    Paso 4: Hoja de nombramiento → [bloqueado / lista]
+
+  Para Fraternal:
+    Paso 1: Registro → completado
+    Paso 2: Pago → [pendiente / en proceso / aprobado / rechazado]
+    Paso 3: Hoja de nombramiento → [bloqueado / lista]
+
+  Colores de estado:
+    - Completado: verde con check
+    - En proceso / pendiente de revisión: amarillo
+    - Rechazado / requiere acción: rojo con !
+    - Bloqueado: gris
+
+SECCIÓN S4.2 — BLOQUE DE ACCIÓN ACTIVO
+  Esta sección muestra la acción pendiente del registrante.
+  Solo una acción activa a la vez.
+
+  ESTADO: Pago pendiente
+    - Título: "Realiza tu pago"
+    - Monto a pagar: "$XXX MXN"
+    - Opciones de pago (botones/tabs):
+      * Tarjeta de crédito o débito
+      * OXXO
+      * Google Pay (solo si disponible en el dispositivo)
+      * Apple Pay (solo si disponible en el dispositivo)
+    - Al seleccionar método → muestra formulario de pago de Stripe (Payment Element)
+    - Botón "Pagar $XXX MXN"
+    - Nota: "Pago procesado de forma segura por Stripe"
+    - Logotipos: Visa, Mastercard, OXXO, Google Pay, Apple Pay
+
+  ESTADO: Voucher OXXO generado
+    - Título: "Paga en OXXO"
+    - Tarjeta destacada con:
+      * Código de barras / número de referencia
+      * Monto exacto a pagar
+      * Fecha límite para pagar en tienda (3 días)
+    - Instrucciones paso a paso para pagar en OXXO
+    - Botón "Descargar voucher"
+    - Mensaje: "Una vez que pagues, tu registro se actualizará automáticamente en las próximas horas"
+
+  ESTADO: Pago en revisión (solo efectivo)
+    - Mensaje: "Tu pago en efectivo está siendo procesado"
+    - Spinner o indicador de progreso
+
+  ESTADO: Pago rechazado
+    - Ícono de error
+    - Mensaje: "Tu pago fue rechazado"
+    - Motivo del rechazo (si está disponible)
+    - Botón: "Intentar de nuevo" → vuelve al estado "Pago pendiente"
+
+  ESTADO: Subir carta de acreditación (solo mensajero, post-pago aprobado)
+    - Título: "Sube tu carta de acreditación"
+    - Descripción: "Sube la carta oficial de tu iglesia que te acredita como mensajero"
+    - Zona de upload (drag & drop + botón de selección de archivo)
+    - Formatos aceptados: PDF, JPG, PNG — máximo 10MB
+    - Vista previa del archivo seleccionado
+    - Botón "Enviar carta"
+    - Nota: "Tu carta será revisada por el equipo de la convención"
+
+  ESTADO: Carta enviada, en revisión
+    - Mensaje: "Tu carta está siendo revisada"
+    - Nombre del archivo enviado
+    - Indicador de progreso
+    - Tiempo estimado de revisión (si aplica)
+
+  ESTADO: Carta rechazada
+    - Ícono de error
+    - Mensaje: "Tu carta fue rechazada"
+    - Motivo del rechazo
+    - Botón: "Subir nueva carta" → vuelve al estado de upload
+
+  ESTADO: Todo aprobado (fully_approved)
+    - Ícono de celebración
+    - Título: "¡Estás listo para las plenarias!"
+    - Mensaje: "Tu hoja de nombramiento fue enviada a [email]"
+
+SECCIÓN S4.3 — HOJA DE NOMBRAMIENTO (visible cuando fully_approved o checked_in)
+  - Tarjeta con:
+    * Título: "Tu Hoja de Nombramiento"
+    * Vista previa del documento (thumbnail del PDF si es posible)
+    * Nombre, iglesia, tipo
+    * Preview del código QR
+  - Botón principal: "Descargar PDF"
+  - Instrucción: "Presenta este documento (impreso o en pantalla) el día del evento"
+
+SECCIÓN S4.4 — INFORMACIÓN DEL REGISTRO
+  - Acordeón o sección colapsable
+  - Muestra todos los datos registrados:
+    * Tipo de delegado
+    * Nombre, iglesia, convención
+    * Correo, teléfono, fecha de nacimiento
+    * Método de pago usado
+    * Fecha de registro
+  - Sin opción de edición (los datos son fijos post-registro)
+
+ESTADOS ESPECIALES DE P4:
+
+  Token inválido o expirado:
+    - Mensaje: "El enlace ha expirado o no es válido"
+    - Campo para ingresar correo y botón "Reenviar enlace de acceso"
+
+  Registro ya presente en el evento (checked_in):
+    - Banner verde: "Presente en el evento — [fecha y hora]"
+    - Hoja de nombramiento disponible para descarga
+
+CONEXIONES:
+  - GET /registrations/:id → datos del registro
+  - POST /registrations/:id/payment/intent → clientSecret de Stripe
+  - PUT /registrations/:id/carta → upload de carta
+  - Stripe.js → confirmar pago
+
+------------------------------------------------------------
+PANTALLA P5: ESTADO DE TOKEN INVÁLIDO / EXPIRADO
+Ruta: /mi-registro (cuando token es inválido)
+------------------------------------------------------------
+
+SECCIÓN S5.1
+  - Ícono de candado o enlace roto
+  - Título: "Enlace no válido o expirado"
+  - Descripción breve
+  - Campo de correo electrónico
+  - Botón "Reenviar enlace de acceso"
+
+  ESTADO: Correo enviado
+    - Mensaje de confirmación
+    - Instrucción de revisar bandeja
+
+============================================================
+APLICACIÓN 2: PANEL DE ADMINISTRACIÓN
+URL base: admin.plenarias.cnbm.org.mx
+Dispositivos objetivo: Desktop principal, móvil para check-in
+============================================================
+
+COMPONENTE GLOBAL — LAYOUT DEL PANEL
+  - Sidebar izquierdo (colapsable en móvil)
+  - Logo CNBM en la parte superior del sidebar
+  - Navegación principal:
+    * Dashboard (ícono de estadísticas)
+    * Registros (ícono de lista)
+    * Check-in (ícono de QR / cámara)
+    * Configuración [solo super_admin] (ícono de engranaje)
+      - Sub-item: Configuración general
+      - Sub-item: Excepciones de cupo
+      - Sub-item: Administradores
+  - Información del admin actual en la parte inferior del sidebar:
+    * Avatar con iniciales
+    * Nombre y rol (Admin / Super Admin)
+    * Botón de cerrar sesión
+  - Header superior:
+    * Título de la sección actual
+    * Badge del rol del admin
+    * Botón de cierre de sesión (alternativo)
+
+------------------------------------------------------------
+PANTALLA A1: LOGIN
+Ruta: /login
+------------------------------------------------------------
+
+SECCIÓN A1.1 — FORMULARIO DE ACCESO
+  - Logo CNBM centrado
+  - Título: "Panel de Administración"
+  - Subtítulo: "Plenarias CNBM 2026"
+  - Campo: Correo electrónico
+  - Campo: Contraseña (con toggle mostrar/ocultar)
+  - Botón: "Iniciar sesión"
+
+  ESTADO: Error de credenciales
+    - Mensaje de error bajo el formulario: "Correo o contraseña incorrectos"
+
+  ESTADO: Cuenta inactiva
+    - Mensaje: "Tu cuenta no tiene acceso. Contacta al administrador."
+
+  ESTADO: Cargando
+    - Botón en estado loading
+
+FLUJO: Login exitoso → A2 (Dashboard)
+
+CONEXIONES:
+  - Firebase Authentication (email/password)
+
+------------------------------------------------------------
+PANTALLA A2: DASHBOARD — ESTADÍSTICAS
+Ruta: /
+------------------------------------------------------------
+
+SECCIÓN A2.1 — TARJETAS DE MÉTRICAS PRINCIPALES (fila de 4)
+  - Total de registros
+  - Mensajeros Acreditados (con sub-conteo: aprobados vs pendientes)
+  - Fraternales (con sub-conteo: aprobados vs pendientes)
+  - Check-ins realizados hoy / total
+
+SECCIÓN A2.2 — ESTADO DE PAGOS
+  - Tarjetas o gráfica de dona:
+    * Pagos aprobados (verde)
+    * Pagos pendientes (amarillo)
+    * Pagos rechazados (rojo)
+    * En proceso / OXXO pendiente (azul)
+  - Total recaudado: "$XXX,XXX MXN"
+
+SECCIÓN A2.3 — ESTADO POR ETAPA (embudo)
+  - Gráfica de barras o embudo visual:
+    * Registrados
+    * Pago aprobado
+    * Carta aprobada (solo mensajeros)
+    * Aprobados totales
+    * Check-in realizado
+
+SECCIÓN A2.4 — TABLA TOP IGLESIAS
+  - Tabla: Nombre de iglesia | Mensajeros | Fraternales | Total | Estado
+  - Ordenable por total (desc por defecto)
+  - Máximo 10 filas con botón "Ver todas"
+
+SECCIÓN A2.5 — ACCIONES RÁPIDAS
+  - Botón: "Ver registros pendientes de pago"
+  - Botón: "Ver registros pendientes de carta" (si aplica)
+  - Botón: "Ir a Check-in" (destacado el día del evento)
+
+SECCIÓN A2.6 — ALERTAS Y NOTIFICACIONES
+  - Lista de items que requieren atención:
+    * "X registros con pago pendiente de aprobación"
+    * "X cartas pendientes de revisión"
+  - Cada alerta con botón "Ver" que filtra la lista de registros
+
+CONEXIONES:
+  - GET /admin/stats
+
+------------------------------------------------------------
+PANTALLA A3: LISTA DE REGISTROS
+Ruta: /registros
+------------------------------------------------------------
+
+SECCIÓN A3.1 — BARRA DE FILTROS
+  - Filtro por estado (dropdown): Todos / Pago pendiente / Pago en revisión /
+    Pago aprobado / Carta pendiente / Carta en revisión / Aprobado / Check-in
+  - Filtro por tipo (tabs o dropdown): Todos / Mensajero Acreditado / Fraternal
+  - Filtro por iglesia (búsqueda de texto)
+  - Buscador general (nombre o correo del registrante)
+  - Botón: "Exportar" (CSV o Excel) → descarga inmediata
+  - Botón: "Registro en efectivo" [solo si onsiteCashEnabled] → modal/pantalla de registro
+
+SECCIÓN A3.2 — TABLA DE REGISTROS
+  Columnas:
+    - Nombre del registrante
+    - Iglesia
+    - Tipo (badge: Mensajero / Fraternal)
+    - Estado (badge con color según estado)
+    - Método de pago
+    - Monto
+    - Fecha de registro
+    - Acción rápida (botón según estado pendiente)
+
+  Paginación:
+    - 25 registros por página (configurable: 25 / 50 / 100)
+    - Indicador: "Mostrando 1-25 de 1,080 registros"
+    - Navegación anterior / siguiente / páginas
+
+  Fila clickeable → navega a A4 (Detalle de registro)
+
+  ESTADO: Sin resultados
+    - Mensaje: "No se encontraron registros con estos filtros"
+    - Botón para limpiar filtros
+
+CONEXIONES:
+  - GET /admin/registrations (con query params de filtros)
+  - GET /admin/export
+
+------------------------------------------------------------
+PANTALLA A4: DETALLE DE REGISTRO
+Ruta: /registros/:id
+------------------------------------------------------------
+
+COMPONENTE — BREADCRUMB
+  - Registros > [Nombre del registrante]
+
+SECCIÓN A4.1 — ENCABEZADO DEL REGISTRO
+  - Nombre completo
+  - Badge de tipo (Mensajero Acreditado / Fraternal)
+  - Badge de estado actual
+  - Iglesia y convención
+  - Fecha de registro
+  - ID del registro (para referencia)
+
+SECCIÓN A4.2 — DATOS PERSONALES
+  - Tabla o lista de todos los campos:
+    * Nombre, correo, teléfono, fecha de nacimiento, edad
+    * Campos adicionales si los hay
+  - Solo lectura
+
+SECCIÓN A4.3 — GESTIÓN DE PAGO
+  - Estado actual del pago (badge)
+  - Método de pago
+  - Monto
+  - Fecha de pago (si aplica)
+  - ID de transacción Stripe (si aplica)
+  - Campo de monto con excepción (editable por super_admin): permite ajustar el monto individualmente
+
+  ACCIONES según estado:
+    Estado: payment_submitted (efectivo pendiente)
+      - Botón verde: "Aprobar pago"
+      - Botón rojo: "Rechazar pago" → modal con campo de motivo obligatorio
+
+    Estado: payment_approved / payment_rejected:
+      - Solo información, sin acciones
+
+    Estado: payment_rejected:
+      - Muestra motivo del rechazo
+      - Botón: "Reabrir para nuevo pago" (si aplica, super_admin)
+
+SECCIÓN A4.4 — GESTIÓN DE CARTA (solo mensajero_acreditado)
+  - Visible solo si el tipo es mensajero_acreditado
+  - Estado actual de la carta
+
+  ESTADO: carta_pending
+    - Mensaje: "Esperando que el registrante suba su carta"
+    - Sin acciones disponibles
+
+  ESTADO: carta_submitted
+    - Botón de previsualización: "Ver carta" → abre en modal o nueva pestaña
+    - Nombre del archivo subido
+    - Fecha de upload
+    - Botón verde: "Aprobar carta"
+    - Botón rojo: "Rechazar carta" → modal con campo de motivo obligatorio
+
+  ESTADO: carta_approved
+    - Mensaje: "Carta aprobada" con fecha
+    - Quién la aprobó
+    - Enlace para ver el archivo
+
+  ESTADO: carta_rejected
+    - Mensaje: "Carta rechazada" con motivo
+    - Quién la rechazó
+
+SECCIÓN A4.5 — HOJA DE NOMBRAMIENTO
+  - Visible cuando status === fully_approved o checked_in
+  - Vista previa del QR generado
+  - Botón: "Ver PDF"
+  - Botón: "Descargar PDF"
+  - Fecha de generación
+
+SECCIÓN A4.6 — ESTADO DE CHECK-IN
+  - Estado: no checkeado → indicador gris
+  - Estado: checkeado → indicador verde con fecha, hora y quién registró el check-in
+
+SECCIÓN A4.7 — HISTORIAL DE ACCIONES
+  - Lista cronológica de eventos del registro:
+    * Fecha y hora
+    * Acción realizada
+    * Quién la realizó (sistema / nombre del admin)
+
+COMPONENTE — MODAL DE RECHAZO
+  - Título: "Rechazar [pago / carta]"
+  - Campo de texto obligatorio: "Motivo del rechazo"
+  - Aviso: "El registrante recibirá un correo con este motivo"
+  - Botón: "Confirmar rechazo"
+  - Botón: "Cancelar"
+
+CONEXIONES:
+  - GET /admin/registrations/:id
+  - PUT /admin/registrations/:id/payment/approve
+  - PUT /admin/registrations/:id/payment/reject
+  - PUT /admin/registrations/:id/carta/approve
+  - PUT /admin/registrations/:id/carta/reject
+
+------------------------------------------------------------
+PANTALLA A5: REGISTRO EN EFECTIVO (MODAL O PANTALLA)
+Activado desde: lista de registros cuando onsiteCashEnabled === true
+------------------------------------------------------------
+
+SECCIÓN A5.1 — FORMULARIO RÁPIDO DE REGISTRO EN SITIO
+  - Título: "Registro en efectivo — Día del evento"
+  - Mismos campos del formulario público:
+    * Búsqueda de iglesia
+    * Nombre, correo, teléfono, fecha de nacimiento, edad
+    * Campos adicionales configurados
+  - El tipo (mensajero/fraternal) se asigna automáticamente por cupo
+  - Monto a cobrar mostrado prominentemente: "$XXX MXN"
+  - Botón: "Registrar y aprobar pago"
+  - Al confirmar: crea registro con status fully_approved si fraternal,
+    o payment_approved + carta_pending si mensajero
+
+CONEXIONES:
+  - POST /admin/registrations/cash
+
+------------------------------------------------------------
+PANTALLA A6: CHECK-IN (OPTIMIZADA PARA MÓVIL)
+Ruta: /checkin
+------------------------------------------------------------
+
+DISEÑO: Full screen, optimizado para móvil, alto contraste
+Esta pantalla se usa por personal de la convención el día del evento.
+
+SECCIÓN A6.1 — ÁREA DE ESCANEO
+  - Visor de cámara que ocupa la mayor parte de la pantalla
+  - Marco de guía para posicionar el QR
+  - Texto: "Centra el código QR en el recuadro"
+  - Botón para alternar cámara frontal/trasera
+  - Botón para activar linterna (en dispositivos compatibles)
+
+SECCIÓN A6.2 — RESULTADO DEL ESCANEO (overlay o pantalla completa)
+
+  RESULTADO: Válido (primer escaneo)
+    - Fondo: VERDE
+    - Ícono grande de check
+    - Nombre del asistente (letra grande)
+    - Iglesia
+    - Tipo: "MENSAJERO ACREDITADO" o "FRATERNAL" (prominente)
+    - Hora de registro
+    - Botón: "Escanear siguiente" → vuelve al visor de cámara (después de 3 segundos o inmediato)
+
+  RESULTADO: Ya escaneado previamente
+    - Fondo: AMARILLO/NARANJA
+    - Ícono de advertencia
+    - Texto: "ESTE CÓDIGO YA FUE ESCANEADO"
+    - Nombre del asistente
+    - Fecha y hora del check-in previo
+    - Botón: "Escanear siguiente"
+
+  RESULTADO: Código inválido
+    - Fondo: ROJO
+    - Ícono de X
+    - Texto: "CÓDIGO NO VÁLIDO"
+    - Texto secundario: "Este código no corresponde a un registro activo"
+    - Botón: "Intentar de nuevo"
+
+  RESULTADO: Sin conexión a internet
+    - Fondo: GRIS
+    - Texto: "Sin conexión. Verifica tu conexión e intenta de nuevo"
+
+SECCIÓN A6.3 — CONTADOR DE CHECK-INS (en la parte superior)
+  - "Check-ins hoy: [número]"
+  - Actualización en tiempo real
+
+SECCIÓN A6.4 — BÚSQUEDA MANUAL (tab alternativo)
+  - Para casos donde el QR no se puede escanear
+  - Campo de búsqueda por nombre o correo
+  - Lista de resultados
+  - Botón "Hacer check-in manualmente" en el resultado seleccionado
+  - Requiere confirmación antes de registrar
+
+CONEXIONES:
+  - GET /admin/checkin/validate/:qrToken
+  - POST /admin/registrations/:id/checkin
+  - GET /admin/stats (para contador)
+
+------------------------------------------------------------
+PANTALLAS DE CONFIGURACIÓN (SOLO SUPER ADMIN)
+------------------------------------------------------------
+
+PANTALLA A7: CONFIGURACIÓN GENERAL
+Ruta: /configuracion
+
+SECCIÓN A7.1 — ESTADO DEL SISTEMA
+  - Toggle: "Registro abierto / cerrado"
+  - Toggle: "Habilitar pago en efectivo en sitio" (solo el día del evento)
+
+SECCIÓN A7.2 — PRECIO
+  - Campo: "Precio estándar del registro (MXN)"
+  - Indicación: "Este precio aplica para todos los registros (mensajeros y fraternales)"
+  - Botón: "Guardar precio"
+
+SECCIÓN A7.3 — FECHAS LÍMITE
+  - Date picker: "Fecha límite de pre-registro"
+  - Date picker: "Fecha límite de pago"
+  - Date picker: "Fecha límite para subir carta (mensajeros)"
+  - Botón: "Guardar fechas"
+
+SECCIÓN A7.4 — CAMPOS DEL FORMULARIO
+  - Lista de campos actuales (arrastrable para reordenar)
+  - Cada campo muestra: etiqueta, tipo, obligatorio, acciones
+  - Campos base marcados como "Base — No eliminable" (no tienen botón de eliminar)
+  - Botón: "Agregar campo" → modal
+  - Cada campo adicional: botón de editar y botón de eliminar
+
+  MODAL AGREGAR/EDITAR CAMPO:
+    - Campo: Nombre interno (key, sin espacios)
+    - Campo: Etiqueta visible
+    - Dropdown: Tipo (texto, email, teléfono, fecha, número, selección)
+    - Toggle: Obligatorio
+    - Si tipo === selección: área para agregar opciones
+    - Botón: "Guardar campo"
+
+CONEXIONES:
+  - GET /admin/config
+  - PUT /admin/config
+
+------------------------------------------------------------
+PANTALLA A8: EXCEPCIONES DE CUPO POR IGLESIA
+Ruta: /configuracion/iglesias
+------------------------------------------------------------
+
+SECCIÓN A8.1 — TABLA DE EXCEPCIONES ACTIVAS
+  Columnas: Iglesia | Convención | Cupo base (5) | Cupo con excepción | Mensajeros registrados | Acciones
+  - Botón editar en cada fila: permite cambiar el cupo override
+  - Sin botón eliminar (si se quiere eliminar, se ajusta al valor por defecto)
+
+SECCIÓN A8.2 — AGREGAR EXCEPCIÓN
+  - Buscador de iglesia (igual que el formulario público)
+  - Campo: "Número de mensajeros acreditados permitidos"
+  - Aviso si la iglesia ya tiene registros (no puede reducirse el cupo por debajo de los ya registrados)
+  - Botón: "Guardar excepción"
+
+CONEXIONES:
+  - GET /admin/exceptions
+  - POST /admin/exceptions
+
+------------------------------------------------------------
+PANTALLA A9: GESTIÓN DE ADMINISTRADORES
+Ruta: /configuracion/admins
+------------------------------------------------------------
+
+SECCIÓN A9.1 — LISTA DE ADMINS
+  Columnas: Nombre | Correo | Rol | Estado | Fecha de creación | Acciones
+  - Estado: Activo (badge verde) / Inactivo (badge gris)
+  - Acciones: Desactivar (no se puede eliminar, solo desactivar)
+  - El super_admin que está logueado no puede desactivarse a sí mismo
+
+SECCIÓN A9.2 — CREAR NUEVO ADMIN
+  - Campo: Nombre completo
+  - Campo: Correo electrónico
+  - Dropdown: Rol (Admin / Super Admin)
+  - Botón: "Crear y enviar invitación"
+  - Al crear: se crea en Firebase Auth, se envía correo con instrucciones para crear contraseña
+
+  ESTADO: Email ya en uso
+    - Mensaje de error: "Este correo ya está registrado en el sistema"
+
+CONEXIONES:
+  - GET /admin/admins
+  - POST /admin/admins
+  - PUT /admin/admins/:uid/deactivate
+
+============================================================
+COMPONENTES GLOBALES Y PATRONES DE DISEÑO
+============================================================
+
+PALETA DE COLORES SUGERIDA
+  - Primario: Azul institucional (representativo de la convención)
+  - Secundario: Verde (éxito, aprobaciones)
+  - Alerta: Amarillo/Naranja (advertencias)
+  - Error: Rojo (rechazos, errores)
+  - Neutro: Grises para texto y bordes
+  - Fondo: Blanco y gris muy claro
+
+BADGES DE TIPO
+  - Mensajero Acreditado: Azul sólido
+  - Fraternal: Verde sólido
+
+BADGES DE ESTADO
+  - pending_payment: Gris
+  - payment_submitted: Amarillo
+  - payment_approved: Azul claro
+  - payment_rejected: Rojo
+  - carta_pending: Azul claro
+  - carta_submitted: Amarillo
+  - carta_rejected: Rojo
+  - fully_approved: Verde
+  - checked_in: Verde oscuro con ícono de check doble
+
+TIPOGRAFÍA
+  - Encabezados: Sans-serif semi-bold / bold
+  - Cuerpo: Sans-serif regular
+  - Datos numéricos destacados: Monoespaciada o tabular
+
+COMPONENTES REUTILIZABLES
+  - Modal de confirmación (para acciones destructivas o irreversibles)
+  - Toast/Notificación (éxito, error, información)
+  - Skeleton loader (mientras cargan datos)
+  - Empty state (sin resultados)
+  - Badge de estado (usado en múltiples pantallas)
+  - Uploader de archivos con drag & drop
+  - Date picker con locale español
+
+ACCESIBILIDAD
+  - Alto contraste en pantalla de check-in (uso en exteriores)
+  - Textos legibles en tamaños mínimos de 14px
+  - Botones de tamaño mínimo 44x44px en móvil
+  - Labels explícitos en todos los campos de formulario
+
+RESPONSIVE
+  - Portal: Mobile-first, crítico que el flujo completo funcione en móvil
+  - Admin: Desktop-first, la lista de registros y el detalle son principalmente desktop
+  - Check-in: 100% móvil, diseño de pantalla completa
+
+============================================================
+FLUJOS DE NAVEGACIÓN ENTRE PANTALLAS
+============================================================
+
+FLUJO DEL REGISTRANTE (camino feliz):
+P1 (Landing)
+  → P2 (Registro, Paso 1: Iglesia)
+  → P2 (Registro, Paso 2: Datos)
+  → P2 (Registro, Paso 3: Confirmar)
+  → P3 (Confirmación de registro)
+  → [correo con link]
+  → P4 (Portal personal — pago pendiente)
+  → P4 (Portal personal — formulario Stripe)
+  → P4 (Portal personal — pago aprobado)
+  → [Si mensajero] P4 (Portal personal — subir carta)
+  → P4 (Portal personal — carta en revisión)
+  → P4 (Portal personal — aprobado, descarga PDF)
+
+FLUJO DEL ADMIN (camino de aprobación):
+A1 (Login)
+  → A2 (Dashboard)
+  → A3 (Lista de registros, filtrar por "carta en revisión")
+  → A4 (Detalle de registro — revisar carta)
+  → A4 (Aprobar carta → PDF generado automáticamente)
+  → A3 (Lista de registros)
+
+FLUJO DE CHECK-IN (día del evento):
+A1 (Login en móvil)
+  → A6 (Check-in — escanear QR)
+  → A6 (Resultado: verde/rojo/amarillo)
+  → A6 (Escanear siguiente)
+
+============================================================
+FIN DEL DOCUMENTO
+============================================================

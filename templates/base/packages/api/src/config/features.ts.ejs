@@ -1,0 +1,17 @@
+export interface Features {
+  tshirtEnabled: boolean
+  workshopsEnabled: boolean
+  roomsEnabled: boolean
+  votingEnabled: boolean
+  stripePaymentEnabled: boolean
+  oxxoPaymentEnabled: boolean
+}
+
+export const featuresConfig: Features = {
+  tshirtEnabled: <%= modules.includes('tshirt') %>,
+  workshopsEnabled: <%= modules.includes('workshops') %>,
+  roomsEnabled: <%= modules.includes('rooms') %>,
+  votingEnabled: <%= modules.includes('voting') %>,
+  stripePaymentEnabled: true,
+  oxxoPaymentEnabled: true,
+}
