@@ -85,8 +85,10 @@ Para acelerar el ciclo de desarrollo de `templates/` y del wiring del generador,
 
 * **Fuente de verdad:** `preview-project/` no debe editarse manualmente como si fuera código fuente; cualquier cambio real debe hacerse en `src/` o `templates/`, y luego regenerarse.
 * **Configuración fija del preview:** `plenarias` + `tshirt,workshops,rooms,voting` + `es-en`.
+* **Archivos de entorno:** `preview:refresh` genera `packages/api/.env`, `apps/portal/.env.local` y `apps/admin/.env.local` con valores locales mínimos para arrancar el entorno de preview.
 * **Flujo recomendado:**
   1. `npm run preview:refresh`
   2. `npm run preview:typecheck`
   3. Levantar las apps necesarias con `npm run preview:dev:*`
 * **Puertos del preview:** Portal `http://localhost:3100`, Admin `http://localhost:3102`, API `http://localhost:3001`.
+* **Nota:** Los archivos generados permiten arrancar los servidores, pero para flujos reales de Firebase, Stripe y Resend debes reemplazar los placeholders por credenciales válidas.

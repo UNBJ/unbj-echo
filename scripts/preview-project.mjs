@@ -24,6 +24,43 @@ async function generatePreview() {
   run(
     `node dist/index.js -n ${previewProjectName} -e "Preview Platform" -a plenarias -m "tshirt,workshops,rooms,voting" -l es-en -y`
   );
+  await writePreviewEnvFiles();
+}
+
+async function writePreviewEnvFiles() {
+  const apiEnvPath = path.join(previewProjectPath, 'packages', 'api', '.env');
+  const portalEnvPath = path.join(previewProjectPath, 'apps', 'portal', '.env.local');
+  const adminEnvPath = path.join(previewProjectPath, 'apps', 'admin', '.env.local');
+
+  const apiEnv = `FIREBASE_PROJECT_ID=preview-local
+FIREBASE_CLIENT_EMAIL=preview-local@example.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\\npreview-local\\n-----END PRIVATE KEY-----\\n"
+FIREBASE_STORAGE_BUCKET=preview-local.appspot.com
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=onboarding@resend.dev
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=preview-local.appspot.com
+NEXT_PUBLIC_PORTAL_URL=http://localhost:3100
+NEXT_PUBLIC_ADMIN_URL=http://localhost:3102
+NEXT_PUBLIC_API_URL=http://localhost:3001
+`;
+
+  const clientEnv = `NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_PORTAL_URL=http://localhost:3100
+NEXT_PUBLIC_ADMIN_URL=http://localhost:3102
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=preview-local
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=preview-local.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+`;
+
+  await fs.writeFile(apiEnvPath, apiEnv, 'utf8');
+  await fs.writeFile(portalEnvPath, clientEnv, 'utf8');
+  await fs.writeFile(adminEnvPath, clientEnv, 'utf8');
 }
 
 async function main() {
