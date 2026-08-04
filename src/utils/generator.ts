@@ -406,13 +406,66 @@ async function configureI18n(destPath: string, options: GeneratorOptions): Promi
     }
 
     // 3. Crear archivo de layout raíz en app/layout.tsx
-    const rootLayoutContent = `export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return children
+    const rootLayoutContent = `import { Inter } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-body' })
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="es">
+      <body className={inter.variable}>{children}</body>
+    </html>
+  )
 }
 `;
     await fs.writeFile(path.join(appDir, 'layout.tsx'), rootLayoutContent, 'utf8');
 
-    // 4. Crear archivos de configuración de next-intl en src/
+    // 4. Crear aliases sin locale para las rutas principales del portal.
+    const registroDir = path.join(appDir, 'registro');
+    const registroCompletadoDir = path.join(registroDir, 'completado');
+    const portalAliasDir = path.join(appDir, 'portal', '[token]');
+    await fs.ensureDir(registroCompletadoDir);
+    await fs.ensureDir(portalAliasDir);
+
+    const rootPageContent = `import { redirect } from 'next/navigation'
+
+export default function RootPage() {
+  redirect('/es/registro')
+}
+`;
+    await fs.writeFile(path.join(appDir, 'page.tsx'), rootPageContent, 'utf8');
+
+    const registroAliasContent = `import { redirect } from 'next/navigation'
+
+export default function RegistroAliasPage() {
+  redirect('/es/registro')
+}
+`;
+    await fs.writeFile(path.join(registroDir, 'page.tsx'), registroAliasContent, 'utf8');
+
+    const registroDoneAliasContent = `import { redirect } from 'next/navigation'
+
+export default function RegistroCompletadoAliasPage() {
+  redirect('/es/registro/completado')
+}
+`;
+    await fs.writeFile(path.join(registroCompletadoDir, 'page.tsx'), registroDoneAliasContent, 'utf8');
+
+    const portalAliasContent = `import { redirect } from 'next/navigation'
+
+export default async function PortalAliasPage({
+  params
+}: {
+  params: Promise<{ token: string }>
+}) {
+  const { token } = await params
+  redirect(\`/es/portal/\${token}\`)
+}
+`;
+    await fs.writeFile(path.join(portalAliasDir, 'page.tsx'), portalAliasContent, 'utf8');
+
+    // 5. Crear archivos de configuración de next-intl en src/
     const srcDir = path.join(portalPath, 'src');
     const i18nDir = path.join(srcDir, 'i18n');
     await fs.ensureDir(i18nDir);
@@ -454,7 +507,7 @@ import { routing } from './i18n/routing'
 export default createMiddleware(routing)
 
 export const config = {
-  matcher: ['/', '/(es|en)/:path*']
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
 }
 `;
     await fs.writeFile(path.join(srcDir, 'middleware.ts'), middlewareContent, 'utf8');

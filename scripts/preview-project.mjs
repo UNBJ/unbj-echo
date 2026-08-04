@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { execFileSync, execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs-extra';
 import { fileURLToPath } from 'url';
@@ -12,7 +12,39 @@ function run(command, cwd = rootDir) {
   execSync(command, { cwd, stdio: 'inherit' });
 }
 
+function getListeningPid(port) {
+  try {
+    return execFileSync('lsof', ['-tiTCP:' + String(port), '-sTCP:LISTEN'], {
+      cwd: rootDir,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+  } catch {
+    return '';
+  }
+}
+
+function assertPreviewNotRunning() {
+  const previewPorts = [
+    { port: 3100, name: 'portal' },
+    { port: 3102, name: 'admin' },
+    { port: 3001, name: 'api' },
+  ];
+
+  const busyPorts = previewPorts
+    .map(({ port, name }) => ({ port, name, pid: getListeningPid(port) }))
+    .filter(({ pid }) => pid);
+
+  if (busyPorts.length === 0) return;
+
+  const details = busyPorts.map(({ name, port, pid }) => `${name}:${port} (PID ${pid})`).join(', ');
+  throw new Error(
+    `Preview activo detectado. Deten los procesos antes de regenerar: ${details}`
+  );
+}
+
 async function cleanPreview() {
+  assertPreviewNotRunning();
   if (await fs.pathExists(previewProjectPath)) {
     await fs.remove(previewProjectPath);
   }
