@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getDb } from '../../lib/firebase'
 import { getSignedUploadUrl } from '../../lib/storage'
 import { ok, badRequest, notFound, serverError } from '../../lib/response'
-import type { Registration } from '@plenarias/shared'
+import type { Registration } from '@unbj/shared'
 
 const schema = z.object({
   token: z.string().min(1),

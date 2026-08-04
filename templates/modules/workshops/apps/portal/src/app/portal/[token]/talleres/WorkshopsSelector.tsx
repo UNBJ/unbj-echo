@@ -150,7 +150,7 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
     return (
       <div className="min-h-screen bg-bg-page flex items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-text-secondary">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
           <p className="text-sm">{t('loading')}</p>
         </div>
       </div>
@@ -160,15 +160,15 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
   return (
     <div className="min-h-screen bg-bg-page flex flex-col">
       {/* Header */}
-      <header className="bg-[#1E293B] text-white h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
+      <header className="bg-bg-sidebar text-text-on-dark h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
         <button 
           onClick={() => router.push(`/portal/${token}`)}
-          className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm"
+          className="flex items-center gap-2 text-text-on-dark/70 hover:text-text-on-dark transition-colors text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{t('backBtn')}</span>
         </button>
-        <span className="font-heading font-bold text-sm tracking-widest text-blue-400 uppercase">
+        <span className="font-heading font-bold text-sm tracking-widest text-accent uppercase">
           {t('title')}
         </span>
       </header>
@@ -220,7 +220,7 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
             </div>
             <button 
               onClick={() => router.push(`/portal/${token}`)}
-              className="bg-[#1E293B] hover:bg-[#2d3b50] text-white text-xs font-semibold px-6 py-2.5 rounded-lg transition-colors"
+              className="bg-accent hover:bg-accent-hover text-white text-xs font-semibold px-6 py-2.5 rounded-lg transition-colors"
             >
               {t('goToPayment')}
             </button>
@@ -239,7 +239,7 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
               {selectedWorkshops.map((ws) => (
                 <div key={ws.id} className="bg-bg-card border border-border rounded-xl p-5 flex flex-col justify-between">
                   <div>
-                    <span className="text-[10px] font-bold tracking-wider text-blue-500 uppercase">{ws.day}</span>
+                    <span className="text-[10px] font-bold tracking-wider text-accent uppercase">{ws.day}</span>
                     <h3 className="font-bold text-text-primary text-base mt-1.5 leading-snug">{ws.name}</h3>
                     <p className="text-xs text-text-secondary mt-1">{t('by')}{ws.speaker}</p>
                     <p className="text-xs text-text-secondary mt-3 leading-relaxed line-clamp-4">{ws.description}</p>
@@ -267,7 +267,7 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
                   onClick={() => setActiveTab(day)}
                   className={`flex-1 py-3 text-center text-sm font-semibold border-b-2 capitalize transition-all ${
                     activeTab === day
-                      ? 'border-blue-600 text-blue-600'
+                      ? 'border-accent text-accent'
                       : 'border-transparent text-text-secondary hover:text-text-primary'
                   }`}
                 >
@@ -288,10 +288,10 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
                     onClick={() => !isFull && handleSelectWorkshop(activeTab, ws.id)}
                     className={`border rounded-xl p-5 flex flex-col justify-between cursor-pointer transition-all ${
                       isSelected 
-                        ? 'border-blue-600 bg-blue-50/10 ring-1 ring-blue-600' 
+                        ? 'border-accent bg-accent/10 ring-1 ring-accent' 
                         : isFull 
-                          ? 'border-border bg-gray-50/50 opacity-60 cursor-not-allowed'
-                          : 'border-border hover:border-blue-500/40 hover:bg-blue-500/[0.01]'
+                          ? 'border-border bg-bg-page opacity-60 cursor-not-allowed'
+                          : 'border-border hover:border-accent/40 hover:bg-accent/[0.02]'
                     }`}
                   >
                     <div>
@@ -342,7 +342,7 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
               <button
                 disabled={!isSelectionComplete || isSubmitting}
                 onClick={handleSubmitSelection}
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full sm:w-auto bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {t('saveBtn')}

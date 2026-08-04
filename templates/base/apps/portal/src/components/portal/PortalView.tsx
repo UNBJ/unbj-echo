@@ -1,9 +1,11 @@
-import type { Registration } from '@plenarias/shared'
-import { DELEGATE_TYPE_LABELS } from '@plenarias/shared'
+import type { Registration } from '@unbj/shared'
+import { DELEGATE_TYPE_LABELS, branding } from '@unbj/shared'
 import { ProgressTracker } from './ProgressTracker'
 import { ActionBlock } from './ActionBlock'
 import { InfoCard } from './InfoCard'
 import { Footer } from '@/components/ui/Footer'
+import { Monogram } from '@/components/ui/Monogram'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 interface PortalViewProps {
   registration: Omit<Registration, 'qrToken'>
@@ -26,19 +28,19 @@ export function PortalView({ registration }: PortalViewProps) {
     <div className="min-h-screen bg-bg-page flex flex-col">
 
       {/* Header */}
-      <header className="bg-[#1A1A2E] text-white h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0 border-b border-[#C8A44A]/15">
+      <header className="bg-bg-card border-b border-border h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
-          <span className="font-heading font-bold text-lg tracking-wide">CNBM</span>
-          <div className="w-px h-6 bg-[#C8A44A]/30" />
-          <span className="text-[#C8A44A]/80 text-xs tracking-[0.15em] uppercase hidden sm:block">
-            CXVI Reuniones Plenarias
+          <Monogram size="sm" />
+          <span className="text-text-primary font-heading font-semibold text-sm hidden sm:block">
+            {branding.eventName}
           </span>
         </div>
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-[#C8A44A] flex items-center justify-center">
-            <span className="text-[#1A1A2E] text-xs font-bold">{initials}</span>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
+            <span className="text-white text-xs font-bold">{initials}</span>
           </div>
-          <span className="text-white/70 text-sm hidden sm:block">{registration.fullName.split(' ')[0]}</span>
+          <span className="text-text-secondary text-sm hidden sm:block">{registration.fullName.split(' ')[0]}</span>
         </div>
       </header>
 
@@ -54,7 +56,7 @@ export function PortalView({ registration }: PortalViewProps) {
               {registration.fullName}
             </h1>
             {delegateLabel && (
-              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#1A1A2E] text-[#E8D088] tracking-wide">
+              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-accent/10 text-accent tracking-wide">
                 {delegateLabel}
               </span>
             )}

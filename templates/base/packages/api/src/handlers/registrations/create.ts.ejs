@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { getDb } from '../../lib/firebase'
 import { ok, badRequest, serverError } from '../../lib/response'
 import { confirmationEmailHtml } from '../../lib/email-html'
-import type { Registration, RegistrationStatus } from '@plenarias/shared'
+import type { Registration, RegistrationStatus } from '@unbj/shared'
 
 const schema = z.object({
   fullName: z.string().min(2).max(120),

@@ -1,3 +1,5 @@
+import { branding } from '@unbj/shared'
+
 export function confirmationEmailHtml(opts: {
   fullName: string
   portalUrl: string
@@ -16,7 +18,7 @@ export function confirmationEmailHtml(opts: {
       <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #E5E7EB;">
 
         <!-- Accent line -->
-        <tr><td style="height:3px;background:linear-gradient(90deg,#2563EB,#3B82F6,#2563EB);font-size:0;">&nbsp;</td></tr>
+        <tr><td style="height:3px;background:${branding.accentColor};font-size:0;">&nbsp;</td></tr>
 
         <!-- Header -->
         <tr><td style="background:#1E293B;padding:20px 32px;">
@@ -80,7 +82,7 @@ export function confirmationEmailHtml(opts: {
           <!-- Button -->
           <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
             <tr>
-              <td style="background:#2563EB;border-radius:8px;">
+              <td style="background:${branding.accentColor};border-radius:8px;">
                 <a href="${portalUrl}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;letter-spacing:0.3px;">
                   Acceder a mi portal personal →
                 </a>
@@ -98,7 +100,7 @@ export function confirmationEmailHtml(opts: {
         <!-- Footer -->
         <tr><td style="background:#F8FAFC;border-top:1px solid #E2E8F0;padding:16px 32px;text-align:center;">
           <p style="margin:0;font-size:11px;color:#64748B;letter-spacing:0.5px;">
-            ${eventName} · Todos los derechos reservados.
+            ${eventName} · Generado por ${branding.platform}
           </p>
         </td></tr>
 
@@ -128,7 +130,7 @@ export function approvalEmailHtml(opts: {
       <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #E5E7EB;">
 
         <!-- Accent line -->
-        <tr><td style="height:3px;background:linear-gradient(90deg,#2563EB,#3B82F6,#2563EB);font-size:0;">&nbsp;</td></tr>
+        <tr><td style="height:3px;background:${branding.accentColor};font-size:0;">&nbsp;</td></tr>
 
         <!-- Header -->
         <tr><td style="background:#1E293B;padding:20px 32px;">
@@ -194,7 +196,7 @@ export function approvalEmailHtml(opts: {
           <!-- Button -->
           <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
             <tr>
-              <td style="background:#2563EB;border-radius:8px;">
+              <td style="background:${branding.accentColor};border-radius:8px;">
                 <a href="${pdfUrl}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;letter-spacing:0.3px;">
                   Descargar Pase de Entrada →
                 </a>
@@ -211,7 +213,7 @@ export function approvalEmailHtml(opts: {
         <!-- Footer -->
         <tr><td style="background:#F8FAFC;border-top:1px solid #E2E8F0;padding:16px 32px;text-align:center;">
           <p style="margin:0;font-size:11px;color:#64748B;letter-spacing:0.5px;">
-            ${eventName} · Todos los derechos reservados.
+            ${eventName} · Generado por ${branding.platform}
           </p>
         </td></tr>
 

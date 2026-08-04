@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
+import { branding } from '@unbj/shared'
+import { Monogram } from '@/components/ui/Monogram'
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -31,8 +33,11 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="bg-bg-card border border-border rounded-2xl p-8 shadow-sm">
           <div className="mb-8">
+            <Monogram size="lg" className="mb-4" />
             <h1 className="text-2xl font-bold text-text-primary">Panel Admin</h1>
-            <p className="text-sm text-text-secondary mt-1">Plenarias CNBM 2026</p>
+            {branding.eventName && (
+              <p className="text-sm text-text-secondary mt-1">{branding.eventName}</p>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">

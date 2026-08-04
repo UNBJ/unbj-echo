@@ -159,7 +159,7 @@ export function AdminPolls() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-text-secondary">
-        <Loader2 className="w-8 h-8 animate-spin text-[#1A1A2E] mb-3" />
+        <Loader2 className="w-8 h-8 animate-spin text-accent mb-3" />
         <p className="text-sm">Cargando módulo de votación...</p>
       </div>
     )
@@ -170,12 +170,12 @@ export function AdminPolls() {
       
       {/* MODO PROYECTOR - OVERLAY FULLSCREEN */}
       {projectorMode && activePoll && (
-        <div className="fixed inset-0 bg-[#0F172A] z-50 text-white flex flex-col p-12 justify-between">
+        <div className="fixed inset-0 bg-bg-sidebar z-50 text-text-on-dark flex flex-col p-12 justify-between">
           <div className="flex justify-between items-center border-b border-white/10 pb-5">
             <div className="flex items-center gap-4">
-              <Vote className="w-10 h-10 text-rose-500 animate-pulse" />
+              <Vote className="w-10 h-10 text-accent animate-pulse" />
               <div>
-                <span className="text-xs uppercase font-semibold text-rose-400 tracking-[0.25em]">Votación en Vivo</span>
+                <span className="text-xs uppercase font-semibold text-accent tracking-[0.25em]">Votación en Vivo</span>
                 <h1 className="text-3xl font-heading font-bold">{activePoll.title}</h1>
               </div>
             </div>
@@ -198,14 +198,14 @@ export function AdminPolls() {
                 <div key={opt.id} className="relative flex flex-col gap-2">
                   <div className="flex justify-between items-center text-xl font-bold px-2">
                     <span>{opt.text}</span>
-                    <span className="font-mono text-2xl text-rose-400">
+                    <span className="font-mono text-2xl text-accent">
                       {votes} {votes === 1 ? 'voto' : 'votos'} ({percentage}%)
                     </span>
                   </div>
                   {/* Barra de Progreso Grande */}
                   <div className="w-full h-10 bg-white/5 rounded-full overflow-hidden border border-white/10">
                     <div 
-                      className="h-full bg-gradient-to-r from-rose-500 to-pink-500 rounded-full transition-all duration-500 ease-out"
+                      className="h-full bg-accent rounded-full transition-all duration-500 ease-out"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
@@ -214,9 +214,9 @@ export function AdminPolls() {
             })}
           </div>
 
-          <div className="flex justify-between items-center border-t border-white/10 pt-5 text-sm text-white/50">
+          <div className="flex justify-between items-center border-t border-white/10 pt-5 text-sm text-text-on-dark/50">
             <span>Registros de Votación Encriptados y Asegurados</span>
-            <span className="font-bold text-lg text-white">Votos Totales: {totalVotes}</span>
+            <span className="font-bold text-lg text-text-on-dark">Votos Totales: {totalVotes}</span>
           </div>
         </div>
       )}
@@ -251,16 +251,16 @@ export function AdminPolls() {
 
       {/* SONDEO ACTIVO MONITOR */}
       {activePoll && activePoll.status === 'active' && (
-        <Card className="bg-white border border-border p-6 rounded-2xl shadow-sm relative overflow-hidden">
-          <div className="h-[4px] bg-rose-500 absolute top-0 left-0 right-0" />
+        <Card className="bg-bg-card border border-border p-6 rounded-2xl shadow-sm relative overflow-hidden">
+          <div className="h-[4px] bg-accent absolute top-0 left-0 right-0" />
           
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-4 mb-5">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-lg bg-rose-50 text-rose-600 animate-pulse">
+              <div className="p-2.5 rounded-lg bg-accent/10 text-accent animate-pulse">
                 <Vote className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-[10px] font-bold text-rose-600 uppercase tracking-widest block">Monitoreando Votación en Curso</span>
+                <span className="text-[10px] font-bold text-accent uppercase tracking-widest block">Monitoreando Votación en Curso</span>
                 <h2 className="text-base font-heading font-bold text-text-primary mt-0.5">{activePoll.title}</h2>
               </div>
             </div>
@@ -268,7 +268,7 @@ export function AdminPolls() {
             <div className="flex gap-2">
               <Button 
                 onClick={() => setProjectorMode(true)}
-                className="bg-gray-100 hover:bg-gray-200 text-text-primary text-xs font-semibold px-4 py-2 flex items-center gap-1.5"
+                className="bg-bg-page hover:bg-border/60 text-text-primary text-xs font-semibold px-4 py-2 flex items-center gap-1.5"
               >
                 <Maximize className="w-4 h-4" />
                 <span>Vista Proyector</span>
@@ -276,7 +276,7 @@ export function AdminPolls() {
               <Button
                 onClick={() => handleTogglePoll(activePoll.proposalId, 'close')}
                 disabled={submitting}
-                className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-4 py-2 flex items-center gap-1.5"
+                className="bg-accent hover:bg-accent-hover text-white text-xs font-semibold px-4 py-2 flex items-center gap-1.5"
               >
                 <Square className="w-4 h-4" />
                 <span>Cerrar Votación</span>
@@ -296,9 +296,9 @@ export function AdminPolls() {
                     <span>{opt.text}</span>
                     <span className="font-mono">{votes} votos ({percentage}%)</span>
                   </div>
-                  <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden border border-border">
+                  <div className="w-full h-4 bg-bg-page rounded-full overflow-hidden border border-border">
                     <div 
-                      className="h-full bg-rose-500 rounded-full transition-all duration-300"
+                      className="h-full bg-accent rounded-full transition-all duration-300"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
@@ -316,7 +316,7 @@ export function AdminPolls() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6">
         
         {/* LISTA DE PROPUESTAS */}
-        <Card className="bg-white border border-border p-6 rounded-2xl shadow-sm">
+        <Card className="bg-bg-card border border-border p-6 rounded-2xl shadow-sm">
           <h2 className="text-base font-heading font-bold text-text-primary mb-4 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-text-secondary" />
             <span>Propuestas de Votación</span>
@@ -324,7 +324,7 @@ export function AdminPolls() {
 
           {polls.length === 0 ? (
             <div className="text-center py-12 text-text-secondary">
-              <Vote className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+              <Vote className="w-10 h-10 text-text-secondary/50 mx-auto mb-3" />
               <p className="text-sm">No has creado propuestas de votación aún.</p>
             </div>
           ) : (
@@ -337,19 +337,19 @@ export function AdminPolls() {
                 return (
                   <div 
                     key={p.proposalId} 
-                    className={`border border-border p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/20`}
+                    className={`border border-border p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-bg-page`}
                   >
                     <div className="min-w-0 pr-4">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <h3 className="font-bold text-text-primary text-sm truncate">{p.title}</h3>
                         
                         {isCurrentActive && (
-                          <span className="text-[8px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 animate-pulse">
+                          <span className="text-[8px] font-bold px-2 py-0.5 rounded-full bg-accent/10 text-accent animate-pulse">
                             EN CURSO
                           </span>
                         )}
                         {isClosed && (
-                          <span className="text-[8px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-800">
+                          <span className="text-[8px] font-bold px-2 py-0.5 rounded-full bg-bg-card text-text-secondary">
                             CERRADA
                           </span>
                         )}
@@ -358,7 +358,7 @@ export function AdminPolls() {
                       
                       {/* Mostrar resultados de propuestas cerradas */}
                       {isClosed && (
-                        <div className="mt-2 flex items-center gap-3 text-[10px] text-text-secondary bg-gray-100/50 px-2 py-1 rounded">
+                        <div className="mt-2 flex items-center gap-3 text-[10px] text-text-secondary bg-bg-card px-2 py-1 rounded">
                           <span>Votos Totales: <strong>{totalPollVotes}</strong></span>
                           <span>|</span>
                           {p.options.map((opt: any) => (
@@ -373,7 +373,7 @@ export function AdminPolls() {
                         <Button
                           onClick={() => handleTogglePoll(p.proposalId, 'activate')}
                           disabled={submitting || (activePoll && activePoll.status === 'active')}
-                          className="bg-[#1A1A2E] hover:bg-[#2d2d50] text-white text-xs font-semibold px-3 py-1.5 flex items-center gap-1"
+                          className="bg-accent hover:bg-accent-hover text-white text-xs font-semibold px-3 py-1.5 flex items-center gap-1"
                         >
                           <Play className="w-3.5 h-3.5" />
                           <span>Lanzar</span>
@@ -384,7 +384,7 @@ export function AdminPolls() {
                         <Button
                           onClick={() => handleTogglePoll(p.proposalId, 'close')}
                           disabled={submitting}
-                          className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-3 py-1.5 flex items-center gap-1"
+                          className="bg-accent hover:bg-accent-hover text-white text-xs font-semibold px-3 py-1.5 flex items-center gap-1"
                         >
                           <Square className="w-3.5 h-3.5" />
                           <span>Cerrar</span>
@@ -399,7 +399,7 @@ export function AdminPolls() {
         </Card>
 
         {/* CREAR PROPUESTA */}
-        <Card className="bg-white border border-border p-6 rounded-2xl shadow-sm self-start">
+        <Card className="bg-bg-card border border-border p-6 rounded-2xl shadow-sm self-start">
           <h2 className="text-base font-heading font-bold text-text-primary mb-4 flex items-center gap-2">
             <Plus className="w-5 h-5 text-text-secondary" />
             <span>Nueva Propuesta</span>
@@ -414,7 +414,7 @@ export function AdminPolls() {
                 placeholder="Ej: ¿Se aprueba el balance financiero?" 
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                className="w-full border border-border rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-[#1A1A2E]"
+                className="w-full border border-border rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent"
               />
             </div>
 
@@ -424,7 +424,7 @@ export function AdminPolls() {
                 placeholder="Detalle de la moción en votación" 
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
-                className="w-full border border-border rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-[#1A1A2E] h-20 resize-none"
+                className="w-full border border-border rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent h-20 resize-none"
               />
             </div>
 
@@ -435,7 +435,7 @@ export function AdminPolls() {
                   <button 
                     type="button" 
                     onClick={addOptionField}
-                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700"
+                    className="text-[10px] font-bold text-accent hover:text-accent-hover"
                   >
                     + Agregar
                   </button>
@@ -450,7 +450,7 @@ export function AdminPolls() {
                   placeholder={`Opción ${i + 1}`}
                   value={opt}
                   onChange={(e) => handleOptionChange(i, e.target.value)}
-                  className="w-full border border-border rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-[#1A1A2E]"
+                  className="w-full border border-border rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent"
                 />
               ))}
             </div>
@@ -458,7 +458,7 @@ export function AdminPolls() {
             <Button 
               type="submit" 
               loading={submitting} 
-              className="mt-2 w-full bg-[#1A1A2E] hover:bg-[#2d2d50] text-white font-semibold py-2.5 rounded-lg text-xs"
+              className="mt-2 w-full bg-accent hover:bg-accent-hover text-white font-semibold py-2.5 rounded-lg text-xs"
             >
               Guardar Propuesta
             </Button>

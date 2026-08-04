@@ -5,7 +5,7 @@ import { Search, Check, ChevronDown, X } from 'lucide-react'
 import { getConventions, searchChurches } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import type { Convention, Church } from '@plenarias/shared'
+import type { Convention, Church } from '@unbj/shared'
 
 export interface ChurchSelection {
   convention: Convention | null
@@ -211,7 +211,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
         )}
 
         {selectedConvention && !conventionNotListed && (
-          <div className="flex items-center gap-2 mt-2 p-2.5 bg-green-50 border border-success/30 rounded-lg">
+          <div className="flex items-center gap-2 mt-2 p-2.5 bg-success/10 border border-success/30 rounded-lg">
             <Check className="w-4 h-4 text-success flex-shrink-0" />
             <span className="text-sm text-text-primary flex-1">{selectedConvention.name}</span>
             <button
@@ -308,7 +308,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
               )}
 
               {selectedChurch && (
-                <div className="flex items-center gap-2 mb-3 p-2.5 bg-green-50 border border-success/30 rounded-lg">
+                <div className="flex items-center gap-2 mb-3 p-2.5 bg-success/10 border border-success/30 rounded-lg">
                   <Check className="w-4 h-4 text-success flex-shrink-0" />
                   <span className="text-sm text-text-primary flex-1">{selectedChurch.name}</span>
                   <button

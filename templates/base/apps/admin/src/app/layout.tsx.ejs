@@ -1,0 +1,33 @@
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import { ThemeProvider } from 'next-themes'
+import { branding, hexToRgbTriplet } from '@unbj/shared'
+import './globals.css'
+
+const interBody = Inter({ subsets: ['latin'], variable: '--font-body' })
+const interHeading = Inter({ subsets: ['latin'], variable: '--font-heading' })
+
+const accentStyle = `:root{--accent:${hexToRgbTriplet(branding.accentColor)};--accent-hover:${hexToRgbTriplet(branding.accentHoverColor)}}`
+
+export const metadata: Metadata = {
+  title: 'Admin — <%= eventName %>',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Admin — <%= eventName %>',
+  },
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="es" suppressHydrationWarning>
+      <body className={`${interBody.variable} ${interHeading.variable}`}>
+        <style dangerouslySetInnerHTML={{ __html: accentStyle }} />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  )
+}

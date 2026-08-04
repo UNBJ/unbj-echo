@@ -1,5 +1,5 @@
-import type { Registration } from '@plenarias/shared'
-import { DELEGATE_TYPE_LABELS } from '@plenarias/shared'
+import type { Registration } from '@unbj/shared'
+import { DELEGATE_TYPE_LABELS } from '@unbj/shared'
 
 interface InfoCardProps {
   registration: Omit<Registration, 'qrToken'>
@@ -8,16 +8,16 @@ interface InfoCardProps {
 export function InfoCard({ registration }: InfoCardProps) {
   return (
     <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
-      {/* Gold top accent */}
-      <div className="h-[3px] bg-gradient-to-r from-[#C8A44A]/60 via-[#E8D088]/80 to-[#C8A44A]/60" />
+      {/* Accent top */}
+      <div className="h-[3px] bg-accent/60" />
 
       <div className="p-5">
         <div className="flex items-center gap-2 mb-5">
-          <div className="h-px flex-1 bg-[#C8A44A]/25" />
-          <p className="text-[10px] font-semibold text-[#C8A44A] uppercase tracking-[0.25em]">
+          <div className="h-px flex-1 bg-border" />
+          <p className="text-[10px] font-semibold text-accent uppercase tracking-[0.25em]">
             Información de registro
           </p>
-          <div className="h-px flex-1 bg-[#C8A44A]/25" />
+          <div className="h-px flex-1 bg-border" />
         </div>
 
         <dl className="flex flex-col divide-y divide-border">

@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin()
 <% } %>
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@plenarias/shared'],
+  transpilePackages: ['@unbj/shared'],
 }
 
 export default <% if (languages === 'es-en') { %>withNextIntl(<% } %>nextConfig<% if (languages === 'es-en') { %>)<% } %>

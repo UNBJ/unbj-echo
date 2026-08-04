@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut, type User } from 'firebase/auth'
-import { auth } from './firebase'
+import { getAuthInstance } from './firebase'
 
 interface AuthContextValue {
   user: User | null
@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(getAuthInstance(), (u) => {
       setUser(u)
       setLoading(false)
     })
@@ -27,11 +27,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   async function login(email: string, password: string) {
-    await signInWithEmailAndPassword(auth, email, password)
+    await signInWithEmailAndPassword(getAuthInstance(), email, password)
   }
 
   async function logout() {
-    await signOut(auth)
+    await signOut(getAuthInstance())
   }
 
   async function getToken(): Promise<string> {

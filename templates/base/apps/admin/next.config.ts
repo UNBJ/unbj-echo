@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@plenarias/shared'],
+  transpilePackages: ['@unbj/shared'],
 }
 
 export default nextConfig

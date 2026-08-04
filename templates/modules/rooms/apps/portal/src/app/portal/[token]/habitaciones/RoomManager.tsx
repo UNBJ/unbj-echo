@@ -259,7 +259,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
     return (
       <div className="min-h-screen bg-bg-page flex items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-text-secondary">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
           <p className="text-sm">{t('loading')}</p>
         </div>
       </div>
@@ -269,15 +269,15 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
   return (
     <div className="min-h-screen bg-bg-page flex flex-col">
       {/* Header */}
-      <header className="bg-[#1E293B] text-white h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
+      <header className="bg-bg-sidebar text-text-on-dark h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
         <button 
           onClick={() => router.push(`/portal/${token}`)}
-          className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm"
+          className="flex items-center gap-2 text-text-on-dark/70 hover:text-text-on-dark transition-colors text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{t('backBtn')}</span>
         </button>
-        <span className="font-heading font-bold text-sm tracking-widest text-indigo-400 uppercase">
+        <span className="font-heading font-bold text-sm tracking-widest text-accent uppercase">
           {t('title')}
         </span>
       </header>
@@ -327,7 +327,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
             </div>
             <button 
               onClick={() => router.push(`/portal/${token}`)}
-              className="bg-[#1E293B] hover:bg-[#2d3b50] text-white text-xs font-semibold px-6 py-2.5 rounded-lg transition-colors"
+              className="bg-accent hover:bg-accent-hover text-white text-xs font-semibold px-6 py-2.5 rounded-lg transition-colors"
             >
               {t('goToPayment')}
             </button>
@@ -341,10 +341,10 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* 1. Crear una nueva habitación */}
-                <Card className="bg-white border border-border p-6 rounded-xl flex flex-col justify-between">
+                <Card className="bg-bg-card border border-border p-6 rounded-xl flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2.5 rounded-lg bg-indigo-50 text-indigo-600">
+                      <div className="p-2.5 rounded-lg bg-accent/10 text-accent">
                         <Plus className="w-5 h-5" />
                       </div>
                       <h3 className="font-heading font-bold text-base text-text-primary">{t('createRoomTitle')}</h3>
@@ -359,7 +359,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                         <select 
                           value={createType}
                           onChange={(e: any) => setCreateType(e.target.value)}
-                          className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary bg-white focus:outline-none focus:border-indigo-500"
+                          className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary bg-bg-card focus:outline-none focus:border-accent"
                         >
                           <option value="double">{t('doubleRoom')}</option>
                           <option value="triple">{t('tripleRoom')}</option>
@@ -372,7 +372,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                         <select 
                           value={createGender}
                           onChange={(e: any) => setCreateGender(e.target.value)}
-                          className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary bg-white focus:outline-none focus:border-indigo-500"
+                          className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary bg-bg-card focus:outline-none focus:border-accent"
                         >
                           <option value="mixed">{t('genderMixed')}</option>
                           <option value="M">{t('genderMen')}</option>
@@ -387,14 +387,14 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                           placeholder={t('roomNamePlaceholder')}
                           value={createName}
                           onChange={(e) => setCreateName(e.target.value)}
-                          className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-indigo-500"
+                          className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent"
                         />
                       </div>
 
                       <Button 
                         type="submit" 
                         loading={actionLoading} 
-                        className="mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg text-xs"
+                        className="mt-2 w-full bg-accent hover:bg-accent-hover text-white font-semibold py-2.5 rounded-lg text-xs"
                       >
                         {t('createBtn')}
                       </Button>
@@ -403,10 +403,10 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                 </Card>
 
                 {/* 2. Unirse a una habitación existente */}
-                <Card className="bg-white border border-border p-6 rounded-xl flex flex-col justify-between">
+                <Card className="bg-bg-card border border-border p-6 rounded-xl flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2.5 rounded-lg bg-violet-50 text-violet-600">
+                      <div className="p-2.5 rounded-lg bg-accent/10 text-accent">
                         <Key className="w-5 h-5" />
                       </div>
                       <h3 className="font-heading font-bold text-base text-text-primary">{t('joinRoomTitle')}</h3>
@@ -441,7 +441,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                             placeholder="Ej: ABC-123" 
                             value={joinCode}
                             onChange={(e) => setJoinCode(e.target.value)}
-                            className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary uppercase focus:outline-none focus:border-violet-500"
+                            className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary uppercase focus:outline-none focus:border-accent"
                           />
                         </div>
 
@@ -449,7 +449,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                           type="submit" 
                           disabled={!joinCode || actionLoading}
                           loading={actionLoading}
-                          className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-2.5 rounded-lg text-xs"
+                          className="w-full bg-accent hover:bg-accent-hover text-white font-semibold py-2.5 rounded-lg text-xs"
                         >
                           {t('joinBtn')}
                         </Button>
@@ -464,12 +464,12 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
               <div className="flex flex-col gap-6">
                 
                 {/* Detalles del Cuarto */}
-                <Card className="bg-white border border-border rounded-xl p-6 relative overflow-hidden">
-                  <div className="h-[3px] bg-gradient-to-r from-indigo-500/60 via-violet-500/80 to-indigo-500/60 absolute top-0 left-0 right-0" />
+                <Card className="bg-bg-card border border-border rounded-xl p-6 relative overflow-hidden">
+                  <div className="h-[3px] bg-accent/60 absolute top-0 left-0 right-0" />
                   
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-5 mb-5">
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-lg bg-indigo-50 text-indigo-600">
+                      <div className="p-2.5 rounded-lg bg-accent/10 text-accent">
                         <Home className="w-6 h-6" />
                       </div>
                       <div>
@@ -488,7 +488,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                       </div>
                       <button 
                         onClick={handleCopyCode}
-                        className="p-1.5 hover:bg-gray-100 rounded-lg text-text-secondary hover:text-text-primary transition-all"
+                        className="p-1.5 hover:bg-border/50 rounded-lg text-text-secondary hover:text-text-primary transition-all"
                         title="Copiar Código"
                       >
                         {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
@@ -509,17 +509,17 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                         return (
                           <div 
                             key={member.userId} 
-                            className="flex items-center justify-between p-3.5 border border-border bg-gray-50/50 rounded-xl"
+                            className="flex items-center justify-between p-3.5 border border-border bg-bg-page rounded-xl"
                           >
                             <div className="flex items-center gap-2.5 min-w-0">
-                              <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
+                              <div className="w-7 h-7 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 text-accent">
                                 <User className="w-4 h-4" />
                               </div>
                               <span className="text-xs font-semibold text-text-primary truncate">{member.name}</span>
                             </div>
 
                             {isResponsible && (
-                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
+                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-accent/10 text-accent">
                                 {t('leader')}
                               </span>
                             )}
@@ -544,7 +544,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
 
                 {/* Solicitudes de Unión Pendientes (Solo Responsables) */}
                 {room?.responsibleUserId === registration.id && (
-                  <Card className="bg-white border border-border rounded-xl p-6">
+                  <Card className="bg-bg-card border border-border rounded-xl p-6">
                     <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-4">
                       {t('pendingRequests')}
                     </h3>
@@ -558,7 +558,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                         {requests.map((req: any) => (
                           <div 
                             key={req.id} 
-                            className="flex items-center justify-between p-3 border border-border rounded-xl bg-gray-50/30"
+                            className="flex items-center justify-between p-3 border border-border rounded-xl bg-bg-page"
                           >
                             <div className="min-w-0 pr-4">
                               <p className="text-xs font-bold text-text-primary truncate">{req.userName}</p>

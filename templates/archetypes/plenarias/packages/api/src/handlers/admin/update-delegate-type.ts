@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getDb } from '../../lib/firebase'
 import { verifyAdminToken } from '../../lib/auth'
 import { ok, badRequest, notFound, serverError } from '../../lib/response'
-import type { DelegateType } from '@plenarias/shared'
+import type { DelegateType } from '@unbj/shared'
 
 const schema = z.object({
   delegateType: z.enum(['mensajero_acreditado', 'fraternal']),

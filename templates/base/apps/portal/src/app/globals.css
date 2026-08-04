@@ -5,6 +5,28 @@
 :root {
   --font-heading: 'Inter', sans-serif;
   --font-body: 'Inter', sans-serif;
+
+  /* Acento: se sobrescribe desde branding.accentColor en el layout raíz */
+  --accent: 37 99 235;
+  --accent-hover: 29 78 216;
+
+  --bg-page: 248 249 251;
+  --bg-card: 255 255 255;
+  --bg-sidebar: 15 23 42;
+  --text-primary: 17 24 39;
+  --text-secondary: 107 114 128;
+  --text-on-dark: 203 213 225;
+  --border: 229 231 235;
+}
+
+.dark {
+  --bg-page: 9 9 11;
+  --bg-card: 24 24 27;
+  --bg-sidebar: 9 9 11;
+  --text-primary: 244 244 245;
+  --text-secondary: 161 161 170;
+  --text-on-dark: 203 213 225;
+  --border: 39 39 42;
 }
 
 @layer base {

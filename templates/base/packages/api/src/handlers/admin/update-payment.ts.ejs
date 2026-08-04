@@ -4,7 +4,7 @@ import { getDb } from '../../lib/firebase'
 import { verifyAdminToken } from '../../lib/auth'
 import { ok, badRequest, notFound, serverError } from '../../lib/response'
 import { generateAndSaveNomination } from '../../lib/nomination'
-import type { Registration, RegistrationStatus } from '@plenarias/shared'
+import type { Registration, RegistrationStatus } from '@unbj/shared'
 
 const schema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('approve') }),

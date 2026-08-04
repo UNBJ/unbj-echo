@@ -1,7 +1,7 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
 import { getDb } from '../../lib/firebase'
 import { ok, notFound, serverError } from '../../lib/response'
-import type { Registration } from '@plenarias/shared'
+import type { Registration } from '@unbj/shared'
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
   const token = event.pathParameters?.['token']

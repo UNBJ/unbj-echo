@@ -1,22 +1,23 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: 'class',
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        accent: '#2563EB',
-        'accent-hover': '#1D4ED8',
+        accent: 'rgb(var(--accent) / <alpha-value>)',
+        'accent-hover': 'rgb(var(--accent-hover) / <alpha-value>)',
         success: '#16A34A',
         warning: '#D97706',
         error: '#DC2626',
-        'bg-page': '#F8F9FB',
-        'bg-card': '#FFFFFF',
-        'bg-sidebar': '#1A1A2E',
-        'text-primary': '#111827',
-        'text-secondary': '#6B7280',
-        'text-on-dark': '#CBD5E1',
-        border: '#E5E7EB',
+        'bg-page': 'rgb(var(--bg-page) / <alpha-value>)',
+        'bg-card': 'rgb(var(--bg-card) / <alpha-value>)',
+        'bg-sidebar': 'rgb(var(--bg-sidebar) / <alpha-value>)',
+        'text-primary': 'rgb(var(--text-primary) / <alpha-value>)',
+        'text-secondary': 'rgb(var(--text-secondary) / <alpha-value>)',
+        'text-on-dark': 'rgb(var(--text-on-dark) / <alpha-value>)',
+        border: 'rgb(var(--border) / <alpha-value>)',
       },
       fontFamily: {
         heading: ['var(--font-heading)', 'sans-serif'],

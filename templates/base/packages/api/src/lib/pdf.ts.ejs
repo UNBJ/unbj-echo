@@ -1,6 +1,9 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import QRCode from 'qrcode'
-import type { Registration } from '@plenarias/shared'
+import { branding, hexToRgb } from '@unbj/shared'
+import type { Registration } from '@unbj/shared'
+
+const [accentR, accentG, accentB] = hexToRgb(branding.accentColor).map((c) => c / 255) as [number, number, number]
 
 <% if (archetype === 'plenarias') { %>
 const DELEGATE_LABELS: Record<string, string> = {
@@ -25,7 +28,7 @@ export async function generateNominationPdf(registration: Registration): Promise
     y: height - 110,
     width,
     height: 110,
-    color: rgb(0.149, 0.388, 0.922), // #2563EB accent
+    color: rgb(accentR, accentG, accentB),
   })
 
   // Título en franja
@@ -111,7 +114,7 @@ export async function generateNominationPdf(registration: Registration): Promise
     height: 40,
     color: rgb(0.95, 0.96, 0.98),
   })
-  page.drawText('Documento oficial de acceso — Generado por unbj-echo', {
+  page.drawText(`Documento oficial de acceso — Generado por ${branding.platform}`, {
     x: margin,
     y: 14,
     size: 8,

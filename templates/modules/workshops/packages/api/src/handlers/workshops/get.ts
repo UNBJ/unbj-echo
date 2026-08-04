@@ -3,7 +3,7 @@ import { getDb } from '../../lib/firebase'
 import { verifyRegistrantToken } from '../../lib/auth'
 import { getFeatureFlags } from '../../lib/features'
 import { ok, forbidden, serverError } from '../../lib/response'
-import type { Registration } from '@plenarias/shared'
+import type { Registration } from '@unbj/shared'
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
   // 1. Verificar autenticación del registrante (Token en cabecera)

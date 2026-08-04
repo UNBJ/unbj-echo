@@ -17,7 +17,8 @@
     "preview:typecheck": "pnpm --dir preview-project run typecheck",
     "preview:dev:portal": "pnpm --dir preview-project --filter portal exec next dev -p 3100",
     "preview:dev:admin": "pnpm --dir preview-project --filter admin exec next dev -p 3102",
-    "preview:dev:api": "pnpm --dir preview-project run dev:api"
+    "preview:dev:api": "pnpm --dir preview-project run dev:api",
+    "preview:grant-admin": "pnpm --dir preview-project --filter api exec node ../../../scripts/set-admin-claim.mjs"
   },
   "keywords": [
     "cli",

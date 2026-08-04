@@ -12,7 +12,7 @@ const TIERS = [
     price: '$50 USD',
     description: 'Acceso completo al evento principal, conferencias generales y material de bienvenida.',
     icon: Ticket,
-    color: 'border-border hover:border-gray-400',
+    color: 'border-border hover:border-accent/40',
     iconColor: 'text-blue-500 bg-blue-50',
   },
   {
@@ -21,7 +21,7 @@ const TIERS = [
     price: '$25 USD',
     description: 'Descuento especial para estudiantes activos (requiere credencial vigente al ingresar).',
     icon: GraduationCap,
-    color: 'border-border hover:border-gray-400',
+    color: 'border-border hover:border-accent/40',
     iconColor: 'text-emerald-500 bg-emerald-50',
   },
   {
@@ -30,8 +30,8 @@ const TIERS = [
     price: '$100 USD',
     description: 'Acceso preferente, asientos reservados, kit VIP exclusivo y meet & greet con ponentes.',
     icon: Award,
-    color: 'border-amber-200/80 bg-amber-50/20 hover:border-amber-400',
-    iconColor: 'text-amber-600 bg-amber-100/60',
+    color: 'border-accent/40 bg-accent/5 hover:border-accent',
+    iconColor: 'text-accent bg-accent/10',
     badge: 'Recomendado',
   },
 ] as const
@@ -65,13 +65,13 @@ export function Step2Tier({ selected, onBack, onNext }: Step2TierProps) {
               key={tier.id}
               onClick={() => handleSelect(tier.id)}
               className={clsx(
-                'relative flex items-start gap-4 p-5 rounded-xl border-2 cursor-pointer transition-all duration-200 select-none bg-white',
-                isSelected ? 'border-[#1A1A2E] ring-1 ring-[#1A1A2E]/20 bg-[#1A1A2E]/[0.01]' : tier.color
+                'relative flex items-start gap-4 p-5 rounded-xl border-2 cursor-pointer transition-all duration-200 select-none bg-bg-card',
+                isSelected ? 'border-accent ring-1 ring-accent/20 bg-accent/[0.02]' : tier.color
               )}
             >
               {/* Badge for VIP */}
               {'badge' in tier && (
-                <span className="absolute top-0 right-5 -translate-y-1/2 text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#1A1A2E] text-white">
+                <span className="absolute top-0 right-5 -translate-y-1/2 text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-accent text-white">
                   {tier.badge}
                 </span>
               )}
@@ -81,7 +81,7 @@ export function Step2Tier({ selected, onBack, onNext }: Step2TierProps) {
                 <div
                   className={clsx(
                     'w-5 h-5 rounded-full border flex items-center justify-center transition-all',
-                    isSelected ? 'border-[#1A1A2E] bg-[#1A1A2E]' : 'border-gray-300 bg-white'
+                    isSelected ? 'border-accent bg-accent' : 'border-border bg-bg-card'
                   )}
                 >
                   {isSelected && <Check className="w-3 h-3 text-white stroke-[3]" />}

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth'
 import { getStats, type StatsResponse } from '@/lib/api'
 import { STATUS_LABELS, STATUS_COLORS, DELEGATE_LABELS } from '@/lib/labels'
-import type { RegistrationStatus, DelegateType } from '@plenarias/shared'
+import type { RegistrationStatus, DelegateType } from '@unbj/shared'
 import { RefreshCw } from 'lucide-react'
 import { clsx } from 'clsx'
 

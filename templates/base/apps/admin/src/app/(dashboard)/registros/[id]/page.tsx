@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import { getRegistrationDetail, approvePayment, rejectPayment, approveCarta, rejectCarta } from '@/lib/api'
 import { STATUS_LABELS, STATUS_COLORS, DELEGATE_LABELS, PAYMENT_METHOD_LABELS } from '@/lib/labels'
-import type { Registration, RegistrationStatus, PaymentMethod } from '@plenarias/shared'
+import type { Registration, RegistrationStatus, PaymentMethod } from '@unbj/shared'
 import { ArrowLeft, CheckCircle, XCircle, AlertTriangle, FileText, ExternalLink } from 'lucide-react'
 import { clsx } from 'clsx'
 

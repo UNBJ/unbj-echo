@@ -1,14 +1,16 @@
 import Link from 'next/link'
 import { ShieldX } from 'lucide-react'
+import { branding } from '@unbj/shared'
 import { Footer } from '@/components/ui/Footer'
+import { Monogram } from '@/components/ui/Monogram'
 
 export default function PortalNotFound() {
   return (
     <div className="min-h-screen bg-bg-page flex flex-col">
-      <header className="bg-bg-sidebar text-white py-4 px-8 flex items-center gap-3">
-        <span className="font-heading font-bold text-xl">CNBM</span>
-        <div className="w-px h-7 bg-white/20" />
-        <span className="text-text-on-dark text-sm">CXVI Reuniones Plenarias · CNBM</span>
+      <header className="bg-bg-card border-b border-border py-4 px-8 flex items-center gap-3">
+        <Monogram size="sm" />
+        <div className="w-px h-7 bg-border" />
+        <span className="text-text-secondary text-sm">{branding.eventName}</span>
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 text-center">

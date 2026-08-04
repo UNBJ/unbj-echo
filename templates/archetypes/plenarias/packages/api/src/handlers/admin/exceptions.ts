@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getDb } from '../../lib/firebase'
 import { verifyAdminToken } from '../../lib/auth'
 import { ok, badRequest, notFound, serverError } from '../../lib/response'
-import type { ChurchException } from '@plenarias/shared'
+import type { ChurchException } from '@unbj/shared'
 
 const createSchema = z.object({
   churchId: z.string().min(1),

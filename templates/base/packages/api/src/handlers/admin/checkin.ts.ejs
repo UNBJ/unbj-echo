@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getFirebase } from '../../lib/firebase'
 import { verifyAdminToken } from '../../lib/auth'
 import { ok, badRequest, notFound, serverError } from '../../lib/response'
-import type { Registration, CheckInResult } from '@plenarias/shared'
+import type { Registration, CheckInResult } from '@unbj/shared'
 
 const schema = z.object({
   qrToken: z.string().uuid(),

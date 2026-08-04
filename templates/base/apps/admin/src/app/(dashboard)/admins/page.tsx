@@ -169,7 +169,7 @@ function UserForm({
         <div>
           <label className="text-xs font-medium text-text-secondary mb-1 block">Rol</label>
           <select value={role} onChange={(e) => setRole(e.target.value as 'admin' | 'super_admin')}
-            className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 bg-white">
+            className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 bg-bg-card">
             <option value="admin">Admin</option>
             <option value="super_admin">Super Admin</option>
           </select>

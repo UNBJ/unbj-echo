@@ -15,6 +15,16 @@ interface RenderOptions extends GeneratorOptions {
   moduleEndpointsYaml: string;
 }
 
+/** Deriva iniciales (máx. 3) a partir del nombre del evento para el monograma. */
+function getEventInitials(eventName: string): string {
+  return eventName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((word) => word[0]!.toUpperCase())
+    .join('');
+}
+
 /**
  * Función principal encargada de generar la plataforma en el directorio especificado
  */
@@ -407,14 +417,24 @@ async function configureI18n(destPath: string, options: GeneratorOptions): Promi
 
     // 3. Crear archivo de layout raíz en app/layout.tsx
     const rootLayoutContent = `import { Inter } from 'next/font/google'
+import { ThemeProvider } from 'next-themes'
+import { branding, hexToRgbTriplet } from '@unbj/shared'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-body' })
+const interBody = Inter({ subsets: ['latin'], variable: '--font-body' })
+const interHeading = Inter({ subsets: ['latin'], variable: '--font-heading' })
+
+const accentStyle = \`:root{--accent:\${hexToRgbTriplet(branding.accentColor)};--accent-hover:\${hexToRgbTriplet(branding.accentHoverColor)}}\`
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
-      <body className={inter.variable}>{children}</body>
+    <html lang="es" suppressHydrationWarning>
+      <body className={\`\${interBody.variable} \${interHeading.variable}\`}>
+        <style dangerouslySetInnerHTML={{ __html: accentStyle }} />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   )
 }
@@ -531,6 +551,7 @@ async function renderTemplates(destPath: string, options: RenderOptions): Promis
         const rendered = ejs.render(content, {
           projectName: options.projectName,
           eventName: options.eventName,
+          initials: getEventInitials(options.eventName),
           archetype: options.archetype,
           languages: options.languages,
           modules: options.modules,

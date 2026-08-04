@@ -5,6 +5,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { createPaymentIntent, getRegistration } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
+import { branding } from '@unbj/shared'
 
 const stripePromise = loadStripe(process.env['NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'] ?? '')
 
@@ -42,7 +43,7 @@ export function StripePaymentForm({ token, fullName, email, onSuccess, onOxxo }:
         clientSecret,
         appearance: {
           theme: 'stripe',
-          variables: { colorPrimary: '#4F46E5', borderRadius: '8px' },
+          variables: { colorPrimary: branding.accentColor, borderRadius: '8px' },
         },
         locale: 'es-419',
       }}
@@ -125,8 +126,12 @@ function PaymentForm({
       // Polling hasta que el webhook actualice Firestore
       setLoading(false)
       setPolling(true)
-      await pollUntilPaymentConfirmed(token)
+      const confirmed = await pollUntilPaymentConfirmed(token)
       setPolling(false)
+      if (!confirmed) {
+        setError('Stripe confirmo el pago, pero la plataforma no recibio la confirmacion final. Verifica que `stripe listen` siga activo y que `STRIPE_WEBHOOK_SECRET` coincida con la sesion actual.')
+        return
+      }
       onSuccess()
       return
     }

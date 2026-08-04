@@ -58,8 +58,8 @@ program
     } else {
       const res = await text({
         message: '¿Cuál es el nombre del evento?',
-        placeholder: 'Plenarias Anuales 2026',
-        defaultValue: 'Plenarias Anuales 2026',
+        placeholder: 'Congreso Anual 2026',
+        defaultValue: 'Congreso Anual 2026',
         validate(value) {
           if (value.trim().length === 0) return 'El nombre del evento no puede estar vacío';
         },
@@ -91,7 +91,7 @@ program
           },
           {
             value: 'plenarias',
-            label: 'Registro Plenarias CNBM',
+            label: 'Registro por Iglesias / Delegados',
             hint: 'Búsqueda de iglesia, validación de cupos de mensajeros y carga de carta',
           },
         ],

@@ -86,7 +86,7 @@ export function ShirtSizeSelector({ token }: ShirtSizeSelectorProps) {
   if (loading) {
     return (
       <Card className="flex items-center justify-center p-8">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-600 mr-2" />
+        <Loader2 className="w-6 h-6 animate-spin text-accent mr-2" />
         <span className="text-sm text-text-secondary">{t('loading')}</span>
       </Card>
     )
@@ -95,7 +95,7 @@ export function ShirtSizeSelector({ token }: ShirtSizeSelectorProps) {
   // Si ya tiene seleccionado una talla
   if (selectedSize) {
     return (
-      <Card className="bg-white border border-border rounded-xl p-5">
+      <Card className="bg-bg-card border border-border rounded-xl p-5">
         <div className="flex items-start gap-4">
           <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-600">
             <Shirt className="w-5 h-5" />
@@ -119,9 +119,9 @@ export function ShirtSizeSelector({ token }: ShirtSizeSelectorProps) {
   // Si no puede elegir aún (pago pendiente)
   if (!canSelect) {
     return (
-      <Card className="bg-gray-50/50 border border-border rounded-xl p-5 opacity-75">
+      <Card className="bg-bg-page border border-border rounded-xl p-5 opacity-75">
         <div className="flex items-start gap-4">
-          <div className="p-2.5 rounded-lg bg-gray-100 text-gray-500">
+          <div className="p-2.5 rounded-lg bg-bg-card text-text-secondary">
             <Shirt className="w-5 h-5" />
           </div>
           <div className="flex-1">
@@ -137,11 +137,11 @@ export function ShirtSizeSelector({ token }: ShirtSizeSelectorProps) {
 
   // Formulario interactivo
   return (
-    <Card className="bg-white border border-border rounded-xl p-6 relative overflow-hidden">
-      <div className="h-[3px] bg-gradient-to-r from-blue-500/60 via-indigo-500/80 to-blue-500/60 absolute top-0 left-0 right-0" />
+    <Card className="bg-bg-card border border-border rounded-xl p-6 relative overflow-hidden">
+      <div className="h-[3px] bg-accent/60 absolute top-0 left-0 right-0" />
       
       <div className="flex items-start gap-4 mb-4">
-        <div className="p-2.5 rounded-lg bg-blue-50 text-blue-600">
+        <div className="p-2.5 rounded-lg bg-accent/10 text-accent">
           <Shirt className="w-5 h-5" />
         </div>
         <div>
@@ -159,8 +159,8 @@ export function ShirtSizeSelector({ token }: ShirtSizeSelectorProps) {
             className={clsx(
               'w-11 h-11 rounded-lg border-2 font-bold text-xs flex items-center justify-center transition-all',
               userSelection === size
-                ? 'border-blue-600 bg-blue-50/10 text-blue-600 ring-1 ring-blue-600/30'
-                : 'border-border bg-white text-text-secondary hover:border-gray-400 hover:text-text-primary'
+                ? 'border-accent bg-accent/10 text-accent ring-1 ring-accent/30'
+                : 'border-border bg-bg-card text-text-secondary hover:border-accent/50 hover:text-text-primary'
             )}
           >
             {size}
@@ -178,7 +178,7 @@ export function ShirtSizeSelector({ token }: ShirtSizeSelectorProps) {
       <Button
         disabled={!userSelection || submitting}
         onClick={handleSubmit}
-        className="w-full text-xs font-semibold py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center gap-1.5"
+        className="w-full text-xs font-semibold py-2 bg-accent hover:bg-accent-hover text-white rounded-lg flex items-center justify-center gap-1.5"
       >
         {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
         {t('confirmBtn')}

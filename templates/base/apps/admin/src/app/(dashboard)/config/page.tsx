@@ -43,7 +43,7 @@ export default function ConfigPage() {
     const blob = await res.blob()
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = 'registros-plenarias-2026.csv'
+    a.download = 'registros.csv'
     a.click()
   }
 

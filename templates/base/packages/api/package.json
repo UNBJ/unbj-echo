@@ -1,5 +1,5 @@
 {
-  "name": "@plenarias/api",
+  "name": "@unbj/api",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -10,7 +10,7 @@
     "setup:admin": "node setup-super-admin.mjs"
   },
   "dependencies": {
-    "@plenarias/shared": "workspace:*",
+    "@unbj/shared": "workspace:*",
     "firebase-admin": "^12.0.0",
     "pdf-lib": "^1.17.1",
     "qrcode": "^1.5.4",

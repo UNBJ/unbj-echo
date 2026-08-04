@@ -2,7 +2,7 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda
 import { getDb } from '../../lib/firebase'
 import { verifyAdminToken } from '../../lib/auth'
 import { serverError } from '../../lib/response'
-import type { Registration } from '@plenarias/shared'
+import type { Registration } from '@unbj/shared'
 
 const STATUS_LABELS: Record<string, string> = {
   pending_payment: 'Pendiente de pago',

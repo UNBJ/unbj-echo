@@ -1,6 +1,6 @@
 import { getFirestore } from 'firebase/firestore'
 import { initializeApp, getApps } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import { getAuth, type Auth } from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: process.env['NEXT_PUBLIC_FIREBASE_API_KEY'],
@@ -13,6 +13,12 @@ const firebaseConfig = {
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]!
 
-export const auth = getAuth(app)
+// Inicialización perezosa: getAuth() lanza auth/invalid-api-key durante el
+// prerender del build si las credenciales todavía son placeholders.
+let authInstance: Auth | null = null
+export function getAuthInstance(): Auth {
+  if (!authInstance) authInstance = getAuth(app)
+  return authInstance
+}
 
 export const db = getFirestore(app)

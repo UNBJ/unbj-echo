@@ -20,7 +20,7 @@ const envVars = Object.fromEntries(
     })
 )
 
-const SUPER_ADMIN_EMAIL = 'plenarias.cnbm@gmail.com'
+const SUPER_ADMIN_EMAIL = 'admin@example.com'
 
 initializeApp({
   credential: cert({

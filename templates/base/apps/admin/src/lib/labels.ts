@@ -1,4 +1,4 @@
-import type { RegistrationStatus, DelegateType, PaymentMethod } from '@plenarias/shared'
+import type { RegistrationStatus, DelegateType, PaymentMethod } from '@unbj/shared'
 
 export const STATUS_LABELS: Record<RegistrationStatus, string> = {
   pending_payment: 'Pendiente de pago',

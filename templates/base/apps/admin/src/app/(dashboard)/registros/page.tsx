@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth'
 import { listRegistrations, type ListRegistrationsResponse } from '@/lib/api'
 import { STATUS_LABELS, STATUS_COLORS, DELEGATE_LABELS } from '@/lib/labels'
-import type { RegistrationStatus, DelegateType } from '@plenarias/shared'
+import type { RegistrationStatus, DelegateType } from '@unbj/shared'
 import { Search, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react'
 import { clsx } from 'clsx'
 
@@ -117,7 +117,7 @@ export default function RegistrosPage() {
         <select
           value={status}
           onChange={(e) => handleStatusChange(e.target.value)}
-          className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent bg-white"
+          className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent bg-bg-card"
         >
           {STATUS_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>
@@ -127,7 +127,7 @@ export default function RegistrosPage() {
         <select
           value={delegateType}
           onChange={(e) => handleDelegateChange(e.target.value)}
-          className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent bg-white"
+          className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent bg-bg-card"
         >
           {DELEGATE_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>

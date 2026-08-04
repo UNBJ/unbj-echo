@@ -100,7 +100,7 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
     return (
       <div className="min-h-screen bg-bg-page flex items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-text-secondary">
-          <Loader2 className="w-8 h-8 animate-spin text-rose-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
           <p className="text-sm">{t('loading')}</p>
         </div>
       </div>
@@ -110,15 +110,15 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
   return (
     <div className="min-h-screen bg-bg-page flex flex-col">
       {/* Header */}
-      <header className="bg-[#1E293B] text-white h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
+      <header className="bg-bg-sidebar text-text-on-dark h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
         <button 
           onClick={() => router.push(`/portal/${token}`)}
-          className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm"
+          className="flex items-center gap-2 text-text-on-dark/70 hover:text-text-on-dark transition-colors text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{t('backBtn')}</span>
         </button>
-        <span className="font-heading font-bold text-sm tracking-widest text-rose-400 uppercase">
+        <span className="font-heading font-bold text-sm tracking-widest text-accent uppercase">
           {t('liveTitle')}
         </span>
       </header>
@@ -127,8 +127,8 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
         
         {/* Sin votación activa */}
         {!activePoll && (
-          <Card className="bg-white border border-border p-8 text-center rounded-2xl shadow-sm">
-            <div className="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-5 animate-pulse">
+          <Card className="bg-bg-card border border-border p-8 text-center rounded-2xl shadow-sm">
+            <div className="w-16 h-16 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto mb-5 animate-pulse">
               <Vote className="w-8 h-8" />
             </div>
             <h2 className="text-xl font-heading font-bold text-text-primary mb-2">{t('panelTitle')}</h2>
@@ -144,7 +144,7 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
             
             {hasVotedActive ? (
               // YA VOTÓ EN ESTA PROPUESTA
-              <Card className="bg-white border border-border p-8 text-center rounded-2xl shadow-sm relative overflow-hidden">
+              <Card className="bg-bg-card border border-border p-8 text-center rounded-2xl shadow-sm relative overflow-hidden">
                 <div className="h-[4px] bg-emerald-500 absolute top-0 left-0 right-0" />
                 <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-5">
                   <CheckCircle2 className="w-8 h-8" />
@@ -159,21 +159,21 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
               </Card>
             ) : (
               // FORMULARIO DE VOTACIÓN
-              <Card className="bg-white border border-border p-6 rounded-2xl shadow-sm relative overflow-hidden">
-                <div className="h-[4px] bg-rose-500 absolute top-0 left-0 right-0" />
+              <Card className="bg-bg-card border border-border p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                <div className="h-[4px] bg-accent absolute top-0 left-0 right-0" />
                 
                 <div className="flex items-center gap-3 mb-5 border-b border-border pb-4">
-                  <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
+                  <div className="p-2 bg-accent/10 text-accent rounded-lg">
                     <Vote className="w-5 h-5" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold text-rose-600 uppercase tracking-widest block">{t('activeProposal')}</span>
+                    <span className="text-[10px] font-bold text-accent uppercase tracking-widest block">{t('activeProposal')}</span>
                     <h2 className="text-base font-heading font-bold text-text-primary leading-tight mt-0.5">{activePoll.title}</h2>
                   </div>
                 </div>
 
                 {activePoll.description && (
-                  <p className="text-xs text-text-secondary leading-relaxed mb-6 bg-gray-50 p-3.5 rounded-xl border border-border">
+                  <p className="text-xs text-text-secondary leading-relaxed mb-6 bg-bg-page p-3.5 rounded-xl border border-border">
                     {activePoll.description}
                   </p>
                 )}
@@ -189,8 +189,8 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
                         className={clsx(
                           'w-full p-4 border-2 rounded-xl text-left text-sm font-semibold transition-all duration-150',
                           isSelected 
-                            ? 'border-rose-500 bg-rose-50/10 text-rose-700 ring-1 ring-rose-500/20' 
-                            : 'border-border bg-white text-text-primary hover:border-gray-400'
+                            ? 'border-accent bg-accent/10 text-accent ring-1 ring-accent/20' 
+                            : 'border-border bg-bg-card text-text-primary hover:border-accent/50'
                         )}
                       >
                         {opt.text}
@@ -209,7 +209,7 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
                 <Button
                   disabled={!selectedOption || isSubmitting}
                   onClick={handleSubmitVote}
-                  className="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5"
+                  className="w-full bg-accent hover:bg-accent-hover text-white font-semibold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5"
                 >
                   {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                   {t('submitBtn')}

@@ -1,0 +1,49 @@
+/**
+ * Configuración central de branding de la plataforma generada.
+ *
+ * Edita este archivo para personalizar la identidad del evento:
+ * al cambiar estos valores se re-temizan portal, admin, emails y PDFs.
+ */
+export const branding = {
+  /** Nombre de la plataforma (firma del producto). */
+  platform: 'UNBJ Echo',
+  /** Nombre del evento (inyectado por el CLI al generar). */
+  eventName: '<%= eventName %>',
+  /** Organización anfitriona (opcional). */
+  organization: '',
+  /** Fechas del evento, texto libre (opcional). Ej: '19 – 23 de Octubre de 2026'. */
+  dates: '',
+  /** Tagline o subtítulo del evento (opcional). */
+  tagline: '',
+  /** Color de acento principal (hex). */
+  accentColor: '#2563EB',
+  /** Color de acento en hover (hex). */
+  accentHoverColor: '#1D4ED8',
+  /** Iniciales del monograma (logo por defecto). */
+  logoInitials: '<%= initials %>',
+} as const
+
+/** Footer de plataforma usado en portal y admin. */
+export const platformFooter = `© UNBJ ${new Date().getFullYear()} - Un latir por el Reino`
+
+/** Convierte un color hex (#RRGGBB) a triplete RGB "r g b" para CSS variables. */
+export function hexToRgbTriplet(hex: string): string {
+  return hexToRgb(hex).join(' ')
+}
+
+/** Convierte un color hex (#RRGGBB) a componentes [r, g, b] en rango 0-255. */
+export function hexToRgb(hex: string): [number, number, number] {
+  const normalized = hex.replace('#', '')
+  const value = parseInt(normalized, 16)
+  return [(value >> 16) & 255, (value >> 8) & 255, value & 255]
+}
+
+/** Deriva iniciales (máx. 3) a partir de un nombre. */
+export function getInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((word) => word[0]!.toUpperCase())
+    .join('')
+}

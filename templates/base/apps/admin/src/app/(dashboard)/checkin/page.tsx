@@ -87,7 +87,7 @@ export default function CheckInPage() {
           ) : (
             <button
               onClick={() => { setScanning(true); processingRef.current = false }}
-              className="flex flex-col items-center justify-center gap-3 w-full h-48 bg-bg-card border-2 border-dashed border-border rounded-xl hover:border-accent hover:bg-blue-50 transition-colors"
+              className="flex flex-col items-center justify-center gap-3 w-full h-48 bg-bg-card border-2 border-dashed border-border rounded-xl hover:border-accent hover:bg-accent/10 transition-colors"
             >
               <Scan className="w-10 h-10 text-text-secondary" />
               <span className="text-sm font-medium text-text-secondary">
@@ -135,28 +135,28 @@ function ResultCard({ result, onReset }: { result: ScanResult; onReset: () => vo
 
   const config = {
     valid: {
-      bg: 'bg-green-50 border-green-300',
-      icon: <CheckCircle2 className="w-10 h-10 text-green-600" />,
+      bg: 'bg-success/10 border-success/40',
+      icon: <CheckCircle2 className="w-10 h-10 text-success" />,
       title: '¡Check-in registrado!',
-      titleColor: 'text-green-800',
+      titleColor: 'text-success',
     },
     already_scanned: {
-      bg: 'bg-yellow-50 border-yellow-300',
-      icon: <AlertCircle className="w-10 h-10 text-yellow-600" />,
+      bg: 'bg-warning/10 border-warning/40',
+      icon: <AlertCircle className="w-10 h-10 text-warning" />,
       title: 'Ya registrado anteriormente',
-      titleColor: 'text-yellow-800',
+      titleColor: 'text-warning',
     },
     invalid: {
-      bg: 'bg-red-50 border-red-300',
-      icon: <XCircle className="w-10 h-10 text-red-600" />,
+      bg: 'bg-error/10 border-error/40',
+      icon: <XCircle className="w-10 h-10 text-error" />,
       title: 'QR inválido o no aprobado',
-      titleColor: 'text-red-800',
+      titleColor: 'text-error',
     },
     offline: {
-      bg: 'bg-gray-50 border-gray-300',
-      icon: <XCircle className="w-10 h-10 text-gray-600" />,
+      bg: 'bg-bg-page border-border',
+      icon: <XCircle className="w-10 h-10 text-text-secondary" />,
       title: 'Sin conexión',
-      titleColor: 'text-gray-800',
+      titleColor: 'text-text-primary',
     },
   }[result.status]
 
@@ -168,14 +168,14 @@ function ResultCard({ result, onReset }: { result: ScanResult; onReset: () => vo
       <p className={`text-lg font-bold ${config.titleColor}`}>{config.title}</p>
 
       {reg && (
-        <div className="w-full bg-white/70 rounded-lg p-4 flex flex-col gap-1 text-left">
+        <div className="w-full bg-bg-card/70 rounded-lg p-4 flex flex-col gap-1 text-left">
           <p className="font-semibold text-text-primary text-base">{reg.fullName}</p>
           <p className="text-sm text-text-secondary">{reg.churchName}</p>
           <p className="text-xs font-medium mt-1 text-text-secondary">
             {reg.delegateType ? DELEGATE_LABELS[reg.delegateType] : 'Sin asignar'}
           </p>
           {isAlready && reg.checkedInAt && (
-            <p className="text-xs text-yellow-700 mt-1">
+            <p className="text-xs text-warning mt-1">
               Registrado el {new Date(reg.checkedInAt).toLocaleString('es-MX')}
               {reg.checkedInBy && ` por ${reg.checkedInBy}`}
             </p>
@@ -184,14 +184,14 @@ function ResultCard({ result, onReset }: { result: ScanResult; onReset: () => vo
       )}
 
       {isInvalid && (
-        <p className="text-sm text-red-700">
+        <p className="text-sm text-error">
           El código QR no corresponde a un registro aprobado.
         </p>
       )}
 
       <button
         onClick={onReset}
-        className="mt-2 px-6 py-2 bg-white border border-border rounded-lg text-sm font-medium text-text-primary hover:bg-bg-page transition-colors"
+        className="mt-2 px-6 py-2 bg-bg-card border border-border rounded-lg text-sm font-medium text-text-primary hover:bg-bg-page transition-colors"
       >
         Escanear siguiente
       </button>

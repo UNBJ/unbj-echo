@@ -98,7 +98,7 @@ export function Step2Datos({ state, onBack, onNext }: Step2DatosProps) {
             <select
               value={countryCode}
               onChange={(e) => setCountryCode(e.target.value)}
-              className="flex-shrink-0 border border-border rounded-lg px-2 py-2.5 text-sm text-text-primary bg-white focus:outline-none focus:border-accent"
+              className="flex-shrink-0 border border-border rounded-lg px-2 py-2.5 text-sm text-text-primary bg-bg-card focus:outline-none focus:border-accent"
             >
               {COUNTRY_CODES.map((c) => (
                 <option key={`${c.flag}-${c.code}`} value={c.code}>

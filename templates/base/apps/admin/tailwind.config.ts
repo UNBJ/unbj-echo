@@ -1,23 +1,24 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: 'class',
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        accent: '#2563EB',
-        'accent-hover': '#1D4ED8',
+        accent: 'rgb(var(--accent) / <alpha-value>)',
+        'accent-hover': 'rgb(var(--accent-hover) / <alpha-value>)',
         success: '#16A34A',
         warning: '#D97706',
         error: '#DC2626',
-        'bg-page': '#F1F5F9',
-        'bg-card': '#FFFFFF',
-        'bg-sidebar': '#1E293B',
-        'bg-sidebar-hover': '#334155',
-        'text-primary': '#0F172A',
-        'text-secondary': '#64748B',
-        'text-on-dark': '#CBD5E1',
-        border: '#E2E8F0',
+        'bg-page': 'rgb(var(--bg-page) / <alpha-value>)',
+        'bg-card': 'rgb(var(--bg-card) / <alpha-value>)',
+        'bg-sidebar': 'rgb(var(--bg-sidebar) / <alpha-value>)',
+        'bg-sidebar-hover': 'rgb(var(--bg-sidebar-hover) / <alpha-value>)',
+        'text-primary': 'rgb(var(--text-primary) / <alpha-value>)',
+        'text-secondary': 'rgb(var(--text-secondary) / <alpha-value>)',
+        'text-on-dark': 'rgb(var(--text-on-dark) / <alpha-value>)',
+        border: 'rgb(var(--border) / <alpha-value>)',
       },
       fontFamily: {
         heading: ['var(--font-heading)', 'sans-serif'],

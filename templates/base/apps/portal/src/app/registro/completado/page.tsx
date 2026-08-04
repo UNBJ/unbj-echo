@@ -1,5 +1,6 @@
 import { CheckCircle } from 'lucide-react'
 import Link from 'next/link'
+import { branding } from '@unbj/shared'
 
 interface Props {
   searchParams: Promise<{ token?: string }>
@@ -8,29 +9,28 @@ interface Props {
 export default async function RegistroCompletadoPage({ searchParams }: Props) {
   const params = await searchParams
   const token = params.token
+  const eventTag = [branding.eventName, branding.dates].filter(Boolean).join(' · ')
 
   return (
     <div className="w-full max-w-md">
       {/* Card */}
       <div className="bg-bg-card border border-border rounded-2xl overflow-hidden shadow-sm text-center">
 
-        {/* Gold accent top */}
-        <div className="h-[3px] bg-gradient-to-r from-[#C8A44A]/60 via-[#E8D088]/80 to-[#C8A44A]/60" />
+        {/* Accent top */}
+        <div className="h-[3px] bg-accent/60" />
 
         <div className="px-8 py-10">
           {/* Icon */}
-          <div className="w-16 h-16 rounded-full bg-[#1A1A2E] flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-8 h-8 text-[#E8D088]" />
+          <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-8 h-8 text-white" />
           </div>
 
           {/* Event tag */}
-          <div className="flex items-center gap-2 justify-center mb-5">
-            <div className="h-px w-8 bg-[#C8A44A]/50" />
-            <p className="text-[10px] text-[#C8A44A] tracking-[0.3em] uppercase font-semibold">
-              CXVI · 19–23 de Octubre 2026
+          {eventTag && (
+            <p className="text-[10px] text-accent tracking-[0.3em] uppercase font-semibold mb-5">
+              {eventTag}
             </p>
-            <div className="h-px w-8 bg-[#C8A44A]/50" />
-          </div>
+          )}
 
           <h1 className="text-xl font-heading font-bold text-text-primary mb-3">
             ¡Tu registro fue exitoso!
@@ -47,7 +47,7 @@ export default async function RegistroCompletadoPage({ searchParams }: Props) {
           {token ? (
             <Link
               href={`/portal/${token}`}
-              className="block w-full bg-[#1A1A2E] hover:bg-[#2d2d50] text-white font-semibold px-6 py-3 rounded-lg transition-colors text-sm"
+              className="block w-full bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-lg transition-colors text-sm"
             >
               Ir a mi portal personal
             </Link>
