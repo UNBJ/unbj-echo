@@ -18,17 +18,17 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       return forbidden('La votacion esta deshabilitada temporalmente.')
     }
 
-    const listSnap = await db
-      .collection('polls')
-      .where('id', '!=', 'active') // Omitir el documento de control activo
-      .get()
+    const activeSnap = await db.collection('polls').doc('active').get()
+    const listSnap = await db.collection('polls').get()
 
     const polls = listSnap.docs
+      .filter((doc) => doc.id !== 'active')
       .map((doc) => doc.data())
       .filter((p) => p.proposalId) // Filtrar por si acaso
 
     return ok({
       polls,
+      activePoll: activeSnap.exists ? activeSnap.data() : null,
     })
   } catch (err) {
     console.error('admin-list-polls error:', err)

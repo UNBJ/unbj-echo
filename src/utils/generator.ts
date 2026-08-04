@@ -445,8 +445,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const registroDir = path.join(appDir, 'registro');
     const registroCompletadoDir = path.join(registroDir, 'completado');
     const portalAliasDir = path.join(appDir, 'portal', '[token]');
+    const portalRoomsAliasDir = path.join(portalAliasDir, 'habitaciones');
+    const portalWorkshopsAliasDir = path.join(portalAliasDir, 'talleres');
+    const portalVotingAliasDir = path.join(portalAliasDir, 'votacion');
     await fs.ensureDir(registroCompletadoDir);
     await fs.ensureDir(portalAliasDir);
+    await fs.ensureDir(portalRoomsAliasDir);
+    await fs.ensureDir(portalWorkshopsAliasDir);
+    await fs.ensureDir(portalVotingAliasDir);
 
     const rootPageContent = `import { redirect } from 'next/navigation'
 
@@ -484,6 +490,45 @@ export default async function PortalAliasPage({
 }
 `;
     await fs.writeFile(path.join(portalAliasDir, 'page.tsx'), portalAliasContent, 'utf8');
+
+    const portalRoomsAliasContent = `import { redirect } from 'next/navigation'
+
+export default async function PortalHabitacionesAliasPage({
+  params
+}: {
+  params: Promise<{ token: string }>
+}) {
+  const { token } = await params
+  redirect(\`/es/portal/\${token}/habitaciones\`)
+}
+`;
+    await fs.writeFile(path.join(portalRoomsAliasDir, 'page.tsx'), portalRoomsAliasContent, 'utf8');
+
+    const portalWorkshopsAliasContent = `import { redirect } from 'next/navigation'
+
+export default async function PortalTalleresAliasPage({
+  params
+}: {
+  params: Promise<{ token: string }>
+}) {
+  const { token } = await params
+  redirect(\`/es/portal/\${token}/talleres\`)
+}
+`;
+    await fs.writeFile(path.join(portalWorkshopsAliasDir, 'page.tsx'), portalWorkshopsAliasContent, 'utf8');
+
+    const portalVotingAliasContent = `import { redirect } from 'next/navigation'
+
+export default async function PortalVotacionAliasPage({
+  params
+}: {
+  params: Promise<{ token: string }>
+}) {
+  const { token } = await params
+  redirect(\`/es/portal/\${token}/votacion\`)
+}
+`;
+    await fs.writeFile(path.join(portalVotingAliasDir, 'page.tsx'), portalVotingAliasContent, 'utf8');
 
     // 5. Crear archivos de configuración de next-intl en src/
     const srcDir = path.join(portalPath, 'src');

@@ -1,28 +1,20 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { db } from '@/lib/firebase'
 import { useAuth } from '@/lib/auth'
-import { doc, onSnapshot } from 'firebase/firestore'
-import { Vote, Plus, Play, Square, Loader2, Award, ExternalLink, BarChart3, AlertCircle, Trash2, CheckCircle2, Maximize, Minimize } from 'lucide-react'
+import { Vote, Plus, Play, Square, Loader2, BarChart3, AlertCircle, CheckCircle2, Maximize, Minimize } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
 
 const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001'
 
 export function AdminPolls() {
   const { getToken } = useAuth()
-  // Datos
   const [polls, setPolls] = useState<any[]>([])
   const [activePoll, setActivePoll] = useState<any>(null)
-  
-  // Creación de propuesta
   const [newTitle, setNewTitle] = useState('')
   const [newDesc, setNewDesc] = useState('')
   const [newOptions, setNewOptions] = useState<string[]>(['', ''])
-  
-  // UI estados
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -32,23 +24,15 @@ export function AdminPolls() {
   useEffect(() => {
     void fetchPolls()
 
-    // Suscribirse al documento activo en tiempo real
-    const activeDocRef = doc(db, 'polls', 'active')
-    const unsubActive = onSnapshot(activeDocRef, (snap) => {
-      if (snap.exists()) {
-        const data = snap.data()
-        setActivePoll(data)
-      } else {
-        setActivePoll(null)
-      }
-    })
+    const intervalId = window.setInterval(() => {
+      void fetchPolls(false)
+    }, 3000)
 
-    return () => unsubActive()
+    return () => window.clearInterval(intervalId)
   }, [])
 
-  // Obtener todos los sondeos creados
-  async function fetchPolls() {
-    setLoading(true)
+  async function fetchPolls(showLoader = true) {
+    if (showLoader) setLoading(true)
     setError(null)
     try {
       const token = await getToken()
@@ -57,16 +41,18 @@ export function AdminPolls() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
+        cache: 'no-store',
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Error al cargar votaciones')
       
       setPolls(data.polls || [])
+      setActivePoll(data.activePoll ?? null)
     } catch (err: any) {
       console.error(err)
       setError(err.message || 'Error de conexión.')
     } finally {
-      setLoading(false)
+      if (showLoader) setLoading(false)
     }
   }
 

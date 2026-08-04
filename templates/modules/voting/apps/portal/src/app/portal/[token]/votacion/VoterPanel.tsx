@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { db } from '@/lib/firebase'
-import { doc, onSnapshot } from 'firebase/firestore'
 import { ArrowLeft, Vote, CheckCircle2, Loader2, AlertCircle } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -17,58 +15,57 @@ interface VoterPanelProps {
 
 const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001'
 
-export function VoterPanel({ registration: initialReg, token }: VoterPanelProps) {
+export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps) {
   const router = useRouter()
   const t = useTranslations('voting')
 
-  // Estados de datos en tiempo real
   const [activePoll, setActivePoll] = useState<any>(null)
-  const [votedPolls, setVotedPolls] = useState<string[]>(initialReg.votedPolls || [])
-
-  // Estados UI
+  const [hasVotedActive, setHasVotedActive] = useState(false)
   const [selectedOption, setSelectedOption] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
-  useEffect(() => {
-    // 1. Escuchar la propuesta activa en tiempo real
-    const activeDocRef = doc(db, 'polls', 'active')
-    const unsubActive = onSnapshot(activeDocRef, (snap) => {
-      setLoading(false)
-      if (snap.exists()) {
-        const data = snap.data()
-        if (data && data.status === 'active') {
-          setActivePoll(data)
-          setError(null)
-          return
-        }
-      }
+  async function fetchVotingState() {
+    try {
+      const res = await fetch(`${API_URL}/polls/active`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        cache: 'no-store',
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? t('errorLoad'))
+
+      setActivePoll(data.activePoll ?? null)
+      setHasVotedActive(Boolean(data.hasVoted))
+      setError(null)
+    } catch (err: any) {
+      console.error('Fetch active poll error:', err)
+      setError(err.message || t('errorLoad'))
       setActivePoll(null)
-    }, (err) => {
-      console.error('Active poll listener error:', err)
-      setError(t('errorLoad'))
+      setHasVotedActive(false)
+    } finally {
       setLoading(false)
-    })
-
-    // 2. Escuchar el registro del usuario para actualizar su lista de votos en tiempo real
-    const regDocRef = doc(db, 'registrations', initialReg.id)
-    const unsubReg = onSnapshot(regDocRef, (snap) => {
-      if (snap.exists()) {
-        const data = snap.data()
-        setVotedPolls(data?.votedPolls || [])
-      }
-    })
-
-    return () => {
-      unsubActive()
-      unsubReg()
     }
-  }, [initialReg.id])
+  }
+
+  useEffect(() => {
+    void fetchVotingState()
+
+    const intervalId = window.setInterval(() => {
+      void fetchVotingState()
+    }, 3000)
+
+    return () => window.clearInterval(intervalId)
+  }, [token])
 
   async function handleSubmitVote() {
     if (!selectedOption || !activePoll) return
+
     setIsSubmitting(true)
     setError(null)
     setSuccess(false)
@@ -78,7 +75,7 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ optionId: selectedOption }),
       })
@@ -86,6 +83,8 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
       if (!res.ok) throw new Error(data.error ?? t('errorSubmit'))
 
       setSuccess(true)
+      setSelectedOption('')
+      await fetchVotingState()
     } catch (err: any) {
       console.error(err)
       setError(err.message || t('errorConnection') || 'Error de conexión. Intenta de nuevo.')
@@ -93,8 +92,6 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
       setIsSubmitting(false)
     }
   }
-
-  const hasVotedActive = activePoll && votedPolls.includes(activePoll.proposalId)
 
   if (loading) {
     return (
@@ -109,9 +106,8 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
 
   return (
     <div className="min-h-screen bg-bg-page flex flex-col">
-      {/* Header */}
       <header className="bg-bg-sidebar text-text-on-dark h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
-        <button 
+        <button
           onClick={() => router.push(`/portal/${token}`)}
           className="flex items-center gap-2 text-text-on-dark/70 hover:text-text-on-dark transition-colors text-sm"
         >
@@ -124,8 +120,6 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
       </header>
 
       <main className="flex-1 max-w-xl w-full mx-auto px-6 py-12 flex flex-col justify-center">
-        
-        {/* Sin votación activa */}
         {!activePoll && (
           <Card className="bg-bg-card border border-border p-8 text-center rounded-2xl shadow-sm">
             <div className="w-16 h-16 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto mb-5 animate-pulse">
@@ -138,12 +132,9 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
           </Card>
         )}
 
-        {/* Votación activa disponible */}
         {activePoll && (
           <div className="flex flex-col gap-6">
-            
             {hasVotedActive ? (
-              // YA VOTÓ EN ESTA PROPUESTA
               <Card className="bg-bg-card border border-border p-8 text-center rounded-2xl shadow-sm relative overflow-hidden">
                 <div className="h-[4px] bg-emerald-500 absolute top-0 left-0 right-0" />
                 <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-5">
@@ -158,10 +149,9 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
                 </span>
               </Card>
             ) : (
-              // FORMULARIO DE VOTACIÓN
               <Card className="bg-bg-card border border-border p-6 rounded-2xl shadow-sm relative overflow-hidden">
                 <div className="h-[4px] bg-accent absolute top-0 left-0 right-0" />
-                
+
                 <div className="flex items-center gap-3 mb-5 border-b border-border pb-4">
                   <div className="p-2 bg-accent/10 text-accent rounded-lg">
                     <Vote className="w-5 h-5" />
@@ -188,8 +178,8 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
                         onClick={() => setSelectedOption(opt.id)}
                         className={clsx(
                           'w-full p-4 border-2 rounded-xl text-left text-sm font-semibold transition-all duration-150',
-                          isSelected 
-                            ? 'border-accent bg-accent/10 text-accent ring-1 ring-accent/20' 
+                          isSelected
+                            ? 'border-accent bg-accent/10 text-accent ring-1 ring-accent/20'
                             : 'border-border bg-bg-card text-text-primary hover:border-accent/50'
                         )}
                       >
@@ -216,7 +206,6 @@ export function VoterPanel({ registration: initialReg, token }: VoterPanelProps)
                 </Button>
               </Card>
             )}
-            
           </div>
         )}
       </main>
