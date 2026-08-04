@@ -14,7 +14,7 @@ Este archivo documenta los comandos de desarrollo, arquitectura y estado del pro
 * **Ejecutar pruebas de compilación automática:** `node scripts/test-generator.mjs` (genera un proyecto de prueba completo, instala dependencias y verifica tipos TS)
 * **Regenerar preview local:** `npm run preview:refresh` (recrea `preview-project/` con `plenarias` + todos los módulos + `es-en`, e instala dependencias)
 * **Verificar preview local:** `npm run preview:typecheck`
-* **Levantar preview local:** `npm run preview:dev:portal`, `npm run preview:dev:admin`, `npm run preview:dev:api`
+* **Levantar preview local:** `npm run preview:dev:portal` (puerto `3100`), `npm run preview:dev:admin` (puerto `3102`), `npm run preview:dev:api` (puerto `3001`)
 * **Limpiar y separar plantilla base desde el proyecto origen:** `node scripts/split-monorepo.mjs`
 
 ---
@@ -89,3 +89,4 @@ Para acelerar el ciclo de desarrollo de `templates/` y del wiring del generador,
   1. `npm run preview:refresh`
   2. `npm run preview:typecheck`
   3. Levantar las apps necesarias con `npm run preview:dev:*`
+* **Puertos del preview:** Portal `http://localhost:3100`, Admin `http://localhost:3102`, API `http://localhost:3001`.
