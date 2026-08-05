@@ -6,6 +6,33 @@ Este archivo registra el historial de cambios, correcciones de tipado, integraci
 
 ## Historial de Cambios e Hitos
 
+### 📅 04 de Agosto, 2026 — Recuperación de sesión: votaciones y ajustes del generador
+
+La sesión anterior terminó de forma abrupta. El estado fue reconstruido a partir del historial de Git y de los cambios locales conservados en el árbol de trabajo.
+
+#### Cambios confirmados
+
+* **Credenciales y preview:** ajustadas las credenciales usadas por el flujo de preview local.
+* **Puertos de desarrollo:** normalizados los comandos y la documentación de los puertos del proyecto.
+* **Redirecciones i18n:** corregida la generación de rutas y layouts para que las rutas públicas sin locale redirijan correctamente.
+* **Roles de administrador:** añadido el flujo para asignar el claim de administrador (`scripts/set-admin-claim.mjs`) y corregida la integración de roles en el generador y las plantillas.
+* **Carga de documentos:** corregido el manejo de autenticación y la vista de detalle de registros para la carga/consulta de documentos.
+* **Módulo de votaciones:** habilitado correctamente en los proyectos generados; se actualizaron la inyección del módulo, el listado administrativo de encuestas y las vistas de administración y portal.
+
+Los cambios anteriores quedaron registrados en los commits `d7d5ace`, `e3bfa69`, `2944976`, `4de2390`, `e5c0fd8` y `20a6f10`.
+
+#### Cambios pendientes de confirmar
+
+Quedaron dos cambios locales intencionales, todavía sin commit:
+
+* **Resultados después de votar:** [VoterPanel.tsx](templates/modules/voting/apps/portal/src/app/portal/[token]/votacion/VoterPanel.tsx) muestra, tras emitir el voto, el conteo total, votos por opción, porcentaje y barras de progreso.
+* **Protección contra sesgo previo al voto:** [active.ts](templates/modules/voting/packages/api/src/handlers/polls/active.ts) entrega el objeto `results` únicamente cuando el registro ya votó en esa encuesta. Antes de votar, los contadores continúan ocultos.
+
+#### Verificación de recuperación
+
+* `git diff --check` completado sin errores de espacios ni conflictos.
+* El árbol de trabajo contiene exclusivamente los dos cambios de votación descritos arriba.
+
 ### 📅 04 de Agosto, 2026 — Rediseño Neutro UNBJ Echo
 
 #### 1. Sistema de Diseño Neutro (desacoplamiento del branding CNBM)

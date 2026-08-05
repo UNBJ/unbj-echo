@@ -33,7 +33,6 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     const votedPolls = reg.votedPolls || []
     const hasVoted = votedPolls.includes(poll.proposalId)
 
-    // Omitir los contadores de resultados detallados para evitar sesgos de votación
     const safePoll = {
       proposalId: poll.proposalId,
       title: poll.title,
@@ -41,6 +40,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       options: poll.options || [],
       chartType: poll.chartType || 'BAR',
       targetRole: poll.targetRole || 'all',
+      results: hasVoted ? (poll.results || {}) : undefined,
     }
 
     return ok({

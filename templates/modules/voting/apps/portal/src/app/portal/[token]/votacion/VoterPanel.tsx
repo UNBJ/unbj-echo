@@ -27,6 +27,9 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
+  const results = activePoll?.results || {}
+  const totalVotes = Object.values(results).reduce((sum: number, value: any) => sum + value, 0) as number
+
   async function fetchVotingState() {
     try {
       const res = await fetch(`${API_URL}/polls/active`, {
@@ -144,9 +147,41 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
                 <p className="text-sm text-text-secondary leading-relaxed max-w-sm mx-auto mb-4">
                   {t('voteSuccessText', { title: activePoll.title })}
                 </p>
-                <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-text-secondary">
-                  {t('waitingResults')}
-                </span>
+
+                <div className="mt-6 border-t border-border pt-5 text-left">
+                  <div className="flex items-center justify-between mb-4 gap-3">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">
+                      Resultados en tiempo real
+                    </span>
+                    <span className="text-[11px] font-semibold text-text-secondary">
+                      {totalVotes} {totalVotes === 1 ? 'voto total' : 'votos totales'}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    {activePoll.options.map((opt: any) => {
+                      const votes = results[opt.id] ?? 0
+                      const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0
+
+                      return (
+                        <div key={opt.id} className="flex flex-col gap-1.5">
+                          <div className="flex justify-between items-center text-xs font-semibold text-text-primary gap-3">
+                            <span>{opt.text}</span>
+                            <span className="text-text-secondary">
+                              {votes} {votes === 1 ? 'voto' : 'votos'} ({percentage}%)
+                            </span>
+                          </div>
+                          <div className="w-full h-3 bg-bg-page rounded-full overflow-hidden border border-border">
+                            <div
+                              className="h-full bg-accent rounded-full transition-all duration-300"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
               </Card>
             ) : (
               <Card className="bg-bg-card border border-border p-6 rounded-2xl shadow-sm relative overflow-hidden">
