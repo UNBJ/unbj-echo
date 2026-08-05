@@ -357,7 +357,7 @@ export function AdminPolls() {
                     </div>
 
                     <div className="flex-shrink-0 flex gap-2">
-                      {!isClosed && !isCurrentActive && (
+                      {p.status === 'draft' && !isCurrentActive && (
                         <Button
                           onClick={() => handleTogglePoll(p.proposalId, 'activate')}
                           disabled={submitting || (activePoll && activePoll.status === 'active')}

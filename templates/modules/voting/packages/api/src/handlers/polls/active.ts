@@ -40,7 +40,6 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       options: poll.options || [],
       chartType: poll.chartType || 'BAR',
       targetRole: poll.targetRole || 'all',
-      results: hasVoted ? (poll.results || {}) : undefined,
     }
 
     return ok({

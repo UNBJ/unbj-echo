@@ -52,6 +52,10 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       const poll = pollSnap.data()
 
       if (action === 'activate') {
+        if (poll?.status !== 'draft') {
+          throw new Error('Solo las propuestas en borrador pueden activarse. Las votaciones cerradas son definitivas.')
+        }
+
         // Validar si ya hay una propuesta activa
         const activeSnap = await transaction.get(activeRef)
         if (activeSnap.exists) {
@@ -89,18 +93,20 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
         // Obtener resultados finales
         const finalResults = activePoll?.results || {}
+        const closedAt = new Date().toISOString()
 
         // Guardar resultados e historial en la propuesta original
         transaction.update(pollRef, {
           status: 'closed',
           results: finalResults,
-          updatedAt: new Date().toISOString(),
+          closedAt,
+          updatedAt: closedAt,
         })
 
         // Limpiar o cerrar el documento activo
         transaction.update(activeRef, {
           status: 'closed',
-          updatedAt: new Date().toISOString(),
+          updatedAt: closedAt,
         })
       }
     })

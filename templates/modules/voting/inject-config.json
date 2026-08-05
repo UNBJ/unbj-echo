@@ -12,6 +12,17 @@
           }
         ]
       },
+      "getClosedPolls": {
+        "handler": "src/handlers/polls/closed.handler",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/polls/closed",
+              "method": "get"
+            }
+          }
+        ]
+      },
       "submitVote": {
         "handler": "src/handlers/polls/vote.handler",
         "events": [

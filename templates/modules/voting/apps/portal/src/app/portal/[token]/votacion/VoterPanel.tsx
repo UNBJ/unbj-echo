@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Vote, CheckCircle2, Loader2, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Vote, CheckCircle2, Loader2, AlertCircle, Trophy } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { clsx } from 'clsx'
@@ -13,6 +13,16 @@ interface VoterPanelProps {
   token: string
 }
 
+interface ClosedPoll {
+  proposalId: string
+  title: string
+  description: string
+  options: Array<{ id: string; text: string }>
+  results: Record<string, number>
+  totalVotes: number
+  closedAt: string | null
+}
+
 const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001'
 
 export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps) {
@@ -20,37 +30,37 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
   const t = useTranslations('voting')
 
   const [activePoll, setActivePoll] = useState<any>(null)
+  const [closedPolls, setClosedPolls] = useState<ClosedPoll[]>([])
   const [hasVotedActive, setHasVotedActive] = useState(false)
   const [selectedOption, setSelectedOption] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
-
-  const results = activePoll?.results || {}
-  const totalVotes = Object.values(results).reduce((sum: number, value: any) => sum + value, 0) as number
 
   async function fetchVotingState() {
     try {
-      const res = await fetch(`${API_URL}/polls/active`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        cache: 'no-store',
-      })
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      }
+      const [activeRes, closedRes] = await Promise.all([
+        fetch(`${API_URL}/polls/active`, { headers, cache: 'no-store' }),
+        fetch(`${API_URL}/polls/closed`, { headers, cache: 'no-store' }),
+      ])
+      const [activeData, closedData] = await Promise.all([activeRes.json(), closedRes.json()])
+      if (!activeRes.ok) throw new Error(activeData.error ?? t('errorLoad'))
+      if (!closedRes.ok) throw new Error(closedData.error ?? t('errorLoad'))
 
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? t('errorLoad'))
-
-      setActivePoll(data.activePoll ?? null)
-      setHasVotedActive(Boolean(data.hasVoted))
+      setActivePoll(activeData.activePoll ?? null)
+      setHasVotedActive(Boolean(activeData.hasVoted))
+      setClosedPolls(closedData.polls ?? [])
       setError(null)
     } catch (err: any) {
       console.error('Fetch active poll error:', err)
       setError(err.message || t('errorLoad'))
       setActivePoll(null)
       setHasVotedActive(false)
+      setClosedPolls([])
     } finally {
       setLoading(false)
     }
@@ -71,7 +81,6 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
 
     setIsSubmitting(true)
     setError(null)
-    setSuccess(false)
 
     try {
       const res = await fetch(`${API_URL}/polls/vote`, {
@@ -85,7 +94,6 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? t('errorSubmit'))
 
-      setSuccess(true)
       setSelectedOption('')
       await fetchVotingState()
     } catch (err: any) {
@@ -123,21 +131,21 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
       </header>
 
       <main className="flex-1 max-w-xl w-full mx-auto px-6 py-12 flex flex-col justify-center">
-        {!activePoll && (
-          <Card className="bg-bg-card border border-border p-8 text-center rounded-2xl shadow-sm">
-            <div className="w-16 h-16 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto mb-5 animate-pulse">
-              <Vote className="w-8 h-8" />
-            </div>
-            <h2 className="text-xl font-heading font-bold text-text-primary mb-2">{t('panelTitle')}</h2>
-            <p className="text-sm text-text-secondary leading-relaxed max-w-sm mx-auto">
-              {t('noActive')}
-            </p>
-          </Card>
-        )}
+        <div className="flex flex-col gap-6">
+          {!activePoll && (
+            <Card className="bg-bg-card border border-border p-8 text-center rounded-2xl shadow-sm">
+              <div className="w-16 h-16 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto mb-5 animate-pulse">
+                <Vote className="w-8 h-8" />
+              </div>
+              <h2 className="text-xl font-heading font-bold text-text-primary mb-2">{t('panelTitle')}</h2>
+              <p className="text-sm text-text-secondary leading-relaxed max-w-sm mx-auto">
+                {t('noActive')}
+              </p>
+            </Card>
+          )}
 
-        {activePoll && (
-          <div className="flex flex-col gap-6">
-            {hasVotedActive ? (
+          {activePoll && (
+            hasVotedActive ? (
               <Card className="bg-bg-card border border-border p-8 text-center rounded-2xl shadow-sm relative overflow-hidden">
                 <div className="h-[4px] bg-emerald-500 absolute top-0 left-0 right-0" />
                 <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-5">
@@ -147,41 +155,9 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
                 <p className="text-sm text-text-secondary leading-relaxed max-w-sm mx-auto mb-4">
                   {t('voteSuccessText', { title: activePoll.title })}
                 </p>
-
-                <div className="mt-6 border-t border-border pt-5 text-left">
-                  <div className="flex items-center justify-between mb-4 gap-3">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">
-                      Resultados en tiempo real
-                    </span>
-                    <span className="text-[11px] font-semibold text-text-secondary">
-                      {totalVotes} {totalVotes === 1 ? 'voto total' : 'votos totales'}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col gap-3">
-                    {activePoll.options.map((opt: any) => {
-                      const votes = results[opt.id] ?? 0
-                      const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0
-
-                      return (
-                        <div key={opt.id} className="flex flex-col gap-1.5">
-                          <div className="flex justify-between items-center text-xs font-semibold text-text-primary gap-3">
-                            <span>{opt.text}</span>
-                            <span className="text-text-secondary">
-                              {votes} {votes === 1 ? 'voto' : 'votos'} ({percentage}%)
-                            </span>
-                          </div>
-                          <div className="w-full h-3 bg-bg-page rounded-full overflow-hidden border border-border">
-                            <div
-                              className="h-full bg-accent rounded-full transition-all duration-300"
-                              style={{ width: `${percentage}%` }}
-                            />
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
+                <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-text-secondary">
+                  {t('waitingResults')}
+                </span>
               </Card>
             ) : (
               <Card className="bg-bg-card border border-border p-6 rounded-2xl shadow-sm relative overflow-hidden">
@@ -240,9 +216,69 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
                   {t('submitBtn')}
                 </Button>
               </Card>
+            ))}
+
+          <section className="flex flex-col gap-4">
+            <div className="flex items-center gap-2 px-1">
+              <Trophy className="w-5 h-5 text-accent" />
+              <h2 className="text-lg font-heading font-bold text-text-primary">{t('closedResultsTitle')}</h2>
+            </div>
+
+            {closedPolls.length === 0 ? (
+              <Card className="bg-bg-card border border-border p-5 rounded-2xl text-center text-sm text-text-secondary">
+                {t('closedResultsEmpty')}
+              </Card>
+            ) : (
+              closedPolls.map((poll) => {
+                const maxVotes = Math.max(...poll.options.map((option) => poll.results[option.id] ?? 0), 0)
+                const winnerIds = maxVotes > 0
+                  ? poll.options.filter((option) => (poll.results[option.id] ?? 0) === maxVotes).map((option) => option.id)
+                  : []
+                const closedDate = poll.closedAt ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(poll.closedAt)) : ''
+
+                return (
+                  <Card key={poll.proposalId} className="bg-bg-card border border-border p-5 rounded-2xl shadow-sm">
+                    <div className="flex flex-col gap-1 border-b border-border pb-4 mb-4">
+                      <h3 className="font-heading font-bold text-text-primary">{poll.title}</h3>
+                      {poll.description && <p className="text-xs text-text-secondary leading-relaxed">{poll.description}</p>}
+                      <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-semibold text-text-secondary mt-1">
+                        {closedDate && <span>{t('closedAt', { date: closedDate })}</span>}
+                        <span>{t('totalVotes', { count: poll.totalVotes })}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                      {poll.options.map((option) => {
+                        const votes = poll.results[option.id] ?? 0
+                        const percentage = poll.totalVotes > 0 ? Math.round((votes / poll.totalVotes) * 100) : 0
+                        const isWinner = winnerIds.includes(option.id)
+
+                        return (
+                          <div key={option.id} className="flex flex-col gap-1.5">
+                            <div className="flex items-center justify-between gap-3 text-xs font-semibold text-text-primary">
+                              <span className="min-w-0">{option.text}</span>
+                              <span className="whitespace-nowrap text-text-secondary">
+                                {votes === 1 ? t('voteCount', { count: votes }) : t('voteCountPlural', { count: votes })} ({percentage}%)
+                              </span>
+                            </div>
+                            <div className="w-full h-3 bg-bg-page rounded-full overflow-hidden border border-border">
+                              <div className="h-full bg-accent rounded-full" style={{ width: `${percentage}%` }} />
+                            </div>
+                            {isWinner && (
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
+                                {winnerIds.length > 1 ? t('tie') : t('winner')}
+                              </span>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </Card>
+                )
+              })
             )}
-          </div>
-        )}
+          </section>
+        </div>
       </main>
     </div>
   )
