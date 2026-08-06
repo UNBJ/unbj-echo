@@ -98,7 +98,7 @@ async function runTest() {
 
       // Generar el proyecto
       console.log(`👾 Generando proyecto [arquetipo: ${scenario.archetype}, idiomas: ${scenario.languages}, módulos: ${scenario.modules || 'ninguno'}]...`);
-      const generateCommand = `node dist/index.js -n ${testProjectName} -e "Test Compilación Escenario" -a ${scenario.archetype} -m "${scenario.modules || ''}" -l ${scenario.languages} -y`;
+      const generateCommand = `node dist/index.js --output ${testProjectName} --event-name "Test Compilación Escenario" -a ${scenario.archetype} -m "${scenario.modules || ''}" -l ${scenario.languages} -y`;
       execSync(generateCommand, { cwd: rootDir, stdio: 'inherit' });
       console.log('✅ Proyecto generado.');
 

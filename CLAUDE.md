@@ -9,8 +9,8 @@ Este archivo documenta los comandos de desarrollo, arquitectura y estado del pro
 * **Compilar CLI:** `npm run build` (compila `src/index.ts` a `dist/index.js` usando `tsup`)
 * **Desarrollo en vivo (Watch):** `npm run dev`
 * **Ejecutar CLI interactivamente:** `node dist/index.js`
-* **Ejecutar CLI con flags (Atajo/No interactivo):** `node dist/index.js -n <carpeta> -e "<Evento>" -a <archetype> -m <modules> -l <languages> -y`
-  * *Ejemplo:* `node dist/index.js -n mi-proyecto -e "Congreso 2026" -a standard -m tshirt,voting -l es-en -y`
+* **Ejecutar CLI con flags (Atajo/No interactivo):** `node dist/index.js --output <carpeta> --event-name "<Evento>" -a <archetype> -m <modules> -l <languages> -y`
+  * *Ejemplo:* `node dist/index.js --output mi-proyecto --event-name "Congreso 2026" -a standard -m tshirt,voting -l es-en -y`
 * **Ejecutar pruebas de compilación automática:** `node scripts/test-generator.mjs` (genera un proyecto de prueba completo, instala dependencias y verifica tipos TS)
 * **Regenerar preview local:** `npm run preview:refresh` (recrea `preview-project/` con `plenarias` + todos los módulos + `es-en`, e instala dependencias)
 * **Verificar preview local:** `npm run preview:typecheck`

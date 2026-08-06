@@ -62,19 +62,18 @@ Compila el CLI y ejecútalo de forma interactiva:
 
 ```bash
 npm run build
-npm start
+node dist/index.js -n "Congreso Anual 2026"
 ```
 
-El asistente pregunta el nombre de carpeta, evento, arquetipo, módulos e
-idiomas. El proyecto se crea en la carpeta elegida, relativa al directorio
-actual.
+El asistente pregunta arquetipo, módulos e idiomas. El nombre técnico se deriva
+del evento y, si no se indica una salida, se crea una subcarpeta con ese slug en
+el directorio actual.
 
 Para usar el binario `unbj-echo` durante el desarrollo local:
 
 ```bash
-npm run build
-npm link
-unbj-echo
+npm run install:local
+unbj-echo -n "Congreso Anual 2026"
 ```
 
 Para deshacer el enlace global al terminar:
@@ -88,9 +87,9 @@ npm unlink -g unbj-echo
 Esto permite automatizar la generación en scripts o CI:
 
 ```bash
-node dist/index.js \
-  --name mi-evento \
-  --event "Congreso Anual 2026" \
+unbj-echo \
+  --event-name "Congreso Anual 2026" \
+  --output ./mi-evento \
   --archetype plenarias \
   --modules "tshirt,workshops,rooms,voting" \
   --languages es-en \
@@ -99,8 +98,9 @@ node dist/index.js \
 
 | Opción | Valores | Descripción |
 | --- | --- | --- |
-| `-n, --name <name>` | carpeta válida | Nombre/ruta de salida del proyecto |
-| `-e, --event <event>` | texto | Nombre visible del evento |
+| `-n, --event-name <name>` | texto | Nombre visible del evento; `-n` es el alias corto recomendado |
+| `-e, --event <event>` | texto | Alias compatible de `--event-name` |
+| `-o, --output <path>` | ruta | Carpeta de salida; si se omite se crea `<slug-del-evento>` en el directorio actual |
 | `-a, --archetype <archetype>` | `standard`, `roles`, `plenarias` | Flujo de registro inicial |
 | `-m, --modules <modules>` | `tshirt`, `workshops`, `rooms`, `voting` | Lista separada por comas; `--modules ""` no selecciona ninguno |
 | `-l, --languages <languages>` | `es`, `es-en` | Idioma único o soporte español/inglés |
@@ -110,10 +110,10 @@ Ejemplos:
 
 ```bash
 # Evento sencillo sin módulos, sólo español.
-node dist/index.js -n festival -e "Festival 2026" -a standard -m "" -l es -y
+unbj-echo --event-name "Festival 2026" --output ./festival -a standard -m "" -l es -y
 
 # Entradas por categoría, con talleres y hospedaje.
-node dist/index.js -n congreso -e "Congreso 2026" -a roles -m "workshops,rooms" -l es-en -y
+unbj-echo -n "Congreso 2026" -o ./congreso -a roles -m "workshops,rooms" -l es-en -y
 ```
 
 ## Arquetipos y módulos
@@ -174,7 +174,7 @@ npm run dev
 En otra terminal, prueba una generación con los argumentos que necesitas:
 
 ```bash
-node dist/index.js -n /private/tmp/mi-prueba -e "Prueba" -a plenarias -m "voting" -l es-en -y
+node dist/index.js --event-name "Prueba" --output /private/tmp/mi-prueba -a plenarias -m "voting" -l es-en -y
 ```
 
 No uses un directorio de proyecto real como destino de pruebas: el generador
@@ -266,7 +266,7 @@ Como mínimo, para un cambio acotado genera el escenario afectado y valida:
 
 ```bash
 npm run build
-node dist/index.js -n /private/tmp/validacion -e "Validación" -a standard -m "" -l es -y
+node dist/index.js --output /private/tmp/validacion --event-name "Validación" -a standard -m "" -l es -y
 cd /private/tmp/validacion
 pnpm install
 pnpm typecheck

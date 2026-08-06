@@ -54,7 +54,7 @@ async function generatePreview() {
   run('npm run build');
   await cleanPreview();
   run(
-    `node dist/index.js -n ${previewProjectName} -e "Preview Platform" -a plenarias -m "tshirt,workshops,rooms,voting" -l es-en -y`
+    `node dist/index.js --output ${previewProjectName} --event-name "Preview Platform" -a plenarias -m "tshirt,workshops,rooms,voting" -l es-en -y`
   );
   await writePreviewEnvFiles();
 }

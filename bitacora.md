@@ -50,13 +50,21 @@ Este archivo registra el historial de cambios, correcciones de tipado, integraci
 * Se generaron proyectos completos de prueba con arquetipo `plenarias`, módulos e idiomas `es-en` y se ejecutó exitosamente `pnpm run typecheck` para API, portal y admin.
 * Se ejecutó `git diff --check` después de los cambios de código y documentación.
 
-#### 6. Contexto para agentes en proyectos generados
+#### 7. Contexto para agentes en proyectos generados
 
 * Se añadieron `AGENTS.md` raíz y archivos de alcance para portal, admin y packages, además de punteros mínimos `CLAUDE.md`/`GEMINI.md`.
 * Se agregaron referencias bajo demanda en `docs/agent/` y un `project-manifest.json` con metadatos no sensibles, workspaces, rutas, reglas Firestore e índices.
 * Se incorporaron `pnpm context:refresh` y `pnpm context:check`. El refresco es determinista, idempotente y no modifica la bitácora ni lee secretos; el check detecta contexto obsoleto.
 * El generador ejecuta el refresco al finalizar la generación para que un proyecto recién creado empiece con el manifiesto actualizado.
 * La documentación humana explica cómo usar estos archivos sin cargar el README completo en cada tarea del agente.
+
+#### 8. Limpieza de backups de variables de entorno en Git
+
+* Se detectaron `.env.fr` y `.env.g` rastreados desde el commit histórico de rediseño; contenían credenciales de Firebase, Stripe y Resend usadas por los backups del preview.
+* Se creó un bundle temporal de respaldo, se reescribieron las ramas `main` y `@UI-v2` retirando ambos archivos de todos los commits y se eliminaron las referencias `refs/original` generadas por la herramienta.
+* Se purgaron reflogs y objetos Git inalcanzables; la auditoría final confirmó que los nombres no aparecen en archivos rastreados, commits alcanzables ni objetos de rutas.
+* Se añadió `.env.fr` y `.env.g` al `.gitignore` y se creó el commit `7af2c8a` (`chore: ignore local env backups`).
+* El bundle temporal fue eliminado después de verificar la reescritura. Por seguridad, las credenciales que aparecieron en esos archivos deben rotarse aunque ya no estén en el historial.
 
 ### 📅 05 de Agosto, 2026 — Reenvío administrativo de enlace de acceso
 
@@ -310,3 +318,14 @@ Cada escenario ejecuta la compilación del CLI, genera el proyecto, realiza la i
 - Se corrigieron los flujos sensibles: Storage queda sin acceso directo, cartas mediante URL firmada de corta vida/ruta canónica, respuestas del portal por DTO explícito, expiración de enlaces nuevos y rate limiting para los endpoints de mayor riesgo.
 - Se agregaron reglas e índices Firestore versionados, CORS de orígenes explícitos, cabeceras de seguridad, escape de HTML/CSV, paginación por cursor, caché breve de flags/estadísticas y límites de Lambda.
 - Validación: se generó un proyecto Plenarias completo y `pnpm run typecheck` finalizó correctamente.
+
+### 📅 06 de Agosto, 2026 — CLI local y flujo interactivo por evento
+
+- Se actualizó la interfaz del CLI para aceptar `-n/--event-name` como nombre visible del evento y `-o/--output` como ruta opcional de generación.
+- Cuando no se proporciona `--output`, el proyecto se crea en una subcarpeta segura derivada del slug del evento dentro del directorio actual.
+- Se añadió validación para impedir la generación sobre directorios existentes con contenido y evitar sobrescrituras accidentales.
+- El nombre técnico/package name se deriva del slug normalizado del evento, separado de la ruta absoluta de salida.
+- Se conserva `--event` como alias compatible, junto con los flags de arquetipo, módulos, idiomas y `--yes` para automatización.
+- Se agregó `npm run install:local` para compilar y enlazar el binario mediante `npm link`, permitiendo usar `unbj-echo` localmente.
+- Se actualizaron los ejemplos y la guía de uso del CLI en [README.md](file:///Users/raulcanul/Documents/Dev/platform-register/README.md).
+- Se agregó el shebang `#!/usr/bin/env node` al entrypoint para que el binario enlazado con `npm link` sea ejecutado por Node y no interpretado como script de shell.
