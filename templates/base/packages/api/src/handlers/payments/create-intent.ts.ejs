@@ -3,7 +3,8 @@ import Stripe from 'stripe'
 import { z } from 'zod'
 import { getDb } from '../../lib/firebase'
 import { getFeatureFlags } from '../../lib/features'
-import { ok, badRequest, forbidden, notFound, serverError } from '../../lib/response'
+import { ok, badRequest, forbidden, notFound, serverError, tooManyRequests } from '../../lib/response'
+import { isRateLimitExceeded } from '../../lib/rate-limit'
 import type { Registration } from '@unbj/shared'
 
 const schema = z.object({
@@ -22,6 +23,9 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
   if (!parsed.success) return badRequest(parsed.error.issues[0]?.message ?? 'Invalid input')
 
   const { token } = parsed.data
+  if (await isRateLimitExceeded(event, { scope: 'payment-intent', max: 10, windowSeconds: 600 })) {
+    return tooManyRequests()
+  }
   const stripe = new Stripe(process.env['STRIPE_SECRET_KEY'] ?? '')
   const db = getDb()
 

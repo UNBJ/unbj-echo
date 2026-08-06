@@ -4,9 +4,7 @@ import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Registration } from '@unbj/shared'
 import { CreditCard, Clock, CheckCircle, Upload, FileText, ShieldCheck, Lock, Shirt, BookOpen, Home, Vote, TriangleAlert } from 'lucide-react'
-import { submitCarta } from '@/lib/api'
-import { storage } from '@/lib/firebase'
-import { ref, uploadBytes } from 'firebase/storage'
+import { getCartaUploadUrl, submitCarta } from '@/lib/api'
 import { StripePaymentForm } from './StripePaymentForm'
 
 import { ShirtSizeSelector } from '../shirt-size/ShirtSizeSelector'
@@ -187,11 +185,14 @@ function CartaPendingBlock({ token, rejectedReason }: { token: string; rejectedR
     setError(null)
 
     try {
-      const ext = file.name.split('.').pop() ?? 'pdf'
-      const filePath = `cartas/${token}/carta.${ext}`
-      const storageRef = ref(storage, filePath)
-      await uploadBytes(storageRef, file, { contentType: file.type })
-      await submitCarta(token, filePath, file.name)
+      const { uploadUrl } = await getCartaUploadUrl(token, file.name, file.type)
+      const uploadRes = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      })
+      if (!uploadRes.ok) throw new Error('No se pudo cargar el archivo de forma segura.')
+      await submitCarta(token, file.name)
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al subir la carta. Intenta de nuevo.')

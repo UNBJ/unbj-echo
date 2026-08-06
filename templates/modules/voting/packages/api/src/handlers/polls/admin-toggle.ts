@@ -41,6 +41,8 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
     const pollRef = db.collection('polls').doc(id)
     const activeRef = db.collection('polls').doc('active')
+    const portalLiveRef = db.collection('portal_live').doc('active')
+    const portalResultsRef = db.collection('portal_results').doc(id)
 
     await db.runTransaction(async (transaction) => {
       // 1. Obtener la propuesta seleccionada
@@ -49,7 +51,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         throw new Error('La propuesta de votación especificada no existe.')
       }
 
-      const poll = pollSnap.data()
+      const poll = pollSnap.data() as Record<string, any>
 
       if (action === 'activate') {
         if (poll?.status !== 'draft') {
@@ -66,7 +68,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         }
 
         // Activar la propuesta seleccionada
-        const updatedPoll = {
+        const updatedPoll: Record<string, any> = {
           ...poll,
           status: 'active',
           updatedAt: new Date().toISOString(),
@@ -79,6 +81,14 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
         // Escribir en el documento de control activo
         transaction.set(activeRef, updatedPoll)
+        transaction.set(portalLiveRef, {
+          proposalId: updatedPoll.proposalId,
+          title: updatedPoll.title,
+          description: updatedPoll.description || '',
+          options: updatedPoll.options || [],
+          status: 'active',
+          activatedAt: updatedPoll.updatedAt,
+        })
       } else {
         // Cerrar la propuesta activa
         const activeSnap = await transaction.get(activeRef)
@@ -86,7 +96,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
           throw new Error('No hay ninguna votación activa en curso.')
         }
 
-        const activePoll = activeSnap.data()
+        const activePoll = activeSnap.data() as Record<string, any>
         if (activePoll?.proposalId !== id) {
           throw new Error('La propuesta activa actual no coincide con la solicitada.')
         }
@@ -107,6 +117,15 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         transaction.update(activeRef, {
           status: 'closed',
           updatedAt: closedAt,
+        })
+        transaction.delete(portalLiveRef)
+        transaction.set(portalResultsRef, {
+          proposalId: poll.proposalId,
+          title: poll.title,
+          description: poll.description || '',
+          options: poll.options || [],
+          results: finalResults,
+          closedAt,
         })
       }
     })

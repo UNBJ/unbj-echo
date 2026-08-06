@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // El portal recibe una sesión Firebase temporal emitida por la API. Solo
+    // puede escuchar proyecciones sin PII y sin resultados durante el voto.
+    match /portal_live/active {
+      allow read: if request.auth != null && request.auth.token.portal_access == true;
+      allow write: if false;
+    }
+
+    match /portal_results/{pollId} {
+      allow read: if request.auth != null && request.auth.token.portal_access == true;
+      allow write: if false;
+    }
+
+    // El panel administrativo autenticado puede recibir el conteo vivo, sin
+    // exponer registros ni propuestas en borrador al cliente.
+    match /polls/active {
+      allow read: if request.auth != null
+        && (request.auth.token.role == 'admin' || request.auth.token.role == 'super_admin');
+      allow write: if false;
+    }
+
+    // La API con Firebase Admin es la única vía de datos restantes.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

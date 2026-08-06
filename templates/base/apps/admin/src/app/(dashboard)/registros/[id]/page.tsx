@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
-import { getRegistrationDetail, approvePayment, rejectPayment, approveCarta, rejectCarta, resendAccessLink } from '@/lib/api'
+import { getRegistrationDetail, approvePayment, rejectPayment, approveCarta, rejectCarta, resendAccessLink, getCartaUrl } from '@/lib/api'
 import { STATUS_LABELS, STATUS_COLORS, DELEGATE_LABELS, PAYMENT_METHOD_LABELS } from '@/lib/labels'
 import type { Registration, RegistrationStatus, PaymentMethod } from '@unbj/shared'
 import { ArrowLeft, CheckCircle, XCircle, AlertTriangle, FileText, ExternalLink, Mail, Send, X } from 'lucide-react'
@@ -191,7 +191,7 @@ export default function RegistroDetailPage() {
 
       {/* Revisión de carta */}
       {reg.status === 'carta_submitted' && (
-        <CartaActions registrationId={reg.id} cartaFileUrl={reg.cartaFileUrl} cartaFileName={reg.cartaFileName} onDone={load} />
+        <CartaActions registrationId={reg.id} cartaFileName={reg.cartaFileName} onDone={load} />
       )}
     </div>
   )
@@ -393,12 +393,10 @@ function CashPaymentActions({
 
 function CartaActions({
   registrationId,
-  cartaFileUrl,
   cartaFileName,
   onDone,
 }: {
   registrationId: string
-  cartaFileUrl?: string
   cartaFileName?: string
   onDone: () => void
 }) {
@@ -407,6 +405,21 @@ function CartaActions({
   const [showRejectForm, setShowRejectForm] = useState(false)
   const [reason, setReason] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [loadingCarta, setLoadingCarta] = useState(false)
+
+  async function handleViewCarta() {
+    setLoadingCarta(true)
+    setError(null)
+    try {
+      const token = await getToken()
+      const { url } = await getCartaUrl(token, registrationId)
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo abrir la carta')
+    } finally {
+      setLoadingCarta(false)
+    }
+  }
 
   async function handleApprove() {
     setLoading(true)
@@ -444,16 +457,16 @@ function CartaActions({
         <h3 className="font-semibold text-text-primary">Revisión de carta de acreditación</h3>
       </div>
 
-      {cartaFileUrl && (
-        <a
-          href={cartaFileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 text-sm text-accent hover:underline mb-4"
+      {cartaFileName && (
+        <button
+          type="button"
+          onClick={handleViewCarta}
+          disabled={loadingCarta}
+          className="flex items-center gap-2 text-sm text-accent hover:underline mb-4 disabled:opacity-50"
         >
           <ExternalLink className="w-4 h-4" />
-          Ver carta {cartaFileName ? `— ${cartaFileName}` : ''}
-        </a>
+          {loadingCarta ? 'Abriendo carta...' : `Ver carta — ${cartaFileName}`}
+        </button>
       )}
 
       {error && (

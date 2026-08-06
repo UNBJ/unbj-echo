@@ -77,9 +77,16 @@ export async function createPaymentIntent(token: string): Promise<CreatePaymentI
   })
 }
 
-export async function submitCarta(token: string, filePath: string, fileName: string): Promise<void> {
+export async function getCartaUploadUrl(token: string, fileName: string, contentType: string): Promise<{ uploadUrl: string; expiresAt: string }> {
+  return apiFetch('/registrations/carta-upload-url', {
+    method: 'POST',
+    body: JSON.stringify({ token, fileName, contentType }),
+  })
+}
+
+export async function submitCarta(token: string, fileName: string): Promise<void> {
   await apiFetch('/registrations/carta-submit', {
     method: 'POST',
-    body: JSON.stringify({ token, filePath, fileName }),
+    body: JSON.stringify({ token, fileName }),
   })
 }

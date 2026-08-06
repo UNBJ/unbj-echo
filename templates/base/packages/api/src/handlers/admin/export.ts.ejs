@@ -18,7 +18,9 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 function escapeCsv(val: unknown): string {
-  const str = val === undefined || val === null ? '' : String(val)
+  const raw = val === undefined || val === null ? '' : String(val)
+  // Evita que Excel/Sheets interprete datos proporcionados por usuarios como fórmulas.
+  const str = /^[=+\-@]/.test(raw) ? `'${raw}` : raw
   return str.includes(',') || str.includes('"') || str.includes('\n')
     ? `"${str.replace(/"/g, '""')}"`
     : str
@@ -70,7 +72,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': 'attachment; filename="registros.csv"',
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': process.env['ADMIN_URL'] ?? 'http://localhost:3002',
       },
       body: csv,
     }

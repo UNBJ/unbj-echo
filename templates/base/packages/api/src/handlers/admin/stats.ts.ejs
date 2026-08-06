@@ -4,11 +4,18 @@ import { verifyAdminToken } from '../../lib/auth'
 import { ok, serverError } from '../../lib/response'
 import type { Registration } from '@unbj/shared'
 
+const CACHE_TTL_MS = 60_000
+let cachedStats: { expiresAt: number; value: Record<string, unknown> } | null = null
+
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
   const admin = await verifyAdminToken(event)
   if (!admin) return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorized' }) }
 
   try {
+    if (cachedStats && cachedStats.expiresAt > Date.now()) {
+      return ok(cachedStats.value)
+    }
+
     const db = getDb()
     const snap = await db.collection('registrations').get()
     const registrations = snap.docs.map((d) => d.data() as Registration)
@@ -40,7 +47,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       .map(([name, count]) => ({ name, count }))
     <% } %>
 
-    return ok({
+    const value = {
       total: registrations.length,
       byStatus,
       <% if (archetype === 'plenarias') { %>
@@ -50,7 +57,9 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       <% } else if (archetype === 'roles') { %>
       byTicketTier,
       <% } %>
-    })
+    }
+    cachedStats = { value, expiresAt: Date.now() + CACHE_TTL_MS }
+    return ok(value)
   } catch (err) {
     console.error('stats error:', err)
     return serverError()

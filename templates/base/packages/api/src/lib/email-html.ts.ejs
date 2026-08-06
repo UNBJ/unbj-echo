@@ -2,6 +2,12 @@ import { branding } from '@unbj/shared'
 
 const FONT_STACK = '"Geist","Inter",-apple-system,"Segoe UI",Roboto,Arial,Helvetica,sans-serif'
 
+function escapeHtml(value: string | null | undefined): string {
+  return String(value ?? '').replace(/[&<>'"]/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;',
+  })[char]!)
+}
+
 export function confirmationEmailHtml(opts: {
   fullName: string
   portalUrl: string
@@ -9,7 +15,11 @@ export function confirmationEmailHtml(opts: {
   churchName?: string | null
   conventionName?: string | null
 }): string {
-  const { fullName, portalUrl, eventName, churchName, conventionName } = opts
+  const fullName = escapeHtml(opts.fullName)
+  const portalUrl = escapeHtml(opts.portalUrl)
+  const eventName = escapeHtml(opts.eventName)
+  const churchName = opts.churchName ? escapeHtml(opts.churchName) : null
+  const conventionName = opts.conventionName ? escapeHtml(opts.conventionName) : null
 
   return `<!DOCTYPE html>
 <html lang="es">
@@ -115,7 +125,9 @@ export function accessLinkReminderEmailHtml(opts: {
   portalUrl: string
   eventName: string
 }): string {
-  const { fullName, portalUrl, eventName } = opts
+  const fullName = escapeHtml(opts.fullName)
+  const portalUrl = escapeHtml(opts.portalUrl)
+  const eventName = escapeHtml(opts.eventName)
 
   return `<!DOCTYPE html>
 <html lang="es">
@@ -159,7 +171,12 @@ export function approvalEmailHtml(opts: {
   conventionName?: string | null
   delegateLabel?: string | null
 }): string {
-  const { fullName, eventName, pdfUrl, churchName, conventionName, delegateLabel } = opts
+  const fullName = escapeHtml(opts.fullName)
+  const eventName = escapeHtml(opts.eventName)
+  const pdfUrl = escapeHtml(opts.pdfUrl)
+  const churchName = opts.churchName ? escapeHtml(opts.churchName) : null
+  const conventionName = opts.conventionName ? escapeHtml(opts.conventionName) : null
+  const delegateLabel = opts.delegateLabel ? escapeHtml(opts.delegateLabel) : null
 
   return `<!DOCTYPE html>
 <html lang="es">

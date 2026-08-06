@@ -6,6 +6,22 @@ Este archivo registra el historial de cambios, correcciones de tipado, integraci
 
 ## Historial de Cambios e Hitos
 
+### 📅 05 de Agosto, 2026 — Reenvío administrativo de enlace de acceso
+
+#### 1. Recuperación de acceso desde el detalle de registro
+* **Acción en admin:** añadida la sección **Acceso al portal** en el detalle de cada registro, con botón **Reenviar enlace** y modal de confirmación que muestra el correo registrado antes de enviar.
+* **Endpoint protegido:** nuevo `POST /admin/registrations/{id}/resend-access`, disponible para los roles `admin` y `super_admin`. Reutiliza el `token` de portal existente; no genera ni invalida enlaces.
+* **Correo específico:** añadido el template de recordatorio de acceso en `email-html.ts.ejs`, con asunto y contenido distintos a la confirmación inicial, enlace al portal personal y el branding del evento.
+
+#### 2. Auditoría y manejo de errores
+* Cada intento se registra en `registrations/{id}/accessLinkEmails/{attemptId}` con administrador, destinatario, fecha, resultado, ID de Resend cuando existe y detalle del error si falla.
+* El documento del registro conserva el resumen de envíos exitosos: contador, fecha y administrador del último reenvío; esta información se muestra en la pantalla de detalle.
+* Un fallo del proveedor de correo no incrementa el contador ni marca el reenvío como exitoso, y permite reintentar desde el panel.
+* Se conserva `RESEND_DEV_TO` como protección de preview: cuando está configurada, los correos de desarrollo se redirigen a esa dirección en lugar del destinatario real.
+
+#### 3. Validación
+* Generación aislada de un proyecto `standard` con i18n `es-en` y typecheck exitoso de API, portal y admin mediante `pnpm run typecheck`.
+
 ### 📅 05 de Agosto, 2026 — Rediseño UI/UX mayor (estilo moderno minimalista)
 
 Rediseño visual completo de las plantillas generadas **sin cambios funcionales** (mismas rutas, props, handlers, endpoints, condicionales EJS, hooks y traducciones). Solo markup, clases, tokens, tipografía, iconografía y animación.
@@ -235,3 +251,10 @@ Cada escenario ejecuta la compilación del CLI, genera el proyecto, realiza la i
 * **[generator.ts](file:///Users/raulcanul/Documents/Dev/platform-register/src/utils/generator.ts):** Generador del monorrepo, inyección de dependencias, configuración de i18n y compilación de plantillas EJS.
 * **[split-monorepo.mjs](file:///Users/raulcanul/Documents/Dev/platform-register/scripts/split-monorepo.mjs):** Extracción, limpieza y parametrización de archivos base del proyecto origen.
 * **[test-generator.mjs](file:///Users/raulcanul/Documents/Dev/platform-register/scripts/test-generator.mjs):** Ejecución de la matriz de pruebas de tipado y compilación.
+### 📅 06 de Agosto, 2026 — Endurecimiento y rendimiento
+
+- Se sustituyó el polling de votaciones por listeners Firestore: el portal escucha la votación activa y resultados cerrados, y el panel admin escucha el conteo activo. La API emite una sesión Firebase temporal y las reglas exponen sólo proyecciones mínimas.
+- Se versionó `storage.cors.json` para permitir las cargas por URL firmada desde los puertos locales del portal; el bucket debe recibir esa política con `gsutil cors set`.
+- Se corrigieron los flujos sensibles: Storage queda sin acceso directo, cartas mediante URL firmada de corta vida/ruta canónica, respuestas del portal por DTO explícito, expiración de enlaces nuevos y rate limiting para los endpoints de mayor riesgo.
+- Se agregaron reglas e índices Firestore versionados, CORS de orígenes explícitos, cabeceras de seguridad, escape de HTML/CSV, paginación por cursor, caché breve de flags/estadísticas y límites de Lambda.
+- Validación: se generó un proyecto Plenarias completo y `pnpm run typecheck` finalizó correctamente.

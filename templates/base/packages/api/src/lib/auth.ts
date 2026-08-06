@@ -39,7 +39,11 @@ export async function verifyRegistrantToken(event: APIGatewayProxyEventV2): Prom
 
     const doc = snap.docs[0]
     if (!doc) return null
-    return { id: doc.id, ...doc.data() }
+    const registration = doc.data() as { portalTokenExpiresAt?: string; portalTokenRevokedAt?: string }
+    if (registration.portalTokenRevokedAt) return null
+    if (registration.portalTokenExpiresAt && new Date(registration.portalTokenExpiresAt).getTime() <= Date.now()) return null
+
+    return { id: doc.id, ...registration }
   } catch {
     return null
   }

@@ -2,7 +2,8 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda
 import { FieldValue } from 'firebase-admin/firestore'
 import { getDb } from '../../lib/firebase'
 import { verifyAdminToken } from '../../lib/auth'
-import { ok, notFound, serverError } from '../../lib/response'
+import { ok, notFound, serverError, tooManyRequests } from '../../lib/response'
+import { isRateLimitExceeded } from '../../lib/rate-limit'
 import { accessLinkReminderEmailHtml } from '../../lib/email-html'
 import { branding } from '@unbj/shared'
 import type { Registration } from '@unbj/shared'
@@ -15,6 +16,9 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
   const id = event.pathParameters?.['id']
   if (!id) return notFound()
+  if (await isRateLimitExceeded(event, { scope: 'resend-access', key: `${admin.uid}:${id}`, max: 3, windowSeconds: 3600 })) {
+    return tooManyRequests('Se alcanzó el límite de reenvíos para este registro. Intenta más tarde.')
+  }
 
   const db = getDb()
   const registrationRef = db.collection('registrations').doc(id)

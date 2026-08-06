@@ -1,0 +1,12 @@
+{
+  "indexes": [
+    { "collectionGroup": "registrations", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] },
+    { "collectionGroup": "registrations", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "delegateType", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] },
+    { "collectionGroup": "registrations", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "delegateType", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] },
+    { "collectionGroup": "registrations", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "searchTerms", "arrayConfig": "CONTAINS" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] },
+    { "collectionGroup": "registrations", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "searchTerms", "arrayConfig": "CONTAINS" }, { "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] },
+    { "collectionGroup": "registrations", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "searchTerms", "arrayConfig": "CONTAINS" }, { "fieldPath": "delegateType", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] },
+    { "collectionGroup": "registrations", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "searchTerms", "arrayConfig": "CONTAINS" }, { "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "delegateType", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] }
+  ],
+  "fieldOverrides": []
+}

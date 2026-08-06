@@ -13,3 +13,20 @@ Plataforma de registro y acreditacion de eventos generada con `unbj-echo`.
 2. Configura las variables de entorno en los archivos `.env.example` (renómbralos a `.env`).
 3. Instala las dependencias: `pnpm install`.
 4. Ejecuta el modo de desarrollo: `pnpm dev`.
+
+## Cargas de documentos (Storage)
+
+Las cartas se cargan directamente al bucket mediante una URL firmada temporal.
+Firebase Storage Rules permanece en modo `deny-by-default`; además debes aplicar
+la política CORS del bucket una vez por ambiente para permitir el `PUT` desde el
+portal:
+
+```bash
+# Desde la raíz del proyecto generado, con gcloud/gsutil autenticado.
+gsutil cors set storage.cors.json gs://TU_FIREBASE_STORAGE_BUCKET
+```
+
+`storage.cors.json` incluye los puertos locales `3000` y `3100`. Antes de
+producción, agrega el dominio HTTPS real del portal a `origin` y vuelve a aplicar
+el comando. No uses `*`, porque las URLs firmadas conceden acceso temporal a
+documentos.

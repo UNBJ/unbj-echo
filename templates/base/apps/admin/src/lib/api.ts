@@ -21,14 +21,14 @@ export interface ListRegistrationsParams {
   status?: string
   delegateType?: string
   search?: string
-  page?: number
+  cursor?: string
 }
 
 export interface ListRegistrationsResponse {
   registrations: Omit<Registration, 'qrToken'>[]
   total: number
-  page: number
   pageSize: number
+  nextCursor: string | null
 }
 
 export async function listRegistrations(
@@ -39,7 +39,7 @@ export async function listRegistrations(
   if (params.status) qs.set('status', params.status)
   if (params.delegateType) qs.set('delegateType', params.delegateType)
   if (params.search) qs.set('search', params.search)
-  if (params.page) qs.set('page', String(params.page))
+  if (params.cursor) qs.set('cursor', params.cursor)
   return apiFetch(`/admin/registrations?${qs}`, { token, method: 'GET' })
 }
 
@@ -55,6 +55,10 @@ export async function resendAccessLink(
   id: string
 ): Promise<{ success: true; recipient: string; sentAt: string }> {
   return apiFetch(`/admin/registrations/${id}/resend-access`, { token, method: 'POST' })
+}
+
+export async function getCartaUrl(token: string, id: string): Promise<{ url: string }> {
+  return apiFetch(`/admin/registrations/${id}/carta-url`, { token, method: 'GET' })
 }
 
 export async function approvePayment(token: string, id: string): Promise<void> {

@@ -9,6 +9,9 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { FadeIn } from '@/components/ui/motion'
 import { clsx } from 'clsx'
 import { useTranslations } from '@/hooks/useTranslations'
+import { portalAuth, db } from '@/lib/firebase'
+import { signInWithCustomToken } from 'firebase/auth'
+import { collection, doc, limit, onSnapshot, orderBy, query } from 'firebase/firestore'
 
 interface VoterPanelProps {
   registration: any
@@ -39,43 +42,58 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  async function fetchVotingState() {
-    try {
-      const headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      }
-      const [activeRes, closedRes] = await Promise.all([
-        fetch(`${API_URL}/polls/active`, { headers, cache: 'no-store' }),
-        fetch(`${API_URL}/polls/closed`, { headers, cache: 'no-store' }),
-      ])
-      const [activeData, closedData] = await Promise.all([activeRes.json(), closedRes.json()])
-      if (!activeRes.ok) throw new Error(activeData.error ?? t('errorLoad'))
-      if (!closedRes.ok) throw new Error(closedData.error ?? t('errorLoad'))
-
-      setActivePoll(activeData.activePoll ?? null)
-      setHasVotedActive(Boolean(activeData.hasVoted))
-      setClosedPolls(closedData.polls ?? [])
-      setError(null)
-    } catch (err: any) {
-      console.error('Fetch active poll error:', err)
-      setError(err.message || t('errorLoad'))
-      setActivePoll(null)
-      setHasVotedActive(false)
-      setClosedPolls([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
-    void fetchVotingState()
+    let cancelled = false
+    let unsubscribeActive: (() => void) | undefined
+    let unsubscribeClosed: (() => void) | undefined
 
-    const intervalId = window.setInterval(() => {
-      void fetchVotingState()
-    }, 3000)
+    async function connectRealtime() {
+    try {
+        const response = await fetch(`${API_URL}/registrations/session`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          cache: 'no-store',
+        })
+        const session = await response.json()
+        if (!response.ok) throw new Error(session.error ?? t('errorLoad'))
 
-    return () => window.clearInterval(intervalId)
+        await signInWithCustomToken(portalAuth, session.customToken)
+        if (cancelled) return
+
+        const votedPolls = new Set<string>(session.votedPolls ?? [])
+        unsubscribeActive = onSnapshot(doc(db, 'portal_live', 'active'), (snapshot) => {
+          const poll = snapshot.exists() ? snapshot.data() : null
+          setActivePoll(poll)
+          setHasVotedActive(Boolean(poll && votedPolls.has(poll.proposalId)))
+          setLoading(false)
+          setError(null)
+        }, (listenerError) => {
+          console.error('Active poll listener error:', listenerError)
+          setError(t('errorLoad'))
+          setLoading(false)
+        })
+        unsubscribeClosed = onSnapshot(
+          query(collection(db, 'portal_results'), orderBy('closedAt', 'desc'), limit(50)),
+          (snapshot) => {
+            setClosedPolls(snapshot.docs.map((item) => item.data() as ClosedPoll))
+          },
+          (listenerError) => console.error('Closed results listener error:', listenerError)
+        )
+      } catch (err: any) {
+        console.error('Voting realtime connection error:', err)
+        if (!cancelled) {
+          setError(err.message || t('errorLoad'))
+          setLoading(false)
+        }
+      }
+    }
+
+    void connectRealtime()
+    return () => {
+      cancelled = true
+      unsubscribeActive?.()
+      unsubscribeClosed?.()
+    }
   }, [token])
 
   async function handleSubmitVote() {
@@ -97,7 +115,7 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
       if (!res.ok) throw new Error(data.error ?? t('errorSubmit'))
 
       setSelectedOption('')
-      await fetchVotingState()
+      setHasVotedActive(true)
     } catch (err: any) {
       console.error(err)
       setError(err.message || t('errorConnection') || 'Error de conexión. Intenta de nuevo.')

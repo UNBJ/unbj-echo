@@ -1,17 +1,11 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Cartas: cualquier usuario autenticado puede subir a su propia carpeta por token
-    match /cartas/{token}/{fileName} {
-      allow write: if request.resource.size < 10 * 1024 * 1024
-                   && request.resource.contentType.matches('application/pdf|image/jpeg|image/png');
-      allow read: if false; // Solo el admin lee via URL firmada del backend
-    }
-
-    // PDFs de nombramiento: solo lectura pública (se accede via URL firmada)
-    match /nominations/{registrationId}/{fileName} {
-      allow read: if false;
-      allow write: if false;
+    // Todo acceso de Storage se concede exclusivamente mediante URLs firmadas
+    // emitidas por el backend. Nunca confiar en un token de portal como identidad
+    // de Firebase Storage.
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }

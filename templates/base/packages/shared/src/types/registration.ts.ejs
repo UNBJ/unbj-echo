@@ -40,6 +40,8 @@ export interface FormField {
 export interface Registration {
   id: string
   token: string
+  portalTokenExpiresAt?: string
+  portalTokenRevokedAt?: string
   status: RegistrationStatus
   delegateType?: DelegateType | null
 
@@ -50,6 +52,7 @@ export interface Registration {
   birthDate: string
   age: number
   extraFields: Record<string, string>
+  searchTerms?: string[]
 
   // Iglesia (Plenarias)
   churchId?: string
@@ -80,7 +83,10 @@ export interface Registration {
 
   // Carta (Plenarias)
   cartaFileUrl?: string
+  cartaFilePath?: string
   cartaFileName?: string
+  cartaUploadPath?: string
+  cartaUploadExpiresAt?: string
   cartaSubmittedAt?: string
   cartaRejectedReason?: string
   cartaApprovedAt?: string

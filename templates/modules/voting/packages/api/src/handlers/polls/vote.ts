@@ -3,7 +3,8 @@ import { z } from 'zod'
 import { getDb } from '../../lib/firebase'
 import { verifyRegistrantToken } from '../../lib/auth'
 import { getFeatureFlags } from '../../lib/features'
-import { ok, badRequest, forbidden, serverError } from '../../lib/response'
+import { ok, badRequest, forbidden, serverError, tooManyRequests } from '../../lib/response'
+import { isRateLimitExceeded } from '../../lib/rate-limit'
 
 const schema = z.object({
   optionId: z.string(),
@@ -13,6 +14,9 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
   const reg = await verifyRegistrantToken(event)
   if (!reg) {
     return { statusCode: 401, body: JSON.stringify({ error: 'No autorizado o token expirado' }) }
+  }
+  if (await isRateLimitExceeded(event, { scope: 'vote', key: reg.id, max: 20, windowSeconds: 60 })) {
+    return tooManyRequests()
   }
 
   let body: unknown

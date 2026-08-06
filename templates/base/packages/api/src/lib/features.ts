@@ -10,10 +10,17 @@ const featureKeys: Array<keyof Features> = [
   'oxxoPaymentEnabled',
 ]
 
+let cachedFeatures: { value: Features; expiresAt: number } | null = null
+
 export async function getFeatureFlags(): Promise<Features> {
+  if (cachedFeatures && cachedFeatures.expiresAt > Date.now()) return cachedFeatures.value
+
   try {
     const snap = await getDb().collection('config').doc('features').get()
-    if (!snap.exists) return featuresConfig
+    if (!snap.exists) {
+      cachedFeatures = { value: featuresConfig, expiresAt: Date.now() + 30_000 }
+      return featuresConfig
+    }
 
     const data = snap.data() ?? {}
     const merged = { ...featuresConfig }
@@ -23,6 +30,7 @@ export async function getFeatureFlags(): Promise<Features> {
         merged[key] = value
       }
     }
+    cachedFeatures = { value: merged, expiresAt: Date.now() + 30_000 }
     return merged
   } catch {
     return featuresConfig

@@ -22,13 +22,21 @@ export async function getSignedUploadUrl(
 
 export async function getSignedReadUrl(
   filePath: string,
-  expiresInMs = 7 * 24 * 60 * 60 * 1000
+  expiresInMs = 5 * 60 * 1000
 ): Promise<string> {
   const [url] = await getBucket().file(filePath).getSignedUrl({
     action: 'read',
     expires: Date.now() + expiresInMs,
   })
   return url
+}
+
+export async function getFileMetadata(filePath: string): Promise<{ size: number; contentType: string }> {
+  const [metadata] = await getBucket().file(filePath).getMetadata()
+  return {
+    size: Number(metadata.size ?? 0),
+    contentType: metadata.contentType ?? '',
+  }
 }
 
 export async function saveBuffer(filePath: string, buffer: Buffer, contentType: string): Promise<void> {

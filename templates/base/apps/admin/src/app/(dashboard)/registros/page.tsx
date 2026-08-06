@@ -9,8 +9,6 @@ import type { RegistrationStatus, DelegateType } from '@unbj/shared'
 import { Search, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react'
 import { clsx } from 'clsx'
 
-const PAGE_SIZE = 20
-
 const STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: '', label: 'Todos los estados' },
   { value: 'pending_payment', label: 'Pendiente de pago' },
@@ -39,41 +37,45 @@ export default function RegistrosPage() {
   const [delegateType, setDelegateType] = useState('')
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
-  const [page, setPage] = useState(1)
+  const [cursor, setCursor] = useState<string | undefined>()
+  const [cursorHistory, setCursorHistory] = useState<string[]>([])
 
   const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
       const token = await getToken()
-      const result = await listRegistrations(token, { status, delegateType, search, page })
+      const result = await listRegistrations(token, { status, delegateType, search, cursor })
       setData(result)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar registros')
     } finally {
       setLoading(false)
     }
-  }, [getToken, status, delegateType, search, page])
+  }, [getToken, status, delegateType, search, cursor])
 
   useEffect(() => { load() }, [load])
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
     setSearch(searchInput)
-    setPage(1)
+    setCursor(undefined)
+    setCursorHistory([])
   }
 
   function handleStatusChange(val: string) {
     setStatus(val)
-    setPage(1)
+    setCursor(undefined)
+    setCursorHistory([])
   }
 
   function handleDelegateChange(val: string) {
     setDelegateType(val)
-    setPage(1)
+    setCursor(undefined)
+    setCursorHistory([])
   }
 
-  const totalPages = data ? Math.ceil(data.total / PAGE_SIZE) : 1
+  const page = cursorHistory.length + 1
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -213,22 +215,31 @@ export default function RegistrosPage() {
         )}
 
         {/* Paginación */}
-        {data && totalPages > 1 && (
+        {data && (cursorHistory.length > 0 || data.nextCursor) && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-border">
             <p className="text-xs text-text-secondary">
-              Página {page} de {totalPages}
+              Página {page}
             </p>
             <div className="flex gap-2">
               <button
-                onClick={() => setPage((p) => p - 1)}
-                disabled={page === 1}
+                onClick={() => {
+                  const history = [...cursorHistory]
+                  const previousCursor = history.pop()
+                  setCursorHistory(history)
+                  setCursor(previousCursor || undefined)
+                }}
+                disabled={cursorHistory.length === 0}
                 className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-bg-subtle transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
-                onClick={() => setPage((p) => p + 1)}
-                disabled={page >= totalPages}
+                onClick={() => {
+                  if (!data.nextCursor) return
+                  setCursorHistory((history) => [...history, cursor ?? ''])
+                  setCursor(data.nextCursor)
+                }}
+                disabled={!data.nextCursor}
                 className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-bg-subtle transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />

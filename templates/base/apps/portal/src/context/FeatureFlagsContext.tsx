@@ -1,8 +1,6 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { doc, onSnapshot } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
 import { featuresConfig, type Features } from '../config/features.config'
 
 const FlagsContext = createContext<Features>(featuresConfig)
@@ -11,24 +9,23 @@ export function FeatureFlagsProvider({ children }: { children: React.ReactNode }
   const [flags, setFlags] = useState<Features>(featuresConfig)
 
   useEffect(() => {
-    // Suscribirse a la configuración de características del evento en Firestore
-    const docRef = doc(db, 'config', 'features')
-    const unsub = onSnapshot(docRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data()
-        setFlags({
-          tshirtEnabled: data['tshirtEnabled'] ?? featuresConfig.tshirtEnabled,
-          workshopsEnabled: data['workshopsEnabled'] ?? featuresConfig.workshopsEnabled,
-          roomsEnabled: data['roomsEnabled'] ?? featuresConfig.roomsEnabled,
-          votingEnabled: data['votingEnabled'] ?? featuresConfig.votingEnabled,
-          stripePaymentEnabled: data['stripePaymentEnabled'] ?? featuresConfig.stripePaymentEnabled,
-          oxxoPaymentEnabled: data['oxxoPaymentEnabled'] ?? featuresConfig.oxxoPaymentEnabled,
-        })
+    const apiUrl = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001'
+    let cancelled = false
+
+    async function refreshFlags() {
+      try {
+        const response = await fetch(`${apiUrl}/public/features`, { cache: 'no-store' })
+        if (!response.ok) return
+        const data = await response.json()
+        if (!cancelled) setFlags({ ...featuresConfig, ...data })
+      } catch {
+        // La configuración estática permite que el portal siga disponible si la API falla.
       }
-    }, (err) => {
-      console.warn('Fallo al suscribirse a las Feature Flags de Firestore (se usarán valores estáticos):', err)
-    })
-    return () => unsub()
+    }
+
+    void refreshFlags()
+    const intervalId = window.setInterval(refreshFlags, 60_000)
+    return () => { cancelled = true; window.clearInterval(intervalId) }
   }, [])
 
   return (

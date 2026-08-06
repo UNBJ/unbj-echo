@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { FadeIn } from '@/components/ui/motion'
+import { db } from '@/lib/firebase'
+import { doc, onSnapshot } from 'firebase/firestore'
 
 const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001'
 
@@ -28,11 +30,13 @@ export function AdminPolls() {
   useEffect(() => {
     void fetchPolls()
 
-    const intervalId = window.setInterval(() => {
-      void fetchPolls(false)
-    }, 3000)
-
-    return () => window.clearInterval(intervalId)
+    // Solo el documento de la votación activa se actualiza en tiempo real.
+    // El resto de las propuestas se carga por API al entrar o tras una acción.
+    return onSnapshot(doc(db, 'polls', 'active'), (snapshot) => {
+      setActivePoll(snapshot.exists() ? snapshot.data() : null)
+    }, (listenerError) => {
+      console.error('Active admin poll listener error:', listenerError)
+    })
   }, [])
 
   async function fetchPolls(showLoader = true) {
