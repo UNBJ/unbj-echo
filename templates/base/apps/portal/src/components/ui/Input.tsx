@@ -17,13 +17,15 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
       <input
         id={inputId}
         className={clsx(
-          'border rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary outline-none transition-colors',
-          error ? 'border-error focus:border-error' : 'border-border focus:border-accent',
+          'border rounded-lg bg-bg-card px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary outline-none transition-all duration-150 focus:ring-2',
+          error
+            ? 'border-error focus:border-error focus:ring-error/25'
+            : 'border-border focus:border-accent focus:ring-accent/25',
           className
         )}
         {...props}
       />
-      {error && <p className="text-xs text-error">{error}</p>}
+      {error && <p className="text-xs text-error animate-fade-in">{error}</p>}
     </div>
   )
 }

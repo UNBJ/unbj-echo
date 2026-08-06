@@ -432,20 +432,18 @@ async function configureI18n(destPath: string, options: GeneratorOptions): Promi
     }
 
     // 3. Crear archivo de layout raíz en app/layout.tsx
-    const rootLayoutContent = `import { Inter } from 'next/font/google'
+    const rootLayoutContent = `import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 import { ThemeProvider } from 'next-themes'
 import { branding, hexToRgbTriplet } from '@unbj/shared'
 import './globals.css'
-
-const interBody = Inter({ subsets: ['latin'], variable: '--font-body' })
-const interHeading = Inter({ subsets: ['latin'], variable: '--font-heading' })
 
 const accentStyle = \`:root{--accent:\${hexToRgbTriplet(branding.accentColor)};--accent-hover:\${hexToRgbTriplet(branding.accentHoverColor)}}\`
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={\`\${interBody.variable} \${interHeading.variable}\`}>
+      <body className={\`\${GeistSans.variable} \${GeistMono.variable}\`}>
         <style dangerouslySetInnerHTML={{ __html: accentStyle }} />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}

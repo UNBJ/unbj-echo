@@ -61,7 +61,7 @@ export default function CheckInPage() {
   return (
     <div className="p-6 max-w-lg mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-text-primary">Check-in por QR</h1>
+        <h1 className="text-xl font-heading font-semibold tracking-tight text-text-primary">Check-in por QR</h1>
         <p className="text-sm text-text-secondary mt-0.5">
           Escanea el código QR del nombramiento impreso
         </p>
@@ -111,12 +111,12 @@ export default function CheckInPage() {
                 value={manualToken}
                 onChange={(e) => setManualToken(e.target.value)}
                 placeholder="UUID del token QR..."
-                className="flex-1 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+                className="flex-1 border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150"
               />
               <button
                 type="submit"
                 disabled={loading || !manualToken.trim()}
-                className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-lg transition-all duration-150 active:scale-[0.98] disabled:opacity-50"
               >
                 Verificar
               </button>
@@ -153,7 +153,7 @@ function ResultCard({ result, onReset }: { result: ScanResult; onReset: () => vo
       titleColor: 'text-error',
     },
     offline: {
-      bg: 'bg-bg-page border-border',
+      bg: 'bg-bg-subtle border-border',
       icon: <XCircle className="w-10 h-10 text-text-secondary" />,
       title: 'Sin conexión',
       titleColor: 'text-text-primary',
@@ -165,7 +165,7 @@ function ResultCard({ result, onReset }: { result: ScanResult; onReset: () => vo
   return (
     <div className={`border-2 rounded-xl p-6 flex flex-col items-center gap-4 text-center ${config.bg}`}>
       {config.icon}
-      <p className={`text-lg font-bold ${config.titleColor}`}>{config.title}</p>
+      <p className={`text-lg font-heading font-semibold tracking-tight ${config.titleColor}`}>{config.title}</p>
 
       {reg && (
         <div className="w-full bg-bg-card/70 rounded-lg p-4 flex flex-col gap-1 text-left">
@@ -191,7 +191,7 @@ function ResultCard({ result, onReset }: { result: ScanResult; onReset: () => vo
 
       <button
         onClick={onReset}
-        className="mt-2 px-6 py-2 bg-bg-card border border-border rounded-lg text-sm font-medium text-text-primary hover:bg-bg-page transition-colors"
+        className="mt-2 px-6 py-2 bg-bg-card border border-border rounded-lg text-sm font-medium text-text-primary hover:bg-bg-subtle transition-colors"
       >
         Escanear siguiente
       </button>

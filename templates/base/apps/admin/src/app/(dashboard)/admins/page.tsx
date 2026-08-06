@@ -42,10 +42,10 @@ export default function AdminsPage() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-text-primary">Administradores</h1>
+        <h1 className="text-xl font-heading font-semibold tracking-tight text-text-primary">Administradores</h1>
         <button
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-semibold rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-lg transition-all duration-150 active:scale-[0.98]"
         >
           <Plus className="w-4 h-4" />
           Nuevo admin
@@ -66,13 +66,13 @@ export default function AdminsPage() {
         />
       )}
 
-      <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-bg-card border border-border rounded-xl shadow-card overflow-hidden">
         {loading ? (
           <p className="text-sm text-text-secondary text-center py-8">Cargando...</p>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-bg-page">
+              <tr className="border-b border-border bg-bg-subtle">
                 <th className="text-left px-4 py-3 font-medium text-text-secondary">Usuario</th>
                 <th className="text-left px-4 py-3 font-medium text-text-secondary">Rol</th>
                 <th className="text-left px-4 py-3 font-medium text-text-secondary">Creado</th>
@@ -90,8 +90,8 @@ export default function AdminsPage() {
                     <span className={clsx(
                       'flex items-center gap-1.5 text-xs font-medium w-fit px-2 py-1 rounded-full',
                       u.role === 'super_admin'
-                        ? 'bg-purple-100 text-purple-800'
-                        : 'bg-gray-100 text-gray-700'
+                        ? 'bg-accent/10 text-accent'
+                        : 'bg-bg-subtle text-text-secondary'
                     )}>
                       {u.role === 'super_admin'
                         ? <><ShieldCheck className="w-3 h-3" /> Super Admin</>
@@ -104,7 +104,7 @@ export default function AdminsPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     {u.email !== user?.email && (
-                      <button onClick={() => handleDelete(u.uid)} className="text-error hover:text-red-700 transition-colors">
+                      <button onClick={() => handleDelete(u.uid)} className="text-error hover:opacity-70 transition-opacity">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     )}
@@ -146,30 +146,30 @@ function UserForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-4 flex flex-col gap-3">
-      <h3 className="font-semibold text-text-primary text-sm">Nuevo administrador</h3>
+    <form onSubmit={handleSubmit} className="bg-bg-card border border-border rounded-xl shadow-card p-5 mb-4 flex flex-col gap-3 animate-fade-in">
+      <h3 className="font-heading font-semibold text-text-primary text-sm">Nuevo administrador</h3>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="text-xs font-medium text-text-secondary mb-1 block">Nombre</label>
           <input value={name} onChange={(e) => setName(e.target.value)} required
-            className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
+            className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150" />
         </div>
         <div>
           <label className="text-xs font-medium text-text-secondary mb-1 block">Correo</label>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-            className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
+            className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150" />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="text-xs font-medium text-text-secondary mb-1 block">Contraseña (mín. 8 caracteres)</label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
-            className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
+            className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150" />
         </div>
         <div>
           <label className="text-xs font-medium text-text-secondary mb-1 block">Rol</label>
           <select value={role} onChange={(e) => setRole(e.target.value as 'admin' | 'super_admin')}
-            className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 bg-bg-card">
+            className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150">
             <option value="admin">Admin</option>
             <option value="super_admin">Super Admin</option>
           </select>
@@ -178,7 +178,7 @@ function UserForm({
       {error && <p className="text-xs text-error">{error}</p>}
       <div className="flex gap-2">
         <button type="submit" disabled={saving}
-          className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50">
+          className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-lg transition-all duration-150 active:scale-[0.98] disabled:opacity-50">
           {saving ? 'Creando...' : 'Crear administrador'}
         </button>
         <button type="button" onClick={onCancel}

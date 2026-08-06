@@ -43,7 +43,7 @@ export function StripePaymentForm({ token, fullName, email, onSuccess, onOxxo }:
         clientSecret,
         appearance: {
           theme: 'stripe',
-          variables: { colorPrimary: branding.accentColor, borderRadius: '8px' },
+          variables: { colorPrimary: branding.accentColor, borderRadius: '10px' },
         },
         locale: 'es-419',
       }}
@@ -157,17 +157,17 @@ function PaymentForm({
       />
 
       {isOxxo && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-3 text-sm">
-          <p className="font-medium text-yellow-800 mb-1">Pago en OXXO</p>
-          <p className="text-yellow-700">
-            Al confirmar se generará un voucher válido por <strong>3 días</strong>. Una vez pagado en
-            tienda, la confirmación puede tardar hasta <strong>3 días hábiles</strong> en reflejarse.
+        <div className="bg-warning/10 border border-warning/20 rounded-lg px-4 py-3 text-sm">
+          <p className="font-medium text-warning mb-1">Pago en OXXO</p>
+          <p className="text-text-secondary">
+            Al confirmar se generará un voucher válido por <strong className="text-text-primary">3 días</strong>. Una vez pagado en
+            tienda, la confirmación puede tardar hasta <strong className="text-text-primary">3 días hábiles</strong> en reflejarse.
           </p>
         </div>
       )}
 
       {error && (
-        <p className="text-sm text-error bg-red-50 border border-error/20 rounded-lg px-3 py-2">
+        <p className="text-sm text-error bg-error/10 border border-error/20 rounded-lg px-3 py-2 animate-fade-in">
           {error}
         </p>
       )}

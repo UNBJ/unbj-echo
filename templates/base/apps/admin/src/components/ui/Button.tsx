@@ -10,10 +10,10 @@ export function Button({ variant = 'primary', loading, children, className, disa
   return (
     <button
       className={clsx(
-        'inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
-        variant === 'primary' && 'bg-accent hover:bg-accent-hover text-white',
-        variant === 'secondary' && 'bg-bg-card border border-border text-text-primary hover:bg-bg-page',
-        variant === 'ghost' && 'text-text-secondary hover:text-text-primary',
+        'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-page',
+        variant === 'primary' && 'bg-accent hover:bg-accent-hover text-white shadow-sm',
+        variant === 'secondary' && 'bg-bg-card border border-border text-text-primary shadow-sm hover:bg-bg-subtle',
+        variant === 'ghost' && 'text-text-secondary hover:bg-bg-subtle hover:text-text-primary',
         className
       )}
       disabled={disabled ?? loading}

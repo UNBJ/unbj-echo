@@ -10,14 +10,14 @@ import { Card } from '@/components/ui/Card'
 import type { RegistroState } from './RegistroFlow'
 
 const COUNTRY_CODES = [
-  { flag: '🇲🇽', label: 'México', code: '+52' },
-  { flag: '🇺🇸', label: 'EE.UU.', code: '+1' },
-  { flag: '🇨🇦', label: 'Canadá', code: '+1' },
-  { flag: '🇬🇹', label: 'Guatemala', code: '+502' },
-  { flag: '🇭🇳', label: 'Honduras', code: '+504' },
-  { flag: '🇸🇻', label: 'El Salvador', code: '+503' },
-  { flag: '🇳🇮', label: 'Nicaragua', code: '+505' },
-  { flag: '🇨🇴', label: 'Colombia', code: '+57' },
+  { iso: 'MX', label: 'México', code: '+52' },
+  { iso: 'US', label: 'EE.UU.', code: '+1' },
+  { iso: 'CA', label: 'Canadá', code: '+1' },
+  { iso: 'GT', label: 'Guatemala', code: '+502' },
+  { iso: 'HN', label: 'Honduras', code: '+504' },
+  { iso: 'SV', label: 'El Salvador', code: '+503' },
+  { iso: 'NI', label: 'Nicaragua', code: '+505' },
+  { iso: 'CO', label: 'Colombia', code: '+57' },
 ]
 
 const schema = z.object({
@@ -67,7 +67,7 @@ export function Step2Datos({ state, onBack, onNext }: Step2DatosProps) {
 
   return (
     <Card accent>
-      <h2 className="text-xl font-heading font-bold text-text-primary mb-1">Datos personales</h2>
+      <h2 className="text-xl font-heading font-semibold tracking-tight text-text-primary mb-1">Datos personales</h2>
       <p className="text-sm text-text-secondary mb-6">
         Ingresa tus datos tal como aparecen en tu identificación oficial.
       </p>
@@ -98,18 +98,18 @@ export function Step2Datos({ state, onBack, onNext }: Step2DatosProps) {
             <select
               value={countryCode}
               onChange={(e) => setCountryCode(e.target.value)}
-              className="flex-shrink-0 border border-border rounded-lg px-2 py-2.5 text-sm text-text-primary bg-bg-card focus:outline-none focus:border-accent"
+              className="flex-shrink-0 border border-border rounded-lg px-2 py-2.5 text-sm text-text-primary bg-bg-card focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150"
             >
               {COUNTRY_CODES.map((c) => (
-                <option key={`${c.flag}-${c.code}`} value={c.code}>
-                  {c.flag} {c.code}
+                <option key={`${c.iso}-${c.code}`} value={c.code}>
+                  {c.iso} {c.code}
                 </option>
               ))}
             </select>
             <input
               type="tel"
               placeholder="55 1234 5678"
-              className="flex-1 border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent"
+              className="flex-1 border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary bg-bg-card placeholder:text-text-secondary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150"
               {...register('phoneNumber')}
             />
           </div>

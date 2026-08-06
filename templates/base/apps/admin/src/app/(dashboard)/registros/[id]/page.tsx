@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
-import { getRegistrationDetail, approvePayment, rejectPayment, approveCarta, rejectCarta } from '@/lib/api'
+import { getRegistrationDetail, approvePayment, rejectPayment, approveCarta, rejectCarta, resendAccessLink } from '@/lib/api'
 import { STATUS_LABELS, STATUS_COLORS, DELEGATE_LABELS, PAYMENT_METHOD_LABELS } from '@/lib/labels'
 import type { Registration, RegistrationStatus, PaymentMethod } from '@unbj/shared'
-import { ArrowLeft, CheckCircle, XCircle, AlertTriangle, FileText, ExternalLink } from 'lucide-react'
+import { ArrowLeft, CheckCircle, XCircle, AlertTriangle, FileText, ExternalLink, Mail, Send, X } from 'lucide-react'
 import { clsx } from 'clsx'
 
 type Reg = Omit<Registration, 'qrToken'>
@@ -62,7 +62,7 @@ export default function RegistroDetailPage() {
 
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-text-primary">{reg.fullName}</h1>
+          <h1 className="text-xl font-heading font-semibold tracking-tight text-text-primary">{reg.fullName}</h1>
           <p className="text-sm text-text-secondary mt-0.5">{reg.email} · {reg.phone}</p>
         </div>
         <span className={clsx(
@@ -153,6 +153,8 @@ export default function RegistroDetailPage() {
         </InfoCard>
       </div>
 
+      <ResendAccessLinkCard registration={reg} onDone={load} />
+
       {/* Asignación de tipo de delegado */}
       <div className="mt-4 bg-bg-card border border-border rounded-xl p-5 opacity-60">
         <h3 className="font-semibold text-text-primary mb-1">Tipo de delegado</h3>
@@ -165,7 +167,7 @@ export default function RegistroDetailPage() {
           <select
             disabled
             defaultValue={reg.delegateType ?? ''}
-            className="border border-border rounded-lg px-3 py-2 text-sm text-text-secondary bg-bg-page cursor-not-allowed"
+            className="border border-border rounded-lg px-3 py-2 text-sm text-text-secondary bg-bg-subtle cursor-not-allowed"
           >
             <option value="">Sin asignar</option>
             <option value="mensajero_acreditado">Mensajero Acreditado</option>
@@ -192,6 +194,95 @@ export default function RegistroDetailPage() {
         <CartaActions registrationId={reg.id} cartaFileUrl={reg.cartaFileUrl} cartaFileName={reg.cartaFileName} onDone={load} />
       )}
     </div>
+  )
+}
+
+function ResendAccessLinkCard({
+  registration,
+  onDone,
+}: {
+  registration: Reg
+  onDone: () => void
+}) {
+  const { getToken } = useAuth()
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [message, setMessage] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleSend() {
+    setSending(true)
+    setError(null)
+    setMessage(null)
+    try {
+      const token = await getToken()
+      const result = await resendAccessLink(token, registration.id)
+      setMessage(`Enlace reenviado a ${result.recipient}.`)
+      setShowConfirm(false)
+      onDone()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo reenviar el enlace de acceso.')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  return (
+    <section className="mt-4 bg-bg-card border border-border rounded-xl p-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Mail className="w-5 h-5 text-accent" />
+            <h2 className="font-semibold text-text-primary">Acceso al portal</h2>
+          </div>
+          <p className="text-xs text-text-secondary">
+            Reenvía el enlace personal de acceso a <strong className="text-text-primary">{registration.email}</strong>.
+          </p>
+          <p className="text-xs text-text-secondary mt-2">
+            {registration.accessLinkEmailSendCount
+              ? `${registration.accessLinkEmailSendCount} reenvío${registration.accessLinkEmailSendCount === 1 ? '' : 's'} · Último: ${new Date(registration.accessLinkEmailLastSentAt!).toLocaleString('es-MX')}${registration.accessLinkEmailLastSentBy ? ` por ${registration.accessLinkEmailLastSentBy}` : ''}`
+              : 'Aún no se ha reenviado el enlace.'}
+          </p>
+        </div>
+        <button
+          onClick={() => { setShowConfirm(true); setError(null); setMessage(null) }}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          <Send className="w-4 h-4" />
+          Reenviar enlace
+        </button>
+      </div>
+
+      {message && <p className="mt-4 text-sm text-success bg-success/10 border border-success/20 rounded-lg px-3 py-2">{message}</p>}
+      {error && <p className="mt-4 text-sm text-error bg-error/10 border border-error/20 rounded-lg px-3 py-2">{error}</p>}
+
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 bg-black/50 p-4 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="resend-access-title">
+          <div className="w-full max-w-md bg-bg-card border border-border rounded-2xl shadow-xl p-6">
+            <div className="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <h3 id="resend-access-title" className="font-heading font-bold text-text-primary">¿Reenviar enlace de acceso?</h3>
+                <p className="text-sm text-text-secondary mt-2 leading-relaxed">
+                  Se enviará un recordatorio con el enlace existente a <strong className="text-text-primary">{registration.email}</strong>.
+                </p>
+              </div>
+              <button onClick={() => setShowConfirm(false)} disabled={sending} className="text-text-secondary hover:text-text-primary disabled:opacity-50" aria-label="Cerrar">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <button onClick={() => setShowConfirm(false)} disabled={sending} className="px-4 py-2 border border-border rounded-lg text-sm text-text-secondary hover:text-text-primary disabled:opacity-50">
+                Cancelar
+              </button>
+              <button onClick={handleSend} disabled={sending} className="inline-flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium disabled:opacity-50">
+                <Send className="w-4 h-4" />
+                {sending ? 'Enviando...' : 'Confirmar reenvío'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
   )
 }
 
@@ -238,7 +329,7 @@ function CashPaymentActions({
   }
 
   return (
-    <div className="mt-4 bg-warning/10 border border-warning/30 rounded-xl p-5">
+    <div className="mt-4 bg-warning/10 border border-warning/20 rounded-xl shadow-card p-5">
       <div className="flex items-center gap-2 mb-4">
         <AlertTriangle className="w-5 h-5 text-warning" />
         <h3 className="font-semibold text-text-primary">Acción requerida — Pago en efectivo</h3>
@@ -255,7 +346,7 @@ function CashPaymentActions({
           <button
             onClick={handleApprove}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2.5 bg-success hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-success hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all duration-150 disabled:opacity-50"
           >
             <CheckCircle className="w-4 h-4" />
             Aprobar pago
@@ -263,7 +354,7 @@ function CashPaymentActions({
           <button
             onClick={() => setShowRejectForm(true)}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2.5 bg-error hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-error hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all duration-150 disabled:opacity-50"
           >
             <XCircle className="w-4 h-4" />
             Rechazar
@@ -276,13 +367,13 @@ function CashPaymentActions({
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             rows={3}
-            className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+            className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150"
           />
           <div className="flex gap-3">
             <button
               onClick={handleReject}
               disabled={loading || !reason.trim()}
-              className="px-4 py-2.5 bg-error hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+              className="px-4 py-2.5 bg-error hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all duration-150 disabled:opacity-50"
             >
               Confirmar rechazo
             </button>
@@ -347,7 +438,7 @@ function CartaActions({
   }
 
   return (
-    <div className="mt-4 bg-accent/10 border border-accent/30 rounded-xl p-5">
+    <div className="mt-4 bg-accent/10 border border-accent/20 rounded-xl shadow-card p-5">
       <div className="flex items-center gap-2 mb-4">
         <FileText className="w-5 h-5 text-accent" />
         <h3 className="font-semibold text-text-primary">Revisión de carta de acreditación</h3>
@@ -376,7 +467,7 @@ function CartaActions({
           <button
             onClick={handleApprove}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2.5 bg-success hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-success hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all duration-150 disabled:opacity-50"
           >
             <CheckCircle className="w-4 h-4" />
             Aprobar carta
@@ -384,7 +475,7 @@ function CartaActions({
           <button
             onClick={() => setShowRejectForm(true)}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2.5 bg-error hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-error hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all duration-150 disabled:opacity-50"
           >
             <XCircle className="w-4 h-4" />
             Rechazar
@@ -397,13 +488,13 @@ function CartaActions({
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             rows={3}
-            className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+            className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150"
           />
           <div className="flex gap-3">
             <button
               onClick={handleReject}
               disabled={loading || !reason.trim()}
-              className="px-4 py-2.5 bg-error hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+              className="px-4 py-2.5 bg-error hover:opacity-90 text-white text-sm font-medium rounded-lg transition-all duration-150 disabled:opacity-50"
             >
               Confirmar rechazo
             </button>
@@ -423,8 +514,8 @@ function CartaActions({
 
 function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-bg-card border border-border rounded-xl p-5">
-      <h2 className="text-sm font-semibold text-text-primary mb-3">{title}</h2>
+    <div className="bg-bg-card border border-border rounded-xl shadow-card p-5">
+      <h2 className="text-sm font-heading font-semibold text-text-primary mb-3">{title}</h2>
       <div className="divide-y divide-border">{children}</div>
     </div>
   )

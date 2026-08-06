@@ -6,6 +6,48 @@ Este archivo registra el historial de cambios, correcciones de tipado, integraci
 
 ## Historial de Cambios e Hitos
 
+### 📅 05 de Agosto, 2026 — Rediseño UI/UX mayor (estilo moderno minimalista)
+
+Rediseño visual completo de las plantillas generadas **sin cambios funcionales** (mismas rutas, props, handlers, endpoints, condicionales EJS, hooks y traducciones). Solo markup, clases, tokens, tipografía, iconografía y animación.
+
+#### 1. Fundamentos (tokens + tipografía + dependencias)
+* **Nuevas dependencias en portal y admin:** `geist` (tipografía, sin fetch a Google Fonts en build) y `framer-motion` (^12, compatible React 19).
+* **Tipografía:** Inter → **Geist Sans** (heading/body) + **Geist Mono** (`font-mono` para números/códigos). Actualizados `layout.tsx.ejs` de ambas apps y el layout raíz i18n que genera inline `src/utils/generator.ts` (variante `es-en`).
+* **Tokens ampliados** en `globals.css` de ambas apps (light + dark): escala neutra zinc refinada, `--bg-subtle`, `--bg-sidebar-hover` unificado (antes solo admin), `success`/`warning`/`error` como CSS vars (antes hex hardcodeados en `tailwind.config.ts`), sombras por tema (`--shadow-card`, `--shadow-pop`), `::selection` con acento.
+* **`tailwind.config.ts`:** nuevos tokens (`bg-subtle`, sombras, radios 10/14/20px, `font-mono`, keyframes `animate-fade-in`/`animate-fade-up`).
+
+#### 2. Componentes UI base y primitivas nuevas (ambas apps)
+* Restilados `Button` (focus-visible ring, `active:scale-[0.98]`, secondary/ghost con `bg-subtle`), `Input` (focus ring `accent/25`), `Card` (sin barra superior `h-[3px] bg-accent`; la prop `accent` de portal ahora es borde `border-accent/40`), `Monogram`, `ThemeToggle`.
+* Nuevas primitivas: `components/ui/motion.tsx` (`FadeIn`, `Stagger`, `StaggerItem`, respetan `prefers-reduced-motion`), `Badge` (tones accent/success/warning/error/neutral), `Skeleton`, `EmptyState`.
+* `Sidebar.tsx.ejs`: item activo con indicador de acento lateral + `bg-sidebar-hover`, header con Monogram; condicionales EJS intactos.
+
+#### 3. Portal de registrantes
+* Wizard con transición animada entre pasos (`AnimatePresence` keyed por step en `RegistroFlow.tsx.ejs`).
+* Banderas emoji del selector de país → códigos ISO (`MX +52`); emoji `⚠` de ActionBlock → icono lucide `TriangleAlert`.
+* `ProgressTracker`/`InfoCard` sin el motif de barra de acento ni encabezados uppercase con divisores; headings minimalistas.
+* `ActionBlock.tsx.ejs`: pasteles hardcodeados (`amber-50`, `blue-50`, `indigo-50`, `rose-50`, `emerald-100`, `red-50`) → superficies translúcidas por token (`bg-warning/10`, etc.); iconos de módulos en `bg-bg-subtle`.
+* `completado` y `not-found` retemizadas; header del portal ahora sticky con backdrop-blur.
+
+#### 4. Panel admin
+* `labels.ts` `STATUS_COLORS` → tokens translúcidos; `StatCard` sin pasteles (superficie card + valor en color semántico).
+* Login, stats, registros (+detalle), checkin, config, admins y excepciones restiladas; `EmptyState` en excepciones; fix visual del toggle de config (`translate-x-5.5` no existía en la escala → `translate-x-[22px]`).
+
+#### 5. Módulos (tshirt, workshops, rooms, voting)
+* Los 5 componentes de módulo restilados con la misma guía: headers sticky con backdrop-blur, badges por tokens, `EmptyState`/`Skeleton` donde aplica, inputs canónicos. Modo proyector de `AdminPolls` conserva fondo oscuro intencional (`bg-bg-sidebar`/`text-on-dark`). Suscripciones `onSnapshot`, polling y transacciones intactos.
+
+#### 6. Emails y PDF
+* `email-html.ts.ejs`: stack tipográfico con Geist (fallbacks), header zinc-950, sin barra de acento, radios 10–14px, paleta zinc; estructura tabla inline-CSS conservada (compatibilidad clientes de correo).
+* `pdf.ts.ejs`: paleta zinc + acento de branding; fuentes estándar conservadas (pdf-lib solo embebe StandardFonts; embeber Geist añadiría assets al template).
+
+#### Notas
+* `icon.svg.ejs` y `manifest.json.ejs` conservan el hex `#2563EB` por defecto: son assets estáticos que no pueden leer `branding.accentColor` en runtime sin cambios al generador.
+* Validación por fase: `preview:refresh` + `preview:typecheck` en verde tras cada fase; matriz completa de `scripts/test-generator.mjs` como validación final.
+
+#### Verificación post-rediseño (mismo día)
+* El usuario reportó "el portal sigue igual" al abrirlo. Se verificó que los dev servers (`3100`/`3102`/`3001`, iniciados 15:16) sirven desde `preview-project/` ya regenerado, y que el HTML del portal incluye las variables de Geist y las clases nuevas: **el código servido es el rediseñado**.
+* Causas identificadas del reporte: posible caché del navegador (resolver con `Cmd+Shift+R`) y que el rediseño minimalista es intencionalmente sutil en light mode (paleta zinc apenas refinada, misma estructura, Geist similar a Inter a simple vista).
+* Quedó como opción abierta intensificar el rediseño si se busca un cambio visual evidente: tipografía display con más carácter, paleta más distintiva (tintes/gradientes sutiles) y layouts más ambiciosos (hero del wizard, cards con más elevación, header superior en admin).
+
 ### 📅 04 de Agosto, 2026 — Recuperación de sesión: votaciones y ajustes del generador
 
 La sesión anterior terminó de forma abrupta. El estado fue reconstruido a partir del historial de Git y de los cambios locales conservados en el árbol de trabajo.

@@ -117,6 +117,13 @@ functions:
           path: /admin/registrations/{id}
           method: GET
 
+  adminResendAccessLink:
+    handler: src/handlers/admin/resend-access.handler
+    events:
+      - httpApi:
+          path: /admin/registrations/{id}/resend-access
+          method: POST
+
   adminUpdatePayment:
     handler: src/handlers/admin/update-payment.handler
     events:

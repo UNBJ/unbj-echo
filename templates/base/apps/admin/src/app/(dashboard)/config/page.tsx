@@ -52,10 +52,10 @@ export default function ConfigPage() {
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-text-primary">Configuración</h1>
+        <h1 className="text-xl font-heading font-semibold tracking-tight text-text-primary">Configuración</h1>
         <button
           onClick={handleExport}
-          className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-bg-page transition-colors"
+          className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors"
         >
           <Download className="w-4 h-4" />
           Exportar CSV
@@ -123,7 +123,7 @@ export default function ConfigPage() {
               type="number"
               value={config.price ?? ''}
               onChange={(e) => setConfig((c) => ({ ...c, price: Number(e.target.value) }))}
-              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+              className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150"
               placeholder="800"
             />
           </Field>
@@ -132,7 +132,7 @@ export default function ConfigPage() {
               type="datetime-local"
               value={config.registrationDeadline?.slice(0, 16) ?? ''}
               onChange={(e) => setConfig((c) => ({ ...c, registrationDeadline: new Date(e.target.value).toISOString() }))}
-              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+              className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150"
             />
           </Field>
           <Field label="Fecha límite de pago">
@@ -140,7 +140,7 @@ export default function ConfigPage() {
               type="datetime-local"
               value={config.paymentDeadline?.slice(0, 16) ?? ''}
               onChange={(e) => setConfig((c) => ({ ...c, paymentDeadline: new Date(e.target.value).toISOString() }))}
-              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+              className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150"
             />
           </Field>
           <Field label="Fecha límite de carta">
@@ -148,7 +148,7 @@ export default function ConfigPage() {
               type="datetime-local"
               value={config.cartaDeadline?.slice(0, 16) ?? ''}
               onChange={(e) => setConfig((c) => ({ ...c, cartaDeadline: new Date(e.target.value).toISOString() }))}
-              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+              className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150"
             />
           </Field>
         </Section>
@@ -159,20 +159,20 @@ export default function ConfigPage() {
               type="tel"
               value={config.contactPhone ?? ''}
               onChange={(e) => setConfig((c) => ({ ...c, contactPhone: e.target.value }))}
-              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+              className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150"
               placeholder="+529991234567"
             />
           </Field>
         </Section>
 
         {error && (
-          <p className="text-sm text-error bg-red-50 border border-error/20 rounded-lg px-3 py-2">{error}</p>
+          <p className="text-sm text-error bg-error/10 border border-error/20 rounded-lg px-3 py-2 animate-fade-in">{error}</p>
         )}
 
         <button
           type="submit"
           disabled={saving}
-          className="flex items-center justify-center gap-2 w-full bg-accent hover:bg-accent-hover text-white font-semibold py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-2 w-full bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded-lg text-sm transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
         >
           <Save className="w-4 h-4" />
           {saved ? '¡Guardado!' : saving ? 'Guardando...' : 'Guardar cambios'}
@@ -184,8 +184,8 @@ export default function ConfigPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-bg-card border border-border rounded-xl p-5">
-      <h2 className="text-sm font-semibold text-text-primary mb-4">{title}</h2>
+    <div className="bg-bg-card border border-border rounded-xl shadow-card p-5">
+      <h2 className="text-sm font-heading font-semibold text-text-primary mb-4">{title}</h2>
       <div className="flex flex-col gap-4">{children}</div>
     </div>
   )
@@ -212,9 +212,9 @@ function Toggle({ label, description, checked, onChange }: {
       <button
         type="button"
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors ${checked ? 'bg-accent' : 'bg-border'}`}
+        className={`relative inline-flex h-6 w-11 shrink-0 rounded-full cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${checked ? 'bg-accent' : 'bg-border'}`}
       >
-        <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform mt-0.5 ${checked ? 'translate-x-5.5' : 'translate-x-0.5'}`} />
+        <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform mt-0.5 ${checked ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
       </button>
     </div>
   )

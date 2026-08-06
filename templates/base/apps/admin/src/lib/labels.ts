@@ -14,16 +14,16 @@ export const STATUS_LABELS: Record<RegistrationStatus, string> = {
 }
 
 export const STATUS_COLORS: Record<RegistrationStatus, string> = {
-  pending_payment: 'bg-yellow-100 text-yellow-800',
-  payment_submitted: 'bg-blue-100 text-blue-800',
-  payment_approved: 'bg-green-100 text-green-800',
-  payment_rejected: 'bg-red-100 text-red-800',
-  carta_pending: 'bg-orange-100 text-orange-800',
-  carta_submitted: 'bg-blue-100 text-blue-800',
-  carta_rejected: 'bg-red-100 text-red-800',
-  fully_approved: 'bg-green-100 text-green-800',
-  checked_in: 'bg-emerald-100 text-emerald-800',
-  pending_onsite_payment: 'bg-purple-100 text-purple-800',
+  pending_payment: 'bg-warning/10 text-warning',
+  payment_submitted: 'bg-accent/10 text-accent',
+  payment_approved: 'bg-success/10 text-success',
+  payment_rejected: 'bg-error/10 text-error',
+  carta_pending: 'bg-warning/10 text-warning',
+  carta_submitted: 'bg-accent/10 text-accent',
+  carta_rejected: 'bg-error/10 text-error',
+  fully_approved: 'bg-success/10 text-success',
+  checked_in: 'bg-success/10 text-success',
+  pending_onsite_payment: 'bg-bg-subtle text-text-secondary',
 }
 
 export const DELEGATE_LABELS: Record<DelegateType, string> = {

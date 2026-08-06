@@ -5,6 +5,7 @@ import { ActionBlock } from './ActionBlock'
 import { InfoCard } from './InfoCard'
 import { Footer } from '@/components/ui/Footer'
 import { Monogram } from '@/components/ui/Monogram'
+import { Badge } from '@/components/ui/Badge'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 interface PortalViewProps {
@@ -28,7 +29,7 @@ export function PortalView({ registration }: PortalViewProps) {
     <div className="min-h-screen bg-bg-page flex flex-col">
 
       {/* Header */}
-      <header className="bg-bg-card border-b border-border h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
+      <header className="sticky top-0 z-10 bg-bg-card/80 backdrop-blur border-b border-border h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
           <Monogram size="sm" />
           <span className="text-text-primary font-heading font-semibold text-sm hidden sm:block">
@@ -38,7 +39,7 @@ export function PortalView({ registration }: PortalViewProps) {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
-            <span className="text-white text-xs font-bold">{initials}</span>
+            <span className="text-white text-xs font-semibold">{initials}</span>
           </div>
           <span className="text-text-secondary text-sm hidden sm:block">{registration.fullName.split(' ')[0]}</span>
         </div>
@@ -52,13 +53,11 @@ export function PortalView({ registration }: PortalViewProps) {
             Portal personal · {registration.churchName} · {registration.conventionName}
           </p>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-heading font-bold text-text-primary">
+            <h1 className="text-2xl font-heading font-semibold tracking-tight text-text-primary">
               {registration.fullName}
             </h1>
             {delegateLabel && (
-              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-accent/10 text-accent tracking-wide">
-                {delegateLabel}
-              </span>
+              <Badge tone="accent">{delegateLabel}</Badge>
             )}
           </div>
         </div>

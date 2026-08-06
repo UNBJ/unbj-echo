@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import { Home, Users, User, Check, X, ArrowLeft, Copy, Plus, Key, AlertCircle, Loader2, LogOut } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { Badge } from '@/components/ui/Badge'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { FadeIn } from '@/components/ui/motion'
 import { useTranslations } from '@/hooks/useTranslations'
 
 interface RoomManagerProps {
@@ -267,17 +270,17 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
   }
 
   return (
-    <div className="min-h-screen bg-bg-page flex flex-col">
+    <FadeIn className="min-h-screen bg-bg-page flex flex-col">
       {/* Header */}
-      <header className="bg-bg-sidebar text-text-on-dark h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
+      <header className="sticky top-0 z-10 bg-bg-card/80 backdrop-blur border-b border-border h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
         <button 
           onClick={() => router.push(`/portal/${token}`)}
-          className="flex items-center gap-2 text-text-on-dark/70 hover:text-text-on-dark transition-colors text-sm"
+          className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{t('backBtn')}</span>
         </button>
-        <span className="font-heading font-bold text-sm tracking-widest text-accent uppercase">
+        <span className="font-heading font-semibold text-sm tracking-widest text-accent uppercase">
           {t('title')}
         </span>
       </header>
@@ -286,7 +289,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
         
         {/* Title Section */}
         <div className="mb-8">
-          <h1 className="text-2xl font-heading font-bold text-text-primary mb-1">
+          <h1 className="text-xl font-heading font-semibold tracking-tight text-text-primary mb-1">
             {t('title')}
           </h1>
           <p className="text-sm text-text-secondary">
@@ -296,20 +299,20 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
 
         {/* Alertas */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 flex gap-3 items-start">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="mb-6 bg-error/10 border border-error/20 text-error rounded-xl p-4 flex gap-3 items-start">
+            <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
             <div>
-              <h4 className="text-sm font-bold">{t('warningTitle')}</h4>
+              <h4 className="text-sm font-semibold">{t('warningTitle')}</h4>
               <p className="text-xs mt-0.5 leading-relaxed">{error}</p>
             </div>
           </div>
         )}
 
         {success && (
-          <div className="mb-6 bg-green-50 border border-green-200 text-green-800 rounded-xl p-4 flex gap-3 items-start">
-            <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+          <div className="mb-6 bg-success/10 border border-success/20 text-success rounded-xl p-4 flex gap-3 items-start">
+            <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
             <div>
-              <h4 className="text-sm font-bold">{t('successTitle')}</h4>
+              <h4 className="text-sm font-semibold">{t('successTitle')}</h4>
               <p className="text-xs mt-0.5 leading-relaxed">{success}</p>
             </div>
           </div>
@@ -317,17 +320,17 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
 
         {/* Bloque de Pago Pendiente */}
         {!canSelect && (
-          <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-6 flex flex-col items-center text-center gap-4 max-w-md mx-auto my-12">
-            <AlertCircle className="w-12 h-12 text-amber-500" />
+          <div className="bg-warning/10 border border-warning/20 rounded-xl p-6 flex flex-col items-center text-center gap-4 max-w-md mx-auto my-12">
+            <AlertCircle className="w-12 h-12 text-warning" />
             <div>
-              <h3 className="font-bold text-lg text-amber-950">{t('pendingPayment')}</h3>
-              <p className="text-sm mt-1 leading-relaxed">
+              <h3 className="font-semibold text-lg text-text-primary">{t('pendingPayment')}</h3>
+              <p className="text-sm mt-1 leading-relaxed text-text-secondary">
                 {t('notAvailable')}
               </p>
             </div>
             <button 
               onClick={() => router.push(`/portal/${token}`)}
-              className="bg-accent hover:bg-accent-hover text-white text-xs font-semibold px-6 py-2.5 rounded-lg transition-colors"
+              className="bg-accent hover:bg-accent-hover text-white text-xs font-medium px-6 py-2.5 rounded-lg transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
             >
               {t('goToPayment')}
             </button>
@@ -341,13 +344,13 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* 1. Crear una nueva habitación */}
-                <Card className="bg-bg-card border border-border p-6 rounded-xl flex flex-col justify-between">
+                <Card className="flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-3 mb-4">
                       <div className="p-2.5 rounded-lg bg-accent/10 text-accent">
                         <Plus className="w-5 h-5" />
                       </div>
-                      <h3 className="font-heading font-bold text-base text-text-primary">{t('createRoomTitle')}</h3>
+                      <h3 className="font-heading font-semibold text-base text-text-primary">{t('createRoomTitle')}</h3>
                     </div>
                     <p className="text-xs text-text-secondary leading-relaxed mb-5">
                       {t('createRoomText')}
@@ -355,11 +358,11 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
 
                     <form onSubmit={handleCreateRoom} className="flex flex-col gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-text-secondary uppercase mb-1">{t('roomTypeLabel') || t('capacity')}</label>
+                        <label className="block text-xs font-semibold text-text-secondary uppercase mb-1">{t('roomTypeLabel') || t('capacity')}</label>
                         <select 
                           value={createType}
                           onChange={(e: any) => setCreateType(e.target.value)}
-                          className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary bg-bg-card focus:outline-none focus:border-accent"
+                          className="w-full border border-border rounded-lg bg-bg-card px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150"
                         >
                           <option value="double">{t('doubleRoom')}</option>
                           <option value="triple">{t('tripleRoom')}</option>
@@ -368,11 +371,11 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-text-secondary uppercase mb-1">{t('genderFilterLabel') || t('genderFilter')}</label>
+                        <label className="block text-xs font-semibold text-text-secondary uppercase mb-1">{t('genderFilterLabel') || t('genderFilter')}</label>
                         <select 
                           value={createGender}
                           onChange={(e: any) => setCreateGender(e.target.value)}
-                          className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary bg-bg-card focus:outline-none focus:border-accent"
+                          className="w-full border border-border rounded-lg bg-bg-card px-3 py-2.5 text-sm text-text-primary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150"
                         >
                           <option value="mixed">{t('genderMixed')}</option>
                           <option value="M">{t('genderMen')}</option>
@@ -381,20 +384,20 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-text-secondary uppercase mb-1">{t('roomNameLabel')}</label>
+                        <label className="block text-xs font-semibold text-text-secondary uppercase mb-1">{t('roomNameLabel')}</label>
                         <input 
                           type="text" 
                           placeholder={t('roomNamePlaceholder')}
                           value={createName}
                           onChange={(e) => setCreateName(e.target.value)}
-                          className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent"
+                          className="w-full border border-border rounded-lg bg-bg-card px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150"
                         />
                       </div>
 
                       <Button 
                         type="submit" 
                         loading={actionLoading} 
-                        className="mt-2 w-full bg-accent hover:bg-accent-hover text-white font-semibold py-2.5 rounded-lg text-xs"
+                        className="mt-2 w-full bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded-lg text-xs"
                       >
                         {t('createBtn')}
                       </Button>
@@ -403,13 +406,13 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                 </Card>
 
                 {/* 2. Unirse a una habitación existente */}
-                <Card className="bg-bg-card border border-border p-6 rounded-xl flex flex-col justify-between">
+                <Card className="flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-3 mb-4">
                       <div className="p-2.5 rounded-lg bg-accent/10 text-accent">
                         <Key className="w-5 h-5" />
                       </div>
-                      <h3 className="font-heading font-bold text-base text-text-primary">{t('joinRoomTitle')}</h3>
+                      <h3 className="font-heading font-semibold text-base text-text-primary">{t('joinRoomTitle')}</h3>
                     </div>
                     <p className="text-xs text-text-secondary leading-relaxed mb-5">
                       {t('joinRoomText')}
@@ -417,16 +420,16 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
 
                     {pendingRequest ? (
                       // Solicitud pendiente actual
-                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center mt-6">
-                        <AlertCircle className="w-8 h-8 text-amber-500 mx-auto mb-2" />
-                        <h4 className="text-xs font-bold text-amber-950">{t('requestSentTitle')}</h4>
-                        <p className="text-xs text-amber-900 mt-1 leading-normal">
+                      <div className="bg-warning/10 border border-warning/20 rounded-xl p-4 text-center mt-6">
+                        <AlertCircle className="w-8 h-8 text-warning mx-auto mb-2" />
+                        <h4 className="text-xs font-semibold text-text-primary">{t('requestSentTitle')}</h4>
+                        <p className="text-xs text-text-secondary mt-1 leading-normal">
                           {t('requestSentText', { name: pendingRequest.roomName || pendingRequest.roomId })}. {t('requestPendingText')}
                         </p>
                         <button
                           onClick={handleCancelRequest}
                           disabled={actionLoading}
-                          className="mt-3 text-xs font-bold text-red-600 hover:text-red-700 underline"
+                          className="mt-3 text-xs font-semibold text-error hover:text-error/80 underline"
                         >
                           {t('cancelRequestBtn')}
                         </button>
@@ -435,13 +438,13 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                       // Formulario de ingreso de código
                       <form onSubmit={handleJoinRoom} className="flex flex-col gap-4">
                         <div>
-                          <label className="block text-xs font-bold text-text-secondary uppercase mb-1">{t('joinCodeLabel') || t('inviteCode')}</label>
+                          <label className="block text-xs font-semibold text-text-secondary uppercase mb-1">{t('joinCodeLabel') || t('inviteCode')}</label>
                           <input 
                             type="text" 
                             placeholder="Ej: ABC-123" 
                             value={joinCode}
                             onChange={(e) => setJoinCode(e.target.value)}
-                            className="w-full border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary uppercase focus:outline-none focus:border-accent"
+                            className="w-full border border-border rounded-lg bg-bg-card px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary uppercase focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150"
                           />
                         </div>
 
@@ -449,7 +452,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                           type="submit" 
                           disabled={!joinCode || actionLoading}
                           loading={actionLoading}
-                          className="w-full bg-accent hover:bg-accent-hover text-white font-semibold py-2.5 rounded-lg text-xs"
+                          className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded-lg text-xs"
                         >
                           {t('joinBtn')}
                         </Button>
@@ -464,16 +467,14 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
               <div className="flex flex-col gap-6">
                 
                 {/* Detalles del Cuarto */}
-                <Card className="bg-bg-card border border-border rounded-xl p-6 relative overflow-hidden">
-                  <div className="h-[3px] bg-accent/60 absolute top-0 left-0 right-0" />
-                  
+                <Card className="relative overflow-hidden">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-5 mb-5">
                     <div className="flex items-center gap-3">
                       <div className="p-2.5 rounded-lg bg-accent/10 text-accent">
                         <Home className="w-6 h-6" />
                       </div>
                       <div>
-                        <h2 className="text-lg font-heading font-bold text-text-primary">{room?.name}</h2>
+                        <h2 className="text-lg font-heading font-semibold text-text-primary">{room?.name}</h2>
                         <p className="text-xs text-text-secondary capitalize">
                           {t('roomType')} {room?.type === 'double' ? t('doubleName') : room?.type === 'triple' ? t('tripleName') : t('quadName')} · {t('genderFilter')} {room?.gender === 'M' ? t('genderMen') : room?.gender === 'F' ? t('genderWomen') : t('genderMixed')}
                         </p>
@@ -481,24 +482,24 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                     </div>
 
                     {/* Código del Cuarto */}
-                    <div className="bg-bg-page border border-border rounded-xl px-4 py-2 flex items-center gap-3">
+                    <div className="bg-bg-subtle border border-border rounded-xl px-4 py-2 flex items-center gap-3">
                       <div>
-                        <span className="text-[9px] uppercase font-bold text-text-secondary tracking-wider block">{t('invitedLabel')}</span>
-                        <span className="text-base font-bold font-mono text-text-primary tracking-wider">{room?.id}</span>
+                        <span className="text-[9px] uppercase font-semibold text-text-secondary tracking-wider block">{t('invitedLabel')}</span>
+                        <span className="text-base font-semibold font-mono text-text-primary tracking-wider">{room?.id}</span>
                       </div>
                       <button 
                         onClick={handleCopyCode}
                         className="p-1.5 hover:bg-border/50 rounded-lg text-text-secondary hover:text-text-primary transition-all"
                         title="Copiar Código"
                       >
-                        {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                        {copied ? <Check className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
 
                   {/* Integrantes del Cuarto */}
                   <div className="mb-6">
-                    <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                    <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-1.5">
                       <Users className="w-4 h-4" />
                       <span>{t('members')} ({room?.enrolledUsers?.length}/{room?.capacity})</span>
                     </h3>
@@ -509,7 +510,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                         return (
                           <div 
                             key={member.userId} 
-                            className="flex items-center justify-between p-3.5 border border-border bg-bg-page rounded-xl"
+                            className="flex items-center justify-between p-3.5 border border-border bg-bg-subtle rounded-xl"
                           >
                             <div className="flex items-center gap-2.5 min-w-0">
                               <div className="w-7 h-7 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 text-accent">
@@ -519,9 +520,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                             </div>
 
                             {isResponsible && (
-                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-accent/10 text-accent">
-                                {t('leader')}
-                              </span>
+                              <Badge tone="accent">{t('leader')}</Badge>
                             )}
                           </div>
                         )
@@ -534,7 +533,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                     <button
                       onClick={handleLeaveRoom}
                       disabled={actionLoading}
-                      className="text-xs font-semibold text-red-600 hover:text-red-700 flex items-center gap-1.5 px-3 py-2 hover:bg-red-50 rounded-lg transition-all"
+                      className="text-xs font-medium text-error hover:text-error/80 flex items-center gap-1.5 px-3 py-2 hover:bg-error/10 rounded-lg transition-all"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>{room?.enrolledUsers?.length <= 1 ? t('deleteBtn') : t('leaveBtn')}</span>
@@ -544,24 +543,22 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
 
                 {/* Solicitudes de Unión Pendientes (Solo Responsables) */}
                 {room?.responsibleUserId === registration.id && (
-                  <Card className="bg-bg-card border border-border rounded-xl p-6">
-                    <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-4">
+                  <Card>
+                    <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-4">
                       {t('pendingRequests')}
                     </h3>
 
                     {requests.length === 0 ? (
-                      <p className="text-xs text-text-secondary text-center py-4">
-                        {t('noPendingRequests')}
-                      </p>
+                      <EmptyState icon={Users} title={t('noPendingRequests')} />
                     ) : (
                       <div className="flex flex-col gap-3">
                         {requests.map((req: any) => (
                           <div 
                             key={req.id} 
-                            className="flex items-center justify-between p-3 border border-border rounded-xl bg-bg-page"
+                            className="flex items-center justify-between p-3 border border-border rounded-xl bg-bg-subtle"
                           >
                             <div className="min-w-0 pr-4">
-                              <p className="text-xs font-bold text-text-primary truncate">{req.userName}</p>
+                              <p className="text-xs font-semibold text-text-primary truncate">{req.userName}</p>
                               <p className="text-[10px] text-text-secondary mt-0.5">{t('requestedAgo', { date: new Date(req.createdAt).toLocaleDateString() })}</p>
                             </div>
 
@@ -569,7 +566,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                               <button
                                 onClick={() => handleRespondRequest(req.id, 'accept')}
                                 disabled={actionLoading}
-                                className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all"
+                                className="p-1.5 rounded-lg bg-success/10 text-success hover:bg-success/20 transition-all"
                                 title={t('acceptBtn')}
                               >
                                 <Check className="w-4 h-4" />
@@ -577,7 +574,7 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
                               <button
                                 onClick={() => handleRespondRequest(req.id, 'reject')}
                                 disabled={actionLoading}
-                                className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-all"
+                                className="p-1.5 rounded-lg bg-error/10 text-error hover:bg-error/20 transition-all"
                                 title={t('rejectBtn')}
                               >
                                 <X className="w-4 h-4" />
@@ -595,6 +592,6 @@ export function RoomManager({ registration, token }: RoomManagerProps) {
           </div>
         )}
       </main>
-    </div>
+    </FadeIn>
   )
 }

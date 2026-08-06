@@ -44,7 +44,8 @@ export async function generateNominationPdf(registration: Registration): Promise
     y: height - 78,
     size: 13,
     font: fontRegular,
-    color: rgb(0.85, 0.91, 0.99),
+    color: rgb(1, 1, 1),
+    opacity: 0.75,
   })
 
   // --- Datos del asistente ---
@@ -56,7 +57,7 @@ export async function generateNominationPdf(registration: Registration): Promise
       y,
       size: 8,
       font: fontRegular,
-      color: rgb(0.42, 0.45, 0.5),
+      color: rgb(0.443, 0.443, 0.478),
     })
     y -= 16
     page.drawText(value, {
@@ -64,7 +65,7 @@ export async function generateNominationPdf(registration: Registration): Promise
       y,
       size: 14,
       font: fontBold,
-      color: rgb(0.06, 0.09, 0.16),
+      color: rgb(0.035, 0.035, 0.043),
     })
     y -= 10
     // Línea divisora
@@ -72,7 +73,7 @@ export async function generateNominationPdf(registration: Registration): Promise
       start: { x: margin, y },
       end: { x: width - margin, y },
       thickness: 0.5,
-      color: rgb(0.89, 0.91, 0.94),
+      color: rgb(0.894, 0.894, 0.906),
     })
     y -= 24
   }
@@ -103,7 +104,7 @@ export async function generateNominationPdf(registration: Registration): Promise
     y: y - qrSize - 20,
     size: 9,
     font: fontRegular,
-    color: rgb(0.42, 0.45, 0.5),
+    color: rgb(0.443, 0.443, 0.478),
   })
 
   // --- Pie de página ---
@@ -112,14 +113,14 @@ export async function generateNominationPdf(registration: Registration): Promise
     y: 0,
     width,
     height: 40,
-    color: rgb(0.95, 0.96, 0.98),
+    color: rgb(0.98, 0.98, 0.98),
   })
   page.drawText(`Documento oficial de acceso — Generado por ${branding.platform}`, {
     x: margin,
     y: 14,
     size: 8,
     font: fontRegular,
-    color: rgb(0.42, 0.45, 0.5),
+    color: rgb(0.443, 0.443, 0.478),
   })
 
   const pdfBytes = await doc.save()

@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth'
 import { listExceptions, createException, deleteException, type ChurchException } from '@/lib/api'
-import { Trash2, Plus } from 'lucide-react'
+import { Trash2, Plus, Building2 } from 'lucide-react'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 export default function ExcepcionesPage() {
   const { getToken } = useAuth()
@@ -42,14 +43,14 @@ export default function ExcepcionesPage() {
     <div className="p-6 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-text-primary">Excepciones de cupo</h1>
+          <h1 className="text-xl font-heading font-semibold tracking-tight text-text-primary">Excepciones de cupo</h1>
           <p className="text-sm text-text-secondary mt-0.5">
             Iglesias con cupo adicional de mensajeros acreditados (default: 5)
           </p>
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-semibold rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-lg transition-all duration-150 active:scale-[0.98]"
         >
           <Plus className="w-4 h-4" />
           Nueva excepción
@@ -70,15 +71,19 @@ export default function ExcepcionesPage() {
         />
       )}
 
-      <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-bg-card border border-border rounded-xl shadow-card overflow-hidden">
         {loading ? (
           <p className="text-sm text-text-secondary text-center py-8">Cargando...</p>
         ) : exceptions.length === 0 ? (
-          <p className="text-sm text-text-secondary text-center py-8">No hay excepciones configuradas.</p>
+          <EmptyState
+            icon={Building2}
+            title="No hay excepciones configuradas"
+            description="Las iglesias con cupo adicional aparecerán aquí."
+          />
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-bg-page">
+              <tr className="border-b border-border bg-bg-subtle">
                 <th className="text-left px-4 py-3 font-medium text-text-secondary">Iglesia</th>
                 <th className="text-left px-4 py-3 font-medium text-text-secondary">Cupo extra</th>
                 <th className="text-left px-4 py-3 font-medium text-text-secondary">Total</th>
@@ -99,7 +104,7 @@ export default function ExcepcionesPage() {
                   <td className="px-4 py-3 text-right">
                     <button
                       onClick={() => handleDelete(ex.churchId)}
-                      className="text-error hover:text-red-700 transition-colors"
+                      className="text-error hover:opacity-70 transition-opacity"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -141,34 +146,34 @@ function ExceptionForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-4 flex flex-col gap-3">
-      <h3 className="font-semibold text-text-primary text-sm">Nueva excepción</h3>
+    <form onSubmit={handleSubmit} className="bg-bg-card border border-border rounded-xl shadow-card p-5 mb-4 flex flex-col gap-3 animate-fade-in">
+      <h3 className="font-heading font-semibold text-text-primary text-sm">Nueva excepción</h3>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="text-xs font-medium text-text-secondary mb-1 block">ID de iglesia</label>
           <input value={churchId} onChange={(e) => setChurchId(e.target.value)} required
-            className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
+            className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150" />
         </div>
         <div>
           <label className="text-xs font-medium text-text-secondary mb-1 block">Nombre de iglesia</label>
           <input value={churchName} onChange={(e) => setChurchName(e.target.value)} required
-            className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
+            className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150" />
         </div>
       </div>
       <div>
         <label className="text-xs font-medium text-text-secondary mb-1 block">Cupo extra (adicional a 5)</label>
         <input type="number" min={1} max={100} value={extraQuota} onChange={(e) => setExtraQuota(Number(e.target.value))} required
-          className="w-32 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
+          className="w-32 border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150" />
       </div>
       <div>
         <label className="text-xs font-medium text-text-secondary mb-1 block">Motivo</label>
         <input value={reason} onChange={(e) => setReason(e.target.value)} required
-          className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40" />
+          className="w-full border border-border rounded-lg bg-bg-card px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent transition-all duration-150" />
       </div>
       {error && <p className="text-xs text-error">{error}</p>}
       <div className="flex gap-2">
         <button type="submit" disabled={saving}
-          className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50">
+          className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-lg transition-all duration-150 active:scale-[0.98] disabled:opacity-50">
           {saving ? 'Guardando...' : 'Guardar'}
         </button>
         <button type="button" onClick={onCancel}

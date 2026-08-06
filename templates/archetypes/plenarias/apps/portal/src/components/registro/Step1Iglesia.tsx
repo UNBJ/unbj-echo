@@ -21,6 +21,8 @@ interface Step1IglesiaProps {
   onNext: (selection: ChurchSelection) => void
 }
 
+const inputClasses = 'w-full px-3 py-2.5 border border-border rounded-lg bg-bg-card text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150'
+
 export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
   const [conventions, setConventions] = useState<Convention[]>([])
   const [convQuery, setConvQuery] = useState('')
@@ -146,7 +148,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
 
   return (
     <Card accent>
-      <h2 className="text-xl font-heading font-bold text-text-primary mb-1">Iglesia de procedencia</h2>
+      <h2 className="text-xl font-heading font-semibold tracking-tight text-text-primary mb-1">Iglesia de procedencia</h2>
       <p className="text-sm text-text-secondary mb-6">
         Selecciona primero tu convención regional y luego busca tu iglesia.
       </p>
@@ -162,7 +164,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
             <button
               type="button"
               onClick={() => setConvOpen((o) => !o)}
-              className="w-full flex items-center justify-between px-3 py-2.5 border border-border rounded-lg text-sm text-left focus:outline-none focus:border-accent"
+              className="w-full flex items-center justify-between px-3 py-2.5 border border-border rounded-lg bg-bg-card text-sm text-left focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150"
             >
               <span className={selectedConvention ? 'text-text-primary' : 'text-text-secondary'}>
                 {selectedConvention ? selectedConvention.name : 'Selecciona tu convención...'}
@@ -171,7 +173,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
             </button>
 
             {convOpen && (
-              <div className="absolute z-20 mt-1 w-full bg-bg-card border border-border rounded-lg shadow-lg max-h-72 flex flex-col">
+              <div className="absolute z-20 mt-1 w-full bg-bg-card border border-border rounded-lg shadow-pop max-h-72 flex flex-col animate-fade-in">
                 <div className="p-2 border-b border-border">
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-secondary" />
@@ -181,7 +183,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
                       value={convQuery}
                       onChange={(e) => setConvQuery(e.target.value)}
                       placeholder="Buscar convención..."
-                      className="w-full pl-8 pr-3 py-1.5 text-sm border border-border rounded focus:outline-none focus:border-accent"
+                      className="w-full pl-8 pr-3 py-1.5 text-sm bg-bg-card border border-border rounded-md focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150"
                     />
                   </div>
                 </div>
@@ -194,7 +196,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
                         <button
                           type="button"
                           onClick={() => handleSelectConvention(conv)}
-                          className="w-full text-left px-4 py-2.5 text-sm hover:bg-bg-page transition-colors"
+                          className="w-full text-left px-4 py-2.5 text-sm hover:bg-bg-subtle transition-colors"
                         >
                           <span className="text-text-primary">{conv.name}</span>
                           {conv.code && (
@@ -211,7 +213,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
         )}
 
         {selectedConvention && !conventionNotListed && (
-          <div className="flex items-center gap-2 mt-2 p-2.5 bg-success/10 border border-success/30 rounded-lg">
+          <div className="flex items-center gap-2 mt-2 p-2.5 bg-success/10 border border-success/20 rounded-lg animate-fade-in">
             <Check className="w-4 h-4 text-success flex-shrink-0" />
             <span className="text-sm text-text-primary flex-1">{selectedConvention.name}</span>
             <button
@@ -247,14 +249,14 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
               value={conventionNotListedName}
               onChange={(e) => setConventionNotListedName(e.target.value)}
               placeholder="Escribe el nombre de tu convención"
-              className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent"
+              className={inputClasses}
             />
             <input
               type="text"
               value={churchNotListedName}
               onChange={(e) => setChurchNotListedName(e.target.value)}
               placeholder="Escribe el nombre de tu iglesia"
-              className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent"
+              className={inputClasses}
             />
           </div>
         )}
@@ -276,7 +278,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
                   value={churchQuery}
                   onChange={(e) => handleChurchSearch(e.target.value)}
                   placeholder="Busca tu iglesia en esta convención..."
-                  className="w-full pl-9 pr-4 py-2.5 border border-border rounded-lg text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent"
+                  className="w-full pl-9 pr-4 py-2.5 border border-border rounded-lg bg-bg-card text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150"
                 />
               </div>
 
@@ -285,7 +287,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
               )}
 
               {!churchLoading && churchResults.length > 0 && !selectedChurch && (
-                <ul className="border border-border rounded-lg divide-y divide-border mb-3 max-h-56 overflow-y-auto">
+                <ul className="border border-border rounded-lg divide-y divide-border mb-3 max-h-56 overflow-y-auto animate-fade-in">
                   {churchResults.map((church) => (
                     <li key={church.id}>
                       <button
@@ -295,7 +297,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
                           setChurchResults([])
                           setChurchQuery(church.name)
                         }}
-                        className="w-full text-left px-4 py-3 hover:bg-bg-page transition-colors"
+                        className="w-full text-left px-4 py-3 hover:bg-bg-subtle transition-colors"
                       >
                         <p className="text-sm font-medium text-text-primary">{church.name}</p>
                         {church.code && (
@@ -308,7 +310,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
               )}
 
               {selectedChurch && (
-                <div className="flex items-center gap-2 mb-3 p-2.5 bg-success/10 border border-success/30 rounded-lg">
+                <div className="flex items-center gap-2 mb-3 p-2.5 bg-success/10 border border-success/20 rounded-lg animate-fade-in">
                   <Check className="w-4 h-4 text-success flex-shrink-0" />
                   <span className="text-sm text-text-primary flex-1">{selectedChurch.name}</span>
                   <button
@@ -340,7 +342,7 @@ export function Step1Iglesia({ selected, onNext }: Step1IglesiaProps) {
                 value={churchNotListedName}
                 onChange={(e) => setChurchNotListedName(e.target.value)}
                 placeholder="Escribe el nombre de tu iglesia"
-                className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent"
+                className={inputClasses}
               />
             </div>
           )}

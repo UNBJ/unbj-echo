@@ -14,10 +14,10 @@ export default function PortalNotFound() {
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 text-center">
-        <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-6">
+        <div className="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center mb-6">
           <ShieldX className="w-9 h-9 text-error" />
         </div>
-        <h1 className="text-2xl font-heading font-bold text-text-primary mb-3">
+        <h1 className="text-2xl font-heading font-semibold tracking-tight text-text-primary mb-3">
           Enlace no válido
         </h1>
         <p className="text-text-secondary mb-8 max-w-sm">
@@ -26,7 +26,7 @@ export default function PortalNotFound() {
         </p>
         <Link
           href="/"
-          className="text-accent font-semibold text-sm hover:underline"
+          className="text-accent font-medium text-sm hover:underline"
         >
           Volver al inicio
         </Link>

@@ -79,7 +79,7 @@ export default function RegistrosPage() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-text-primary">Registros</h1>
+          <h1 className="text-xl font-heading font-semibold tracking-tight text-text-primary">Registros</h1>
           {data && (
             <p className="text-sm text-text-secondary mt-0.5">{data.total} registros en total</p>
           )}
@@ -94,7 +94,7 @@ export default function RegistrosPage() {
       </div>
 
       {/* Filtros */}
-      <div className="bg-bg-card border border-border rounded-xl p-4 mb-4 flex flex-wrap gap-3">
+      <div className="bg-bg-card border border-border rounded-xl shadow-card p-4 mb-4 flex flex-wrap gap-3">
         <form onSubmit={handleSearch} className="flex gap-2 flex-1 min-w-48">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
@@ -136,7 +136,7 @@ export default function RegistrosPage() {
       </div>
 
       {/* Tabla */}
-      <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-bg-card border border-border rounded-xl shadow-card overflow-hidden">
         {error && (
           <div className="p-4 text-sm text-error text-center">{error}</div>
         )}
@@ -145,7 +145,7 @@ export default function RegistrosPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border bg-bg-page">
+                <tr className="border-b border-border bg-bg-subtle">
                   <th className="text-left px-4 py-3 font-medium text-text-secondary">Nombre</th>
                   <th className="text-left px-4 py-3 font-medium text-text-secondary">Iglesia</th>
                   <th className="text-left px-4 py-3 font-medium text-text-secondary">Tipo</th>
@@ -163,7 +163,7 @@ export default function RegistrosPage() {
                   </tr>
                 )}
                 {(data?.registrations ?? []).map((reg) => (
-                  <tr key={reg.id} className="border-b border-border last:border-0 hover:bg-bg-page transition-colors">
+                  <tr key={reg.id} className="border-b border-border last:border-0 hover:bg-bg-subtle transition-colors">
                     <td className="px-4 py-3">
                       <p className="font-medium text-text-primary">{reg.fullName}</p>
                       <p className="text-xs text-text-secondary">{reg.email}</p>
@@ -173,8 +173,8 @@ export default function RegistrosPage() {
                       <span className={clsx(
                         'text-xs px-2 py-1 rounded-full font-medium',
                         reg.delegateType === 'mensajero_acreditado'
-                          ? 'bg-indigo-100 text-indigo-800'
-                          : 'bg-gray-100 text-gray-700'
+                          ? 'bg-accent/10 text-accent'
+                          : 'bg-bg-subtle text-text-secondary'
                       )}>
                         {reg.delegateType ? DELEGATE_LABELS[reg.delegateType] : 'Sin asignar'}
                       </span>
@@ -222,14 +222,14 @@ export default function RegistrosPage() {
               <button
                 onClick={() => setPage((p) => p - 1)}
                 disabled={page === 1}
-                className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-bg-page transition-colors"
+                className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-bg-subtle transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= totalPages}
-                className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-bg-page transition-colors"
+                className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-bg-subtle transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

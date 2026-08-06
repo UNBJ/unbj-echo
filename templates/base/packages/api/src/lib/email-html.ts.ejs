@@ -1,5 +1,7 @@
 import { branding } from '@unbj/shared'
 
+const FONT_STACK = '"Geist","Inter",-apple-system,"Segoe UI",Roboto,Arial,Helvetica,sans-serif'
+
 export function confirmationEmailHtml(opts: {
   fullName: string
   portalUrl: string
@@ -8,24 +10,21 @@ export function confirmationEmailHtml(opts: {
   conventionName?: string | null
 }): string {
   const { fullName, portalUrl, eventName, churchName, conventionName } = opts
-  
+
   return `<!DOCTYPE html>
 <html lang="es">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#F8F9FB;font-family:Arial,Helvetica,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8F9FB;padding:32px 16px;">
+<body style="margin:0;padding:0;background:#FAFAFA;font-family:${FONT_STACK};">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAFAFA;padding:32px 16px;">
     <tr><td align="center">
-      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #E5E7EB;">
-
-        <!-- Accent line -->
-        <tr><td style="height:3px;background:${branding.accentColor};font-size:0;">&nbsp;</td></tr>
+      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #E4E4E7;">
 
         <!-- Header -->
-        <tr><td style="background:#1E293B;padding:20px 32px;">
+        <tr><td style="background:#09090B;padding:20px 32px;">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td>
-                <span style="color:#F8FAFC;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">${eventName}</span>
+                <span style="color:#FAFAFA;font-size:15px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">${eventName}</span>
               </td>
             </tr>
           </table>
@@ -38,35 +37,35 @@ export function confirmationEmailHtml(opts: {
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
             <tr>
               <td>
-                <div style="display:inline-block;background:#E0F2FE;color:#0369A1;border-radius:50%;width:48px;height:48px;line-height:48px;text-align:center;font-size:22px;font-weight:bold;">✓</div>
+                <div style="display:inline-block;background:${branding.accentColor};color:#ffffff;border-radius:50%;width:48px;height:48px;line-height:48px;text-align:center;font-size:22px;font-weight:600;">✓</div>
               </td>
             </tr>
           </table>
 
-          <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#1F2937;">¡Tu registro fue exitoso!</h1>
-          <p style="margin:0 0 20px;font-size:15px;color:#4B5563;">Hola <strong style="color:#1F2937;">${fullName}</strong>,</p>
-          <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.6;">
+          <h1 style="margin:0 0 8px;font-size:22px;font-weight:600;letter-spacing:-0.01em;color:#18181B;">¡Tu registro fue exitoso!</h1>
+          <p style="margin:0 0 20px;font-size:15px;color:#52525B;">Hola <strong style="color:#18181B;">${fullName}</strong>,</p>
+          <p style="margin:0 0 20px;font-size:15px;color:#3F3F46;line-height:1.6;">
             Tu registro para el evento <strong>${eventName}</strong> ha sido recibido correctamente.
           </p>
 
           ${(churchName || conventionName) ? `
           <!-- Info box -->
-          <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:8px;border:1px solid #E2E8F0;margin:0 0 24px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#F4F4F5;border-radius:10px;border:1px solid #E4E4E7;margin:0 0 24px;">
             <tr><td style="padding:16px 20px;">
               <table width="100%" cellpadding="0" cellspacing="0">
                 ${churchName ? `
                 <tr>
-                  <td style="padding:6px 0;${conventionName ? 'border-bottom:1px solid #E2E8F0;' : ''}">
-                    <span style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;">Organización / Iglesia</span><br>
-                    <span style="font-size:14px;color:#1E293B;font-weight:600;">${churchName}</span>
+                  <td style="padding:6px 0;${conventionName ? 'border-bottom:1px solid #E4E4E7;' : ''}">
+                    <span style="font-size:11px;color:#71717A;text-transform:uppercase;letter-spacing:0.08em;">Organización / Iglesia</span><br>
+                    <span style="font-size:14px;color:#18181B;font-weight:600;">${churchName}</span>
                   </td>
                 </tr>
                 ` : ''}
                 ${conventionName ? `
                 <tr>
                   <td style="padding:6px 0;">
-                    <span style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;">Asociación / Convención</span><br>
-                    <span style="font-size:14px;color:#1E293B;font-weight:600;">${conventionName}</span>
+                    <span style="font-size:11px;color:#71717A;text-transform:uppercase;letter-spacing:0.08em;">Asociación / Convención</span><br>
+                    <span style="font-size:14px;color:#18181B;font-weight:600;">${conventionName}</span>
                   </td>
                 </tr>
                 ` : ''}
@@ -75,22 +74,22 @@ export function confirmationEmailHtml(opts: {
           </table>
           ` : ''}
 
-          <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.6;">
+          <p style="margin:0 0 20px;font-size:15px;color:#3F3F46;line-height:1.6;">
             El siguiente paso es completar tu pago e información adicional en tu portal personal.
           </p>
 
           <!-- Button -->
           <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
             <tr>
-              <td style="background:${branding.accentColor};border-radius:8px;">
-                <a href="${portalUrl}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;letter-spacing:0.3px;">
+              <td style="background:${branding.accentColor};border-radius:10px;">
+                <a href="${portalUrl}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:14px;font-weight:500;text-decoration:none;letter-spacing:0.01em;">
                   Acceder a mi portal personal →
                 </a>
               </td>
             </tr>
           </table>
 
-          <p style="margin:0;font-size:12px;color:#64748B;line-height:1.6;">
+          <p style="margin:0;font-size:12px;color:#71717A;line-height:1.6;">
             Guarda este correo — el enlace de arriba es tu acceso personal al proceso de registro.
             No lo compartas con nadie más.
           </p>
@@ -98,12 +97,53 @@ export function confirmationEmailHtml(opts: {
         </td></tr>
 
         <!-- Footer -->
-        <tr><td style="background:#F8FAFC;border-top:1px solid #E2E8F0;padding:16px 32px;text-align:center;">
-          <p style="margin:0;font-size:11px;color:#64748B;letter-spacing:0.5px;">
+        <tr><td style="background:#FAFAFA;border-top:1px solid #E4E4E7;padding:16px 32px;text-align:center;">
+          <p style="margin:0;font-size:11px;color:#71717A;letter-spacing:0.02em;">
             ${eventName} · Generado por ${branding.platform}
           </p>
         </td></tr>
 
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+}
+
+export function accessLinkReminderEmailHtml(opts: {
+  fullName: string
+  portalUrl: string
+  eventName: string
+}): string {
+  const { fullName, portalUrl, eventName } = opts
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#FAFAFA;font-family:${FONT_STACK};">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAFAFA;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #E4E4E7;">
+        <tr><td style="background:#09090B;padding:20px 32px;">
+          <span style="color:#FAFAFA;font-size:15px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">${eventName}</span>
+        </td></tr>
+        <tr><td style="padding:36px 32px 28px;">
+          <div style="display:inline-block;background:${branding.accentColor};color:#ffffff;border-radius:50%;width:48px;height:48px;line-height:48px;text-align:center;font-size:22px;font-weight:600;margin-bottom:24px;">→</div>
+          <h1 style="margin:0 0 8px;font-size:22px;font-weight:600;letter-spacing:-0.01em;color:#18181B;">Tu enlace de acceso</h1>
+          <p style="margin:0 0 20px;font-size:15px;color:#52525B;">Hola <strong style="color:#18181B;">${fullName}</strong>,</p>
+          <p style="margin:0 0 20px;font-size:15px;color:#3F3F46;line-height:1.6;">
+            El equipo administrativo de <strong>${eventName}</strong> reenvió tu enlace de acceso al portal personal.
+          </p>
+          <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+            <tr><td style="background:${branding.accentColor};border-radius:10px;">
+              <a href="${portalUrl}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:14px;font-weight:500;text-decoration:none;letter-spacing:0.01em;">Acceder a mi portal personal →</a>
+            </td></tr>
+          </table>
+          <p style="margin:0;font-size:12px;color:#71717A;line-height:1.6;">Guarda este correo y no compartas el enlace con nadie más.</p>
+        </td></tr>
+        <tr><td style="background:#FAFAFA;border-top:1px solid #E4E4E7;padding:16px 32px;text-align:center;">
+          <p style="margin:0;font-size:11px;color:#71717A;letter-spacing:0.02em;">${eventName} · Generado por ${branding.platform}</p>
+        </td></tr>
       </table>
     </td></tr>
   </table>
@@ -120,24 +160,21 @@ export function approvalEmailHtml(opts: {
   delegateLabel?: string | null
 }): string {
   const { fullName, eventName, pdfUrl, churchName, conventionName, delegateLabel } = opts
-  
+
   return `<!DOCTYPE html>
 <html lang="es">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#F8F9FB;font-family:Arial,Helvetica,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8F9FB;padding:32px 16px;">
+<body style="margin:0;padding:0;background:#FAFAFA;font-family:${FONT_STACK};">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAFAFA;padding:32px 16px;">
     <tr><td align="center">
-      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #E5E7EB;">
-
-        <!-- Accent line -->
-        <tr><td style="height:3px;background:${branding.accentColor};font-size:0;">&nbsp;</td></tr>
+      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #E4E4E7;">
 
         <!-- Header -->
-        <tr><td style="background:#1E293B;padding:20px 32px;">
+        <tr><td style="background:#09090B;padding:20px 32px;">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td>
-                <span style="color:#F8FAFC;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">${eventName}</span>
+                <span style="color:#FAFAFA;font-size:15px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">${eventName}</span>
               </td>
             </tr>
           </table>
@@ -146,38 +183,38 @@ export function approvalEmailHtml(opts: {
         <!-- Content -->
         <tr><td style="padding:36px 32px 28px;">
 
-          <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#1F2937;">¡Tu registro está aprobado!</h1>
-          <p style="margin:0 0 20px;font-size:15px;color:#4B5563;">Hola <strong style="color:#1F2937;">${fullName}</strong>,</p>
-          <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.6;">
+          <h1 style="margin:0 0 8px;font-size:22px;font-weight:600;letter-spacing:-0.01em;color:#18181B;">¡Tu registro está aprobado!</h1>
+          <p style="margin:0 0 20px;font-size:15px;color:#52525B;">Hola <strong style="color:#18181B;">${fullName}</strong>,</p>
+          <p style="margin:0 0 20px;font-size:15px;color:#3F3F46;line-height:1.6;">
             Tu registro para el evento <strong>${eventName}</strong> ha sido confirmado por el equipo administrativo.
           </p>
 
           ${(churchName || conventionName || delegateLabel) ? `
           <!-- Info box -->
-          <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border-radius:8px;border:1px solid #E2E8F0;margin:0 0 24px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#F4F4F5;border-radius:10px;border:1px solid #E4E4E7;margin:0 0 24px;">
             <tr><td style="padding:16px 20px;">
               <table width="100%" cellpadding="0" cellspacing="0">
                 ${churchName ? `
                 <tr>
-                  <td style="padding:6px 0;${(conventionName || delegateLabel) ? 'border-bottom:1px solid #E2E8F0;' : ''}">
-                    <span style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;">Organización / Iglesia</span><br>
-                    <span style="font-size:14px;color:#1E293B;font-weight:600;">${churchName}</span>
+                  <td style="padding:6px 0;${(conventionName || delegateLabel) ? 'border-bottom:1px solid #E4E4E7;' : ''}">
+                    <span style="font-size:11px;color:#71717A;text-transform:uppercase;letter-spacing:0.08em;">Organización / Iglesia</span><br>
+                    <span style="font-size:14px;color:#18181B;font-weight:600;">${churchName}</span>
                   </td>
                 </tr>
                 ` : ''}
                 ${conventionName ? `
                 <tr>
-                  <td style="padding:6px 0;${delegateLabel ? 'border-bottom:1px solid #E2E8F0;' : ''}">
-                    <span style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;">Asociación / Convención</span><br>
-                    <span style="font-size:14px;color:#1E293B;font-weight:600;">${conventionName}</span>
+                  <td style="padding:6px 0;${delegateLabel ? 'border-bottom:1px solid #E4E4E7;' : ''}">
+                    <span style="font-size:11px;color:#71717A;text-transform:uppercase;letter-spacing:0.08em;">Asociación / Convención</span><br>
+                    <span style="font-size:14px;color:#18181B;font-weight:600;">${conventionName}</span>
                   </td>
                 </tr>
                 ` : ''}
                 ${delegateLabel ? `
                 <tr>
                   <td style="padding:6px 0;">
-                    <span style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;">Tipo de Acceso / Asistente</span><br>
-                    <span style="font-size:14px;color:#1E293B;font-weight:600;">${delegateLabel}</span>
+                    <span style="font-size:11px;color:#71717A;text-transform:uppercase;letter-spacing:0.08em;">Tipo de Acceso / Asistente</span><br>
+                    <span style="font-size:14px;color:#18181B;font-weight:600;">${delegateLabel}</span>
                   </td>
                 </tr>
                 ` : ''}
@@ -186,33 +223,33 @@ export function approvalEmailHtml(opts: {
           </table>
           ` : ''}
 
-          <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#1F2937;text-transform:uppercase;letter-spacing:1px;">
+          <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#18181B;text-transform:uppercase;letter-spacing:0.08em;">
             Tu pase de acceso
           </p>
-          <p style="margin:0 0 20px;font-size:14px;color:#374151;line-height:1.6;">
+          <p style="margin:0 0 20px;font-size:14px;color:#3F3F46;line-height:1.6;">
             Tu pase oficial de acceso en formato PDF ha sido generado. Preséntalo impreso o en pantalla el día del evento.
           </p>
 
           <!-- Button -->
           <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
             <tr>
-              <td style="background:${branding.accentColor};border-radius:8px;">
-                <a href="${pdfUrl}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;letter-spacing:0.3px;">
+              <td style="background:${branding.accentColor};border-radius:10px;">
+                <a href="${pdfUrl}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:14px;font-weight:500;text-decoration:none;letter-spacing:0.01em;">
                   Descargar Pase de Entrada →
                 </a>
               </td>
             </tr>
           </table>
 
-          <p style="margin:0;font-size:12px;color:#64748B;line-height:1.6;">
+          <p style="margin:0;font-size:12px;color:#71717A;line-height:1.6;">
             Te esperamos en el evento.
           </p>
 
         </td></tr>
 
         <!-- Footer -->
-        <tr><td style="background:#F8FAFC;border-top:1px solid #E2E8F0;padding:16px 32px;text-align:center;">
-          <p style="margin:0;font-size:11px;color:#64748B;letter-spacing:0.5px;">
+        <tr><td style="background:#FAFAFA;border-top:1px solid #E4E4E7;padding:16px 32px;text-align:center;">
+          <p style="margin:0;font-size:11px;color:#71717A;letter-spacing:0.02em;">
             ${eventName} · Generado por ${branding.platform}
           </p>
         </td></tr>

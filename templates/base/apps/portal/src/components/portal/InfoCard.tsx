@@ -7,18 +7,11 @@ interface InfoCardProps {
 
 export function InfoCard({ registration }: InfoCardProps) {
   return (
-    <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
-      {/* Accent top */}
-      <div className="h-[3px] bg-accent/60" />
-
+    <div className="bg-bg-card border border-border rounded-xl shadow-card">
       <div className="p-5">
-        <div className="flex items-center gap-2 mb-5">
-          <div className="h-px flex-1 bg-border" />
-          <p className="text-[10px] font-semibold text-accent uppercase tracking-[0.25em]">
-            Información de registro
-          </p>
-          <div className="h-px flex-1 bg-border" />
-        </div>
+        <p className="text-sm font-heading font-semibold text-text-primary mb-5">
+          Información de registro
+        </p>
 
         <dl className="flex flex-col divide-y divide-border">
           <Row label="Nombre" value={registration.fullName} />

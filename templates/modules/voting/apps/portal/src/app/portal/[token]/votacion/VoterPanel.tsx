@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Vote, CheckCircle2, Loader2, AlertCircle, Trophy } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { FadeIn } from '@/components/ui/motion'
 import { clsx } from 'clsx'
 import { useTranslations } from '@/hooks/useTranslations'
 
@@ -116,16 +118,16 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
   }
 
   return (
-    <div className="min-h-screen bg-bg-page flex flex-col">
-      <header className="bg-bg-sidebar text-text-on-dark h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
+    <FadeIn className="min-h-screen bg-bg-page flex flex-col">
+      <header className="sticky top-0 z-10 bg-bg-card/80 backdrop-blur border-b border-border h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
         <button
           onClick={() => router.push(`/portal/${token}`)}
-          className="flex items-center gap-2 text-text-on-dark/70 hover:text-text-on-dark transition-colors text-sm"
+          className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{t('backBtn')}</span>
         </button>
-        <span className="font-heading font-bold text-sm tracking-widest text-accent uppercase">
+        <span className="font-heading font-semibold text-sm tracking-widest text-accent uppercase">
           {t('liveTitle')}
         </span>
       </header>
@@ -133,11 +135,11 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
       <main className="flex-1 max-w-xl w-full mx-auto px-6 py-12 flex flex-col justify-center">
         <div className="flex flex-col gap-6">
           {!activePoll && (
-            <Card className="bg-bg-card border border-border p-8 text-center rounded-2xl shadow-sm">
+            <Card className="text-center">
               <div className="w-16 h-16 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto mb-5 animate-pulse">
                 <Vote className="w-8 h-8" />
               </div>
-              <h2 className="text-xl font-heading font-bold text-text-primary mb-2">{t('panelTitle')}</h2>
+              <h2 className="text-xl font-heading font-semibold text-text-primary mb-2">{t('panelTitle')}</h2>
               <p className="text-sm text-text-secondary leading-relaxed max-w-sm mx-auto">
                 {t('noActive')}
               </p>
@@ -146,35 +148,32 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
 
           {activePoll && (
             hasVotedActive ? (
-              <Card className="bg-bg-card border border-border p-8 text-center rounded-2xl shadow-sm relative overflow-hidden">
-                <div className="h-[4px] bg-emerald-500 absolute top-0 left-0 right-0" />
-                <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-5">
+              <Card className="text-center">
+                <div className="w-16 h-16 bg-success/10 text-success rounded-full flex items-center justify-center mx-auto mb-5">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <h2 className="text-xl font-heading font-bold text-text-primary mb-2">{t('voteReceived')}</h2>
+                <h2 className="text-xl font-heading font-semibold text-text-primary mb-2">{t('voteReceived')}</h2>
                 <p className="text-sm text-text-secondary leading-relaxed max-w-sm mx-auto mb-4">
                   {t('voteSuccessText', { title: activePoll.title })}
                 </p>
-                <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-text-secondary">
+                <span className="inline-block text-[11px] font-semibold uppercase tracking-wider text-text-secondary">
                   {t('waitingResults')}
                 </span>
               </Card>
             ) : (
-              <Card className="bg-bg-card border border-border p-6 rounded-2xl shadow-sm relative overflow-hidden">
-                <div className="h-[4px] bg-accent absolute top-0 left-0 right-0" />
-
+              <Card accent>
                 <div className="flex items-center gap-3 mb-5 border-b border-border pb-4">
                   <div className="p-2 bg-accent/10 text-accent rounded-lg">
                     <Vote className="w-5 h-5" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold text-accent uppercase tracking-widest block">{t('activeProposal')}</span>
-                    <h2 className="text-base font-heading font-bold text-text-primary leading-tight mt-0.5">{activePoll.title}</h2>
+                    <span className="text-[10px] font-semibold text-accent uppercase tracking-widest block">{t('activeProposal')}</span>
+                    <h2 className="text-base font-heading font-semibold text-text-primary leading-tight mt-0.5">{activePoll.title}</h2>
                   </div>
                 </div>
 
                 {activePoll.description && (
-                  <p className="text-xs text-text-secondary leading-relaxed mb-6 bg-bg-page p-3.5 rounded-xl border border-border">
+                  <p className="text-xs text-text-secondary leading-relaxed mb-6 bg-bg-subtle p-3.5 rounded-xl border border-border">
                     {activePoll.description}
                   </p>
                 )}
@@ -201,8 +200,8 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
                 </div>
 
                 {error && (
-                  <div className="p-3 bg-red-50 border border-red-200 text-red-800 rounded-xl text-xs flex gap-2 items-start mb-4">
-                    <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div className="p-3 bg-error/10 border border-error/20 text-error rounded-xl text-xs flex gap-2 items-start mb-4">
+                    <AlertCircle className="w-4 h-4 text-error flex-shrink-0 mt-0.5" />
                     <span>{error}</span>
                   </div>
                 )}
@@ -210,7 +209,7 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
                 <Button
                   disabled={!selectedOption || isSubmitting}
                   onClick={handleSubmitVote}
-                  className="w-full bg-accent hover:bg-accent-hover text-white font-semibold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5"
+                  className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-3 rounded-xl text-xs flex items-center justify-center gap-1.5"
                 >
                   {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                   {t('submitBtn')}
@@ -221,12 +220,12 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
           <section className="flex flex-col gap-4">
             <div className="flex items-center gap-2 px-1">
               <Trophy className="w-5 h-5 text-accent" />
-              <h2 className="text-lg font-heading font-bold text-text-primary">{t('closedResultsTitle')}</h2>
+              <h2 className="text-lg font-heading font-semibold text-text-primary">{t('closedResultsTitle')}</h2>
             </div>
 
             {closedPolls.length === 0 ? (
-              <Card className="bg-bg-card border border-border p-5 rounded-2xl text-center text-sm text-text-secondary">
-                {t('closedResultsEmpty')}
+              <Card>
+                <EmptyState icon={Trophy} title={t('closedResultsEmpty')} />
               </Card>
             ) : (
               closedPolls.map((poll) => {
@@ -237,9 +236,9 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
                 const closedDate = poll.closedAt ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(poll.closedAt)) : ''
 
                 return (
-                  <Card key={poll.proposalId} className="bg-bg-card border border-border p-5 rounded-2xl shadow-sm">
+                  <Card key={poll.proposalId}>
                     <div className="flex flex-col gap-1 border-b border-border pb-4 mb-4">
-                      <h3 className="font-heading font-bold text-text-primary">{poll.title}</h3>
+                      <h3 className="font-heading font-semibold text-text-primary">{poll.title}</h3>
                       {poll.description && <p className="text-xs text-text-secondary leading-relaxed">{poll.description}</p>}
                       <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-semibold text-text-secondary mt-1">
                         {closedDate && <span>{t('closedAt', { date: closedDate })}</span>}
@@ -261,11 +260,11 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
                                 {votes === 1 ? t('voteCount', { count: votes }) : t('voteCountPlural', { count: votes })} ({percentage}%)
                               </span>
                             </div>
-                            <div className="w-full h-3 bg-bg-page rounded-full overflow-hidden border border-border">
+                            <div className="w-full h-3 bg-bg-subtle rounded-full overflow-hidden border border-border">
                               <div className="h-full bg-accent rounded-full" style={{ width: `${percentage}%` }} />
                             </div>
                             {isWinner && (
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
+                              <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">
                                 {winnerIds.length > 1 ? t('tie') : t('winner')}
                               </span>
                             )}
@@ -280,6 +279,6 @@ export function VoterPanel({ registration: _initialReg, token }: VoterPanelProps
           </section>
         </div>
       </main>
-    </div>
+    </FadeIn>
   )
 }

@@ -7,6 +7,7 @@ import { STATUS_LABELS, STATUS_COLORS, DELEGATE_LABELS } from '@/lib/labels'
 import type { RegistrationStatus, DelegateType } from '@unbj/shared'
 import { RefreshCw } from 'lucide-react'
 import { clsx } from 'clsx'
+import { FadeIn } from '@/components/ui/motion'
 
 export default function StatsPage() {
   const { getToken } = useAuth()
@@ -32,7 +33,7 @@ export default function StatsPage() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-text-primary">Estadísticas</h1>
+        <h1 className="text-xl font-heading font-semibold tracking-tight text-text-primary">Estadísticas</h1>
         <button onClick={load} className="flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors">
           <RefreshCw className={clsx('w-4 h-4', loading && 'animate-spin')} />
           Actualizar
@@ -42,7 +43,7 @@ export default function StatsPage() {
       {error && <p className="text-error text-sm">{error}</p>}
 
       {data && (
-        <div className="flex flex-col gap-6">
+        <FadeIn className="flex flex-col gap-6">
           {/* Totales principales */}
           <div className="grid grid-cols-3 gap-4">
             <StatCard label="Total de registros" value={data.total} color="accent" />
@@ -59,15 +60,15 @@ export default function StatsPage() {
           </div>
 
           {/* Por estado */}
-          <div className="bg-bg-card border border-border rounded-xl p-5">
-            <h2 className="text-sm font-semibold text-text-primary mb-4">Por estado</h2>
+          <div className="bg-bg-card border border-border rounded-xl shadow-card p-5">
+            <h2 className="text-sm font-heading font-semibold text-text-primary mb-4">Por estado</h2>
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(data.byStatus).map(([status, count]) => (
-                <div key={status} className="flex items-center justify-between px-3 py-2 rounded-lg bg-bg-page">
+                <div key={status} className="flex items-center justify-between px-3 py-2 rounded-lg bg-bg-subtle">
                   <span className={clsx('text-xs px-2 py-0.5 rounded-full font-medium', STATUS_COLORS[status as RegistrationStatus])}>
                     {STATUS_LABELS[status as RegistrationStatus] ?? status}
                   </span>
-                  <span className="text-sm font-bold text-text-primary">{count}</span>
+                  <span className="text-sm font-semibold text-text-primary">{count}</span>
                 </div>
               ))}
             </div>
@@ -75,8 +76,8 @@ export default function StatsPage() {
 
           {/* Top iglesias */}
           {data.topChurches.length > 0 && (
-            <div className="bg-bg-card border border-border rounded-xl p-5">
-              <h2 className="text-sm font-semibold text-text-primary mb-4">Top iglesias con más registros</h2>
+            <div className="bg-bg-card border border-border rounded-xl shadow-card p-5">
+              <h2 className="text-sm font-heading font-semibold text-text-primary mb-4">Top iglesias con más registros</h2>
               <div className="flex flex-col gap-2">
                 {data.topChurches.map((church, i) => {
                   const pct = Math.round((church.count / data.total) * 100)
@@ -101,19 +102,19 @@ export default function StatsPage() {
 
           {/* Por convención */}
           {Object.keys(data.byConvention).length > 1 && (
-            <div className="bg-bg-card border border-border rounded-xl p-5">
-              <h2 className="text-sm font-semibold text-text-primary mb-4">Por convención</h2>
+            <div className="bg-bg-card border border-border rounded-xl shadow-card p-5">
+              <h2 className="text-sm font-heading font-semibold text-text-primary mb-4">Por convención</h2>
               <div className="flex flex-col gap-2">
                 {Object.entries(data.byConvention).map(([conv, count]) => (
-                  <div key={conv} className="flex justify-between items-center px-3 py-2 bg-bg-page rounded-lg">
+                  <div key={conv} className="flex justify-between items-center px-3 py-2 bg-bg-subtle rounded-lg">
                     <span className="text-sm text-text-primary">{conv}</span>
-                    <span className="text-sm font-bold text-text-primary">{count}</span>
+                    <span className="text-sm font-semibold text-text-primary">{count}</span>
                   </div>
                 ))}
               </div>
             </div>
           )}
-        </div>
+        </FadeIn>
       )}
     </div>
   )
@@ -121,14 +122,14 @@ export default function StatsPage() {
 
 function StatCard({ label, value, color }: { label: string; value: number; color: 'accent' | 'indigo' | 'gray' }) {
   const colorMap = {
-    accent: 'bg-blue-50 border-blue-200 text-accent',
-    indigo: 'bg-indigo-50 border-indigo-200 text-indigo-700',
-    gray: 'bg-gray-50 border-gray-200 text-gray-700',
+    accent: 'text-accent',
+    indigo: 'text-text-primary',
+    gray: 'text-text-secondary',
   }
   return (
-    <div className={clsx('border rounded-xl p-5', colorMap[color])}>
-      <p className="text-3xl font-bold mb-1">{value}</p>
-      <p className="text-sm opacity-80">{label}</p>
+    <div className="bg-bg-card border border-border rounded-xl shadow-card p-5">
+      <p className={clsx('text-3xl font-semibold tracking-tight mb-1', colorMap[color])}>{value}</p>
+      <p className="text-sm text-text-secondary">{label}</p>
     </div>
   )
 }

@@ -21,7 +21,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       aria-label="Cambiar tema"
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
       className={clsx(
-        'inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-bg-card text-text-secondary transition-colors hover:text-text-primary',
+        'inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-bg-card text-text-secondary transition-all duration-150 hover:bg-bg-subtle hover:text-text-primary active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50',
         className
       )}
     >

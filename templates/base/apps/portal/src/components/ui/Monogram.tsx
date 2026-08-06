@@ -7,9 +7,9 @@ interface MonogramProps {
 }
 
 const sizes = {
-  sm: 'h-8 w-8 text-xs',
-  md: 'h-10 w-10 text-sm',
-  lg: 'h-14 w-14 text-lg',
+  sm: 'h-8 w-8 text-xs rounded-lg',
+  md: 'h-10 w-10 text-sm rounded-xl',
+  lg: 'h-14 w-14 text-lg rounded-xl',
 }
 
 /** Monograma por defecto: iniciales del evento sobre fondo de acento. */
@@ -18,7 +18,7 @@ export function Monogram({ size = 'md', className }: MonogramProps) {
     <span
       aria-hidden
       className={clsx(
-        'inline-flex shrink-0 select-none items-center justify-center rounded-xl bg-accent font-heading font-bold tracking-tight text-white',
+        'inline-flex shrink-0 select-none items-center justify-center bg-accent font-heading font-semibold tracking-tight text-white shadow-sm',
         sizes[size],
         className
       )}

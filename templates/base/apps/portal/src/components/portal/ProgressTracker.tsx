@@ -81,18 +81,11 @@ export function ProgressTracker({ status, isMensajero: _ }: ProgressTrackerProps
   const steps = getSteps(status)
 
   return (
-    <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
-      {/* Accent top */}
-      <div className="h-[3px] bg-accent/60" />
-
+    <div className="bg-bg-card border border-border rounded-xl shadow-card">
       <div className="p-5">
-        <div className="flex items-center gap-2 mb-5">
-          <div className="h-px flex-1 bg-border" />
-          <p className="text-[10px] font-semibold text-accent uppercase tracking-[0.25em]">
-            Tu progreso
-          </p>
-          <div className="h-px flex-1 bg-border" />
-        </div>
+        <p className="text-sm font-heading font-semibold text-text-primary mb-5">
+          Tu progreso
+        </p>
 
         <div className="flex flex-col">
           {steps.map((step, i) => (
@@ -101,7 +94,7 @@ export function ProgressTracker({ status, isMensajero: _ }: ProgressTrackerProps
                 <StepIcon state={step.state} />
                 <div className="pt-1">
                   <p className={clsx(
-                    'text-sm font-semibold leading-tight',
+                    'text-sm font-medium leading-tight',
                     step.state === 'done' && 'text-text-primary',
                     step.state === 'active' && 'text-text-primary',
                     step.state === 'error' && 'text-error',
@@ -114,7 +107,7 @@ export function ProgressTracker({ status, isMensajero: _ }: ProgressTrackerProps
                     step.state === 'done' && 'text-accent',
                     step.state === 'active' && 'text-text-secondary',
                     step.state === 'error' && 'text-error/70',
-                    step.state === 'blocked' && 'text-border',
+                    step.state === 'blocked' && 'text-text-secondary/60',
                   )}>
                     {step.sublabel}
                   </p>
@@ -144,7 +137,7 @@ function StepIcon({ state }: { state: Step['state'] }) {
   }
   if (state === 'error') {
     return (
-      <div className="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+      <div className="w-9 h-9 rounded-full bg-error/10 flex items-center justify-center flex-shrink-0">
         <X className="w-4 h-4 text-error" />
       </div>
     )
@@ -157,7 +150,7 @@ function StepIcon({ state }: { state: Step['state'] }) {
     )
   }
   return (
-    <div className="w-9 h-9 rounded-full bg-bg-page border border-border flex items-center justify-center flex-shrink-0">
+    <div className="w-9 h-9 rounded-full bg-bg-subtle border border-border flex items-center justify-center flex-shrink-0">
       <div className="w-2 h-2 rounded-full bg-border" />
     </div>
   )

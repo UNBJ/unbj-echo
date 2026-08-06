@@ -13,7 +13,7 @@ const TIERS = [
     description: 'Acceso completo al evento principal, conferencias generales y material de bienvenida.',
     icon: Ticket,
     color: 'border-border hover:border-accent/40',
-    iconColor: 'text-blue-500 bg-blue-50',
+    iconColor: 'text-text-secondary bg-bg-subtle',
   },
   {
     id: 'student',
@@ -22,7 +22,7 @@ const TIERS = [
     description: 'Descuento especial para estudiantes activos (requiere credencial vigente al ingresar).',
     icon: GraduationCap,
     color: 'border-border hover:border-accent/40',
-    iconColor: 'text-emerald-500 bg-emerald-50',
+    iconColor: 'text-text-secondary bg-bg-subtle',
   },
   {
     id: 'vip',
@@ -50,7 +50,7 @@ export function Step2Tier({ selected, onBack, onNext }: Step2TierProps) {
 
   return (
     <Card accent>
-      <h2 className="text-xl font-heading font-bold text-text-primary mb-1">Selecciona tu entrada</h2>
+      <h2 className="text-xl font-heading font-semibold tracking-tight text-text-primary mb-1">Selecciona tu entrada</h2>
       <p className="text-sm text-text-secondary mb-6">
         Elige el tipo de acceso que deseas para el evento. Podrás realizar el pago en el siguiente paso.
       </p>
@@ -71,7 +71,7 @@ export function Step2Tier({ selected, onBack, onNext }: Step2TierProps) {
             >
               {/* Badge for VIP */}
               {'badge' in tier && (
-                <span className="absolute top-0 right-5 -translate-y-1/2 text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-accent text-white">
+                <span className="absolute top-0 right-5 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-accent text-white shadow-sm">
                   {tier.badge}
                 </span>
               )}
@@ -96,8 +96,8 @@ export function Step2Tier({ selected, onBack, onNext }: Step2TierProps) {
               {/* Details */}
               <div className="flex-1 min-w-0 pr-4">
                 <div className="flex items-baseline justify-between gap-2 mb-0.5">
-                  <h3 className="font-heading font-bold text-sm text-text-primary">{tier.name}</h3>
-                  <span className="text-sm font-bold text-text-primary">{tier.price}</span>
+                  <h3 className="font-heading font-semibold text-sm text-text-primary">{tier.name}</h3>
+                  <span className="text-sm font-semibold text-text-primary">{tier.price}</span>
                 </div>
                 <p className="text-xs text-text-secondary leading-relaxed">{tier.description}</p>
               </div>

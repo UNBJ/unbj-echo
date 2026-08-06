@@ -50,6 +50,13 @@ export async function getRegistrationDetail(
   return apiFetch(`/admin/registrations/${id}`, { token, method: 'GET' })
 }
 
+export async function resendAccessLink(
+  token: string,
+  id: string
+): Promise<{ success: true; recipient: string; sentAt: string }> {
+  return apiFetch(`/admin/registrations/${id}/resend-access`, { token, method: 'POST' })
+}
+
 export async function approvePayment(token: string, id: string): Promise<void> {
   await apiFetch(`/admin/registrations/${id}/payment`, {
     token,

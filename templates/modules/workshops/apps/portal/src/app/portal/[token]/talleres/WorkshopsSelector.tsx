@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Calendar, MapPin, Users, CheckCircle, AlertCircle, ArrowLeft, Loader2 } from 'lucide-react'
 import { useTranslations } from '@/hooks/useTranslations'
+import { Badge } from '@/components/ui/Badge'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { FadeIn } from '@/components/ui/motion'
 
 interface WorkshopsSelectorProps {
   registration: any
@@ -158,17 +161,17 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
   }
 
   return (
-    <div className="min-h-screen bg-bg-page flex flex-col">
+    <FadeIn className="min-h-screen bg-bg-page flex flex-col">
       {/* Header */}
-      <header className="bg-bg-sidebar text-text-on-dark h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
+      <header className="sticky top-0 z-10 bg-bg-card/80 backdrop-blur border-b border-border h-16 px-6 md:px-12 flex items-center justify-between flex-shrink-0">
         <button 
           onClick={() => router.push(`/portal/${token}`)}
-          className="flex items-center gap-2 text-text-on-dark/70 hover:text-text-on-dark transition-colors text-sm"
+          className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{t('backBtn')}</span>
         </button>
-        <span className="font-heading font-bold text-sm tracking-widest text-accent uppercase">
+        <span className="font-heading font-semibold text-sm tracking-widest text-accent uppercase">
           {t('title')}
         </span>
       </header>
@@ -177,7 +180,7 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
         
         {/* Title Section */}
         <div className="mb-8">
-          <h1 className="text-2xl font-heading font-bold text-text-primary mb-1">
+          <h1 className="text-xl font-heading font-semibold tracking-tight text-text-primary mb-1">
             {t('eventTitle')}
           </h1>
           <p className="text-sm text-text-secondary">
@@ -189,20 +192,20 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
 
         {/* Rejection / Warning Alerts */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 flex gap-3 items-start">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="mb-6 bg-error/10 border border-error/20 text-error rounded-xl p-4 flex gap-3 items-start">
+            <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
             <div>
-              <h4 className="text-sm font-bold">{t('warningTitle')}</h4>
+              <h4 className="text-sm font-semibold">{t('warningTitle')}</h4>
               <p className="text-xs mt-0.5 leading-relaxed">{error}</p>
             </div>
           </div>
         )}
 
         {successMsg && (
-          <div className="mb-6 bg-green-50 border border-green-200 text-green-800 rounded-xl p-4 flex gap-3 items-start">
-            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+          <div className="mb-6 bg-success/10 border border-success/20 text-success rounded-xl p-4 flex gap-3 items-start">
+            <CheckCircle className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
             <div>
-              <h4 className="text-sm font-bold">{t('successTitle')}</h4>
+              <h4 className="text-sm font-semibold">{t('successTitle')}</h4>
               <p className="text-xs mt-0.5 leading-relaxed">{successMsg}</p>
             </div>
           </div>
@@ -210,17 +213,17 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
 
         {/* Pago Pendiente Block */}
         {!hasSelected && !canSelect && pendingBalance !== null && pendingBalance > 0 && (
-          <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-6 flex flex-col items-center text-center gap-4 max-w-md mx-auto my-12">
-            <AlertCircle className="w-12 h-12 text-amber-500" />
+          <div className="bg-warning/10 border border-warning/20 rounded-xl p-6 flex flex-col items-center text-center gap-4 max-w-md mx-auto my-12">
+            <AlertCircle className="w-12 h-12 text-warning" />
             <div>
-              <h3 className="font-bold text-lg text-amber-950">{t('pendingPayment')}</h3>
-              <p className="text-sm mt-1 leading-relaxed">
+              <h3 className="font-semibold text-lg text-text-primary">{t('pendingPayment')}</h3>
+              <p className="text-sm mt-1 leading-relaxed text-text-secondary">
                 {t('pendingPaymentText')}
               </p>
             </div>
             <button 
               onClick={() => router.push(`/portal/${token}`)}
-              className="bg-accent hover:bg-accent-hover text-white text-xs font-semibold px-6 py-2.5 rounded-lg transition-colors"
+              className="bg-accent hover:bg-accent-hover text-white text-xs font-medium px-6 py-2.5 rounded-lg transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
             >
               {t('goToPayment')}
             </button>
@@ -230,17 +233,17 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
         {/* Vista: Talleres ya Seleccionados (Read Only) */}
         {hasSelected && (
           <div className="flex flex-col gap-4">
-            <div className="bg-green-50/50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <p className="text-sm text-green-950 font-medium">{t('completedText')}</p>
+            <div className="bg-success/10 border border-success/20 rounded-xl p-4 flex items-center gap-3">
+              <CheckCircle className="w-5 h-5 text-success" />
+              <p className="text-sm text-success font-medium">{t('completedText')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
               {selectedWorkshops.map((ws) => (
-                <div key={ws.id} className="bg-bg-card border border-border rounded-xl p-5 flex flex-col justify-between">
+                <div key={ws.id} className="bg-bg-card border border-border rounded-xl shadow-card p-5 flex flex-col justify-between">
                   <div>
-                    <span className="text-[10px] font-bold tracking-wider text-accent uppercase">{ws.day}</span>
-                    <h3 className="font-bold text-text-primary text-base mt-1.5 leading-snug">{ws.name}</h3>
+                    <span className="text-[10px] font-semibold tracking-wider text-accent uppercase">{ws.day}</span>
+                    <h3 className="font-semibold text-text-primary text-base mt-1.5 leading-snug">{ws.name}</h3>
                     <p className="text-xs text-text-secondary mt-1">{t('by')}{ws.speaker}</p>
                     <p className="text-xs text-text-secondary mt-3 leading-relaxed line-clamp-4">{ws.description}</p>
                   </div>
@@ -290,17 +293,17 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
                       isSelected 
                         ? 'border-accent bg-accent/10 ring-1 ring-accent' 
                         : isFull 
-                          ? 'border-border bg-bg-page opacity-60 cursor-not-allowed'
-                          : 'border-border hover:border-accent/40 hover:bg-accent/[0.02]'
+                          ? 'border-border bg-bg-subtle opacity-60 cursor-not-allowed'
+                          : 'border-border bg-bg-card shadow-card hover:border-accent/40 hover:bg-accent/[0.02]'
                     }`}
                   >
                     <div>
                       <div className="flex items-start justify-between gap-3">
-                        <h3 className="font-bold text-text-primary text-base leading-snug">{ws.name}</h3>
+                        <h3 className="font-semibold text-text-primary text-base leading-snug">{ws.name}</h3>
                         {isFull && (
-                          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-100 text-red-700 whitespace-nowrap">
+                          <Badge tone="error" className="whitespace-nowrap">
                             {t('full')}
-                          </span>
+                          </Badge>
                         )}
                       </div>
                       <p className="text-xs text-text-secondary mt-1">{t('by')}{ws.speaker}</p>
@@ -322,16 +325,16 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
               })}
 
               {availableWorkshops[activeTab]?.length === 0 && (
-                <p className="text-sm text-text-secondary col-span-2 text-center py-8">
-                  {t('noWorkshops')}
-                </p>
+                <div className="col-span-2">
+                  <EmptyState icon={Calendar} title={t('noWorkshops')} />
+                </div>
               )}
             </div>
 
             {/* Bottom Bar: Resumen de selección y botón de guardar */}
-            <div className="bg-bg-card border border-border rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="bg-bg-card border border-border rounded-xl shadow-card p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-center sm:text-left">
-                <h4 className="text-sm font-bold text-text-primary">{t('yourSelection')}</h4>
+                <h4 className="text-sm font-semibold text-text-primary">{t('yourSelection')}</h4>
                 <p className="text-xs text-text-secondary mt-1">
                   {t('martes')}: <span className="font-semibold text-text-primary">{availableWorkshops.martes?.find(w => w.id === selection.martes)?.name || t('none')}</span> | 
                   {t('miercoles')}: <span className="font-semibold text-text-primary">{availableWorkshops.miercoles?.find(w => w.id === selection.miercoles)?.name || t('none')}</span> | 
@@ -342,7 +345,7 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
               <button
                 disabled={!isSelectionComplete || isSubmitting}
                 onClick={handleSubmitSelection}
-                className="w-full sm:w-auto bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full sm:w-auto bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg text-sm transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
               >
                 {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {t('saveBtn')}
@@ -352,6 +355,6 @@ export function WorkshopsSelector({ registration, token, locale }: WorkshopsSele
           </div>
         )}
       </main>
-    </div>
+    </FadeIn>
   )
 }

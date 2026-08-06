@@ -2,9 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth'
-import { Vote, Plus, Play, Square, Loader2, BarChart3, AlertCircle, CheckCircle2, Maximize, Minimize } from 'lucide-react'
+import { Vote, Plus, Play, Square, BarChart3, AlertCircle, CheckCircle2, Maximize, Minimize } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { Badge } from '@/components/ui/Badge'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { FadeIn } from '@/components/ui/motion'
 
 const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001'
 
@@ -146,15 +150,22 @@ export function AdminPolls() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-text-secondary">
-        <Loader2 className="w-8 h-8 animate-spin text-accent mb-3" />
-        <p className="text-sm">Cargando módulo de votación...</p>
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-7 w-64" />
+          <Skeleton className="h-4 w-96 max-w-full" />
+        </div>
+        <Skeleton className="h-44 w-full rounded-xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6">
+          <Skeleton className="h-72 w-full rounded-xl" />
+          <Skeleton className="h-72 w-full rounded-xl" />
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <FadeIn className="flex flex-col gap-8">
       
       {/* MODO PROYECTOR - OVERLAY FULLSCREEN */}
       {projectorMode && activePoll && (
@@ -164,7 +175,7 @@ export function AdminPolls() {
               <Vote className="w-10 h-10 text-accent animate-pulse" />
               <div>
                 <span className="text-xs uppercase font-semibold text-accent tracking-[0.25em]">Votación en Vivo</span>
-                <h1 className="text-3xl font-heading font-bold">{activePoll.title}</h1>
+                <h1 className="text-3xl font-heading font-semibold">{activePoll.title}</h1>
               </div>
             </div>
             <button 
@@ -184,7 +195,7 @@ export function AdminPolls() {
 
               return (
                 <div key={opt.id} className="relative flex flex-col gap-2">
-                  <div className="flex justify-between items-center text-xl font-bold px-2">
+                  <div className="flex justify-between items-center text-xl font-semibold px-2">
                     <span>{opt.text}</span>
                     <span className="font-mono text-2xl text-accent">
                       {votes} {votes === 1 ? 'voto' : 'votos'} ({percentage}%)
@@ -204,7 +215,7 @@ export function AdminPolls() {
 
           <div className="flex justify-between items-center border-t border-white/10 pt-5 text-sm text-text-on-dark/50">
             <span>Registros de Votación Encriptados y Asegurados</span>
-            <span className="font-bold text-lg text-text-on-dark">Votos Totales: {totalVotes}</span>
+            <span className="font-semibold text-lg text-text-on-dark">Votos Totales: {totalVotes}</span>
           </div>
         </div>
       )}
@@ -212,26 +223,26 @@ export function AdminPolls() {
       {/* TITULO Y ALERTAS */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-heading font-bold text-text-primary">Votación en Tiempo Real</h1>
+          <h1 className="text-xl font-heading font-semibold tracking-tight text-text-primary">Votación en Tiempo Real</h1>
           <p className="text-sm text-text-secondary">Controla propuestas, monitorea resultados en vivo y proyecta gráficos.</p>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 flex gap-3 items-start">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+        <div className="bg-error/10 border border-error/20 text-error rounded-xl p-4 flex gap-3 items-start">
+          <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-sm font-bold">Error</h4>
+            <h4 className="text-sm font-semibold">Error</h4>
             <p className="text-xs mt-0.5">{error}</p>
           </div>
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-800 rounded-xl p-4 flex gap-3 items-start">
-          <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+        <div className="bg-success/10 border border-success/20 text-success rounded-xl p-4 flex gap-3 items-start">
+          <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-sm font-bold">Acción exitosa</h4>
+            <h4 className="text-sm font-semibold">Acción exitosa</h4>
             <p className="text-xs mt-0.5">{success}</p>
           </div>
         </div>
@@ -239,24 +250,23 @@ export function AdminPolls() {
 
       {/* SONDEO ACTIVO MONITOR */}
       {activePoll && activePoll.status === 'active' && (
-        <Card className="bg-bg-card border border-border p-6 rounded-2xl shadow-sm relative overflow-hidden">
-          <div className="h-[4px] bg-accent absolute top-0 left-0 right-0" />
-          
+        <Card>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-4 mb-5">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-lg bg-accent/10 text-accent animate-pulse">
                 <Vote className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-[10px] font-bold text-accent uppercase tracking-widest block">Monitoreando Votación en Curso</span>
-                <h2 className="text-base font-heading font-bold text-text-primary mt-0.5">{activePoll.title}</h2>
+                <span className="text-[10px] font-semibold text-accent uppercase tracking-widest block">Monitoreando Votación en Curso</span>
+                <h2 className="text-base font-heading font-semibold text-text-primary mt-0.5">{activePoll.title}</h2>
               </div>
             </div>
 
             <div className="flex gap-2">
               <Button 
+                variant="secondary"
                 onClick={() => setProjectorMode(true)}
-                className="bg-bg-page hover:bg-border/60 text-text-primary text-xs font-semibold px-4 py-2 flex items-center gap-1.5"
+                className="text-xs px-4 py-2 flex items-center gap-1.5"
               >
                 <Maximize className="w-4 h-4" />
                 <span>Vista Proyector</span>
@@ -264,7 +274,7 @@ export function AdminPolls() {
               <Button
                 onClick={() => handleTogglePoll(activePoll.proposalId, 'close')}
                 disabled={submitting}
-                className="bg-accent hover:bg-accent-hover text-white text-xs font-semibold px-4 py-2 flex items-center gap-1.5"
+                className="bg-accent hover:bg-accent-hover text-white text-xs font-medium px-4 py-2 flex items-center gap-1.5"
               >
                 <Square className="w-4 h-4" />
                 <span>Cerrar Votación</span>
@@ -280,11 +290,11 @@ export function AdminPolls() {
 
               return (
                 <div key={opt.id} className="flex flex-col gap-1.5">
-                  <div className="flex justify-between items-center text-xs font-bold text-text-primary">
+                  <div className="flex justify-between items-center text-xs font-semibold text-text-primary">
                     <span>{opt.text}</span>
                     <span className="font-mono">{votes} votos ({percentage}%)</span>
                   </div>
-                  <div className="w-full h-4 bg-bg-page rounded-full overflow-hidden border border-border">
+                  <div className="w-full h-4 bg-bg-subtle rounded-full overflow-hidden border border-border">
                     <div 
                       className="h-full bg-accent rounded-full transition-all duration-300"
                       style={{ width: `${percentage}%` }}
@@ -304,17 +314,14 @@ export function AdminPolls() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6">
         
         {/* LISTA DE PROPUESTAS */}
-        <Card className="bg-bg-card border border-border p-6 rounded-2xl shadow-sm">
-          <h2 className="text-base font-heading font-bold text-text-primary mb-4 flex items-center gap-2">
+        <Card>
+          <h2 className="text-base font-heading font-semibold text-text-primary mb-4 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-text-secondary" />
             <span>Propuestas de Votación</span>
           </h2>
 
           {polls.length === 0 ? (
-            <div className="text-center py-12 text-text-secondary">
-              <Vote className="w-10 h-10 text-text-secondary/50 mx-auto mb-3" />
-              <p className="text-sm">No has creado propuestas de votación aún.</p>
-            </div>
+            <EmptyState icon={Vote} title="No has creado propuestas de votación aún." />
           ) : (
             <div className="flex flex-col gap-4">
               {polls.map((p) => {
@@ -325,28 +332,28 @@ export function AdminPolls() {
                 return (
                   <div 
                     key={p.proposalId} 
-                    className={`border border-border p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-bg-page`}
+                    className={`border border-border p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-bg-subtle`}
                   >
                     <div className="min-w-0 pr-4">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 className="font-bold text-text-primary text-sm truncate">{p.title}</h3>
+                        <h3 className="font-semibold text-text-primary text-sm truncate">{p.title}</h3>
                         
                         {isCurrentActive && (
-                          <span className="text-[8px] font-bold px-2 py-0.5 rounded-full bg-accent/10 text-accent animate-pulse">
+                          <Badge tone="accent" className="animate-pulse">
                             EN CURSO
-                          </span>
+                          </Badge>
                         )}
                         {isClosed && (
-                          <span className="text-[8px] font-bold px-2 py-0.5 rounded-full bg-bg-card text-text-secondary">
+                          <Badge tone="neutral">
                             CERRADA
-                          </span>
+                          </Badge>
                         )}
                       </div>
                       <p className="text-xs text-text-secondary line-clamp-1">{p.description || 'Sin descripción'}</p>
                       
                       {/* Mostrar resultados de propuestas cerradas */}
                       {isClosed && (
-                        <div className="mt-2 flex items-center gap-3 text-[10px] text-text-secondary bg-bg-card px-2 py-1 rounded">
+                        <div className="mt-2 flex items-center gap-3 text-[10px] text-text-secondary bg-bg-card border border-border px-2 py-1 rounded">
                           <span>Votos Totales: <strong>{totalPollVotes}</strong></span>
                           <span>|</span>
                           {p.options.map((opt: any) => (
@@ -361,7 +368,7 @@ export function AdminPolls() {
                         <Button
                           onClick={() => handleTogglePoll(p.proposalId, 'activate')}
                           disabled={submitting || (activePoll && activePoll.status === 'active')}
-                          className="bg-accent hover:bg-accent-hover text-white text-xs font-semibold px-3 py-1.5 flex items-center gap-1"
+                          className="bg-accent hover:bg-accent-hover text-white text-xs font-medium px-3 py-1.5 flex items-center gap-1"
                         >
                           <Play className="w-3.5 h-3.5" />
                           <span>Lanzar</span>
@@ -372,7 +379,7 @@ export function AdminPolls() {
                         <Button
                           onClick={() => handleTogglePoll(p.proposalId, 'close')}
                           disabled={submitting}
-                          className="bg-accent hover:bg-accent-hover text-white text-xs font-semibold px-3 py-1.5 flex items-center gap-1"
+                          className="bg-accent hover:bg-accent-hover text-white text-xs font-medium px-3 py-1.5 flex items-center gap-1"
                         >
                           <Square className="w-3.5 h-3.5" />
                           <span>Cerrar</span>
@@ -387,43 +394,43 @@ export function AdminPolls() {
         </Card>
 
         {/* CREAR PROPUESTA */}
-        <Card className="bg-bg-card border border-border p-6 rounded-2xl shadow-sm self-start">
-          <h2 className="text-base font-heading font-bold text-text-primary mb-4 flex items-center gap-2">
+        <Card className="self-start">
+          <h2 className="text-base font-heading font-semibold text-text-primary mb-4 flex items-center gap-2">
             <Plus className="w-5 h-5 text-text-secondary" />
             <span>Nueva Propuesta</span>
           </h2>
 
           <form onSubmit={handleCreatePoll} className="flex flex-col gap-4">
             <div>
-              <label className="block text-[11px] font-bold text-text-secondary uppercase mb-1">Título de la Propuesta</label>
+              <label className="block text-[11px] font-semibold text-text-secondary uppercase mb-1">Título de la Propuesta</label>
               <input 
                 type="text" 
                 required
                 placeholder="Ej: ¿Se aprueba el balance financiero?" 
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                className="w-full border border-border rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent"
+                className="w-full border border-border rounded-lg bg-bg-card px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-text-secondary uppercase mb-1">Descripción / Notas</label>
+              <label className="block text-[11px] font-semibold text-text-secondary uppercase mb-1">Descripción / Notas</label>
               <textarea 
                 placeholder="Detalle de la moción en votación" 
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
-                className="w-full border border-border rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent h-20 resize-none"
+                className="w-full border border-border rounded-lg bg-bg-card px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150 h-20 resize-none"
               />
             </div>
 
             <div className="flex flex-col gap-2.5">
               <div className="flex justify-between items-center">
-                <label className="block text-[11px] font-bold text-text-secondary uppercase">Opciones de Respuesta</label>
+                <label className="block text-[11px] font-semibold text-text-secondary uppercase">Opciones de Respuesta</label>
                 {newOptions.length < 5 && (
                   <button 
                     type="button" 
                     onClick={addOptionField}
-                    className="text-[10px] font-bold text-accent hover:text-accent-hover"
+                    className="text-[10px] font-semibold text-accent hover:text-accent-hover"
                   >
                     + Agregar
                   </button>
@@ -438,7 +445,7 @@ export function AdminPolls() {
                   placeholder={`Opción ${i + 1}`}
                   value={opt}
                   onChange={(e) => handleOptionChange(i, e.target.value)}
-                  className="w-full border border-border rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent"
+                  className="w-full border border-border rounded-lg bg-bg-card px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 transition-all duration-150"
                 />
               ))}
             </div>
@@ -446,7 +453,7 @@ export function AdminPolls() {
             <Button 
               type="submit" 
               loading={submitting} 
-              className="mt-2 w-full bg-accent hover:bg-accent-hover text-white font-semibold py-2.5 rounded-lg text-xs"
+              className="mt-2 w-full bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded-lg text-xs"
             >
               Guardar Propuesta
             </Button>
@@ -455,6 +462,6 @@ export function AdminPolls() {
 
       </div>
 
-    </div>
+    </FadeIn>
   )
 }
