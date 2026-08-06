@@ -11,9 +11,6 @@ dist
 .DS_Store
 coverage
 .turbo
-CLAUDE.md
-docs/
-
 # pnpm
 pnpm-debug.log*
 

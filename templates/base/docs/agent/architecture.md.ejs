@@ -1,0 +1,23 @@
+# Architecture reference
+
+## Workspaces
+
+- `apps/portal`: public registration and personal portal.
+- `apps/admin`: authenticated administrative dashboard.
+- `packages/api`: AWS Lambda/API Gateway handlers with Firebase Admin,
+  Stripe, and Resend integrations.
+- `packages/shared`: shared TypeScript contracts, constants, labels, and
+  branding.
+
+## Data flow
+
+The browser calls the API for registration, payment, administration, and
+mutations. Firebase Admin is used only by the API. Firebase Client is limited to
+approved authentication and real-time projections. Stripe webhooks are the
+payment source of truth; Resend sends transactional/admin email.
+
+## Optional modules
+
+The generated feature flags and `docs/agent/project-manifest.json` identify which
+of playeras (`tshirt`), talleres (`workshops`), hospedaje (`rooms`), and
+votaciones (`voting`) are enabled for this project.

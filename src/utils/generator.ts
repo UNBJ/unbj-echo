@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
+import { execFileSync } from 'node:child_process';
 import ejs from 'ejs';
 import picocolors from 'picocolors';
 
@@ -71,6 +72,17 @@ export async function generateProject(destPath: string, options: GeneratorOption
     ...options,
     moduleEndpointsYaml: moduleEndpointBlocks.join('\n'),
   });
+
+  // El manifiesto inicial se renderiza antes de conocer las rutas finales
+  // inyectadas por módulos. Recalcularlo aquí deja el contexto listo y evita
+  // que un proyecto recién generado aparezca obsoleto al ejecutar context:check.
+  const contextRefreshScript = path.join(destPath, 'scripts', 'context-refresh.mjs');
+  if (await fs.pathExists(contextRefreshScript)) {
+    execFileSync(process.execPath, [contextRefreshScript], {
+      cwd: destPath,
+      stdio: 'ignore',
+    });
+  }
 }
 
 /**

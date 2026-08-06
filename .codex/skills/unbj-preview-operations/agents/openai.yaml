@@ -1,0 +1,4 @@
+interface:
+  display_name: "UNBJ Preview Operations"
+  short_description: "Opera y depura el preview local"
+  default_prompt: "Use $unbj-preview-operations to diagnose or refresh the UNBJ Echo preview."

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "generator": "unbj-echo",
+  "projectName": "<%= projectName %>",
+  "eventName": "<%= eventName.replace(/\\/g, '\\\\').replace(/"/g, '\\"') %>",
+  "archetype": "<%= archetype %>",
+  "languages": "<%= languages %>",
+  "modules": [<% modules.forEach((module, index) => { %>"<%= module %>"<%= index < modules.length - 1 ? ', ' : '' %><% }) %>],
+  "localPorts": { "portal": 3000, "admin": 3002, "api": 3001 },
+  "inventory": {
+    "workspaces": [],
+    "routes": [],
+    "firestoreMatches": [],
+    "firestoreIndexCount": 0
+  }
+}

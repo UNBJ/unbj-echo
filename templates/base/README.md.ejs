@@ -1,32 +1,445 @@
-# <%= eventName %> - Plataforma de Registro
+# <%= eventName %> — Plataforma de registro
 
-Plataforma de registro y acreditacion de eventos generada con `unbj-echo`.
+Plataforma de registro, pagos, acreditación y administración generada con
+`unbj-echo`. Está organizada como un monorepo: portal público, panel de
+administración y API se despliegan de forma independiente, pero comparten los
+tipos y la configuración del evento.
 
-## Arquitectura
-- **Frontend:** Next.js (App Router) en `apps/portal` (Portal de Registrantes) y `apps/admin` (Panel de Control).
-- **Backend:** Serverless API (AWS Lambda + API Gateway) en `packages/api`.
-- **Persistencia:** Firebase Firestore, Storage y Auth.
-- **Pagos:** Stripe.
+## Contenido
 
-## Primeros Pasos
-1. Configura tus credenciales de Firebase en `apps/portal`, `apps/admin` y `packages/api`.
-2. Configura las variables de entorno en los archivos `.env.example` (renómbralos a `.env`).
-3. Instala las dependencias: `pnpm install`.
-4. Ejecuta el modo de desarrollo: `pnpm dev`.
+- [Requisitos previos](#requisitos-previos)
+- [Arquitectura](#arquitectura)
+- [Configuración local paso a paso](#configuración-local-paso-a-paso)
+- [Comandos diarios](#comandos-diarios)
+- [Cómo modificar la plataforma](#cómo-modificar-la-plataforma)
+- [Contexto para agentes](#contexto-para-agentes)
+- [Votaciones y documentos](#votaciones-y-documentos)
+- [Despliegue](#despliegue)
+- [Seguridad y operación](#seguridad-y-operación)
+- [Solución de problemas](#solución-de-problemas)
 
-## Cargas de documentos (Storage)
+## Requisitos previos
 
-Las cartas se cargan directamente al bucket mediante una URL firmada temporal.
-Firebase Storage Rules permanece en modo `deny-by-default`; además debes aplicar
-la política CORS del bucket una vez por ambiente para permitir el `PUT` desde el
-portal:
+| Herramienta | Versión / uso |
+| --- | --- |
+| Node.js | 20 o superior |
+| pnpm | 9 o superior (se recomienda pnpm 10.33) |
+| Cuenta/proyecto Firebase | Authentication, Firestore y Storage |
+| Cuenta AWS | Lambda, API Gateway, CloudWatch e IAM para Serverless |
+| Stripe | Cuenta de prueba para desarrollo y webhook local opcional |
+| Resend | Dominio/remitente verificado para los correos |
+| Firebase CLI | Desplegar reglas e índices |
+| Google Cloud SDK / `gsutil` | Configurar CORS del bucket de Storage |
+
+Instala y prepara el gestor de paquetes:
 
 ```bash
-# Desde la raíz del proyecto generado, con gcloud/gsutil autenticado.
-gsutil cors set storage.cors.json gs://TU_FIREBASE_STORAGE_BUCKET
+corepack enable
+corepack prepare pnpm@10.33.0 --activate
+pnpm --version
 ```
 
-`storage.cors.json` incluye los puertos locales `3000` y `3100`. Antes de
-producción, agrega el dominio HTTPS real del portal a `origin` y vuelve a aplicar
-el comando. No uses `*`, porque las URLs firmadas conceden acceso temporal a
-documentos.
+Para Firebase y Google Cloud:
+
+```bash
+npm install -g firebase-tools
+firebase login
+
+# Instala Google Cloud SDK según tu sistema y autentícate.
+gcloud auth login
+```
+
+Para desarrollo de pagos, instala también la [Stripe CLI](https://docs.stripe.com/stripe-cli)
+y autentícate con `stripe login`.
+
+## Arquitectura
+
+```text
+                         ┌──────────────────────┐
+                         │ apps/portal          │
+                         │ Next.js · puerto 3000│
+                         └──────────┬───────────┘
+                                    │ HTTPS / token de portal
+                                    ▼
+┌──────────────────┐     ┌──────────────────────┐     ┌───────────────────┐
+│ apps/admin       │────▶│ packages/api          │────▶│ Firebase Admin    │
+│ Next.js · 3002   │ JWT │ Lambda + API Gateway  │     │ Firestore/Storage │
+└──────────────────┘     └───────┬───────┬──────┘     └───────────────────┘
+                                  │       │
+                                  ▼       ▼
+                              Stripe     Resend
+                              pagos      correos
+
+                    packages/shared
+                    tipos, constantes y branding
+```
+
+### Componentes
+
+- `apps/portal`: registro y portal personal del asistente. Consume la API con
+  un enlace de acceso individual.
+- `apps/admin`: panel protegido con Firebase Authentication y roles `admin` o
+  `super_admin`.
+- `packages/api`: handlers de Lambda, validación, pagos, correos y acceso a
+  Firebase mediante Admin SDK. Corre localmente con Serverless Offline.
+- `packages/shared`: contratos TypeScript, etiquetas y branding compartidos.
+- `firestore.rules` y `storage.rules`: política de acceso versionada. Firestore
+  deniega todo por defecto y Storage sólo se usa mediante URLs firmadas.
+- `firestore.indexes.json`: índices necesarios para filtros y paginación del
+  panel administrativo.
+
+Los módulos opcionales (playeras, talleres, hospedaje y votaciones) se incluyen
+en el proyecto, y se activan o desactivan mediante las feature flags del panel.
+
+## Configuración local paso a paso
+
+### 1. Instala dependencias
+
+```bash
+pnpm install
+pnpm typecheck
+```
+
+### 2. Crea y configura el proyecto Firebase
+
+En Firebase Console:
+
+1. Crea un proyecto para desarrollo (no reutilices producción).
+2. Habilita **Authentication → Email/Password**.
+3. Crea una base de datos **Firestore**.
+4. Habilita **Storage**.
+5. Registra una aplicación web y conserva su configuración pública.
+6. En **Project settings → Service accounts**, genera una clave de cuenta de
+   servicio para la API. Guárdala fuera de Git.
+
+Selecciona el proyecto para la CLI y despliega desde el inicio las reglas e
+índices:
+
+```bash
+firebase use --add
+firebase deploy --only firestore:rules,firestore:indexes,storage
+```
+
+### 3. Configura las variables de entorno
+
+Hay tres archivos independientes. Nunca copies credenciales privadas al
+frontend ni confirmes archivos `.env` en Git.
+
+**`packages/api/.env`** — credenciales privadas de backend:
+
+```dotenv
+FIREBASE_PROJECT_ID=mi-proyecto-dev
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-...@mi-proyecto-dev.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+FIREBASE_STORAGE_BUCKET=mi-proyecto-dev.firebasestorage.app
+
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+RESEND_API_KEY=re_...
+RESEND_FROM_EMAIL=registro@tu-dominio.com
+
+NEXT_PUBLIC_PORTAL_URL=http://localhost:3000
+NEXT_PUBLIC_ADMIN_URL=http://localhost:3002
+```
+
+Agrega `CORPORATE_DB_API_URL` y `CORPORATE_DB_API_KEY` sólo si tu arquetipo
+consume una fuente externa de iglesias.
+
+**`apps/portal/.env.local`** y **`apps/admin/.env.local`** — sólo configuración
+pública de Firebase, Stripe y API:
+
+```dotenv
+NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_PORTAL_URL=http://localhost:3000
+NEXT_PUBLIC_ADMIN_URL=http://localhost:3002
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=mi-proyecto-dev.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=mi-proyecto-dev
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=mi-proyecto-dev.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+NEXT_PUBLIC_FIREBASE_APP_ID=...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+```
+
+La raíz contiene `.env.example` como inventario de variables. Úsalo como guía,
+pero conserva los secretos únicamente en `packages/api/.env` o en el gestor de
+secretos del entorno desplegado.
+
+### 4. Configura CORS del bucket de documentos
+
+Las cartas se cargan con una URL firmada temporal. Por ello el bucket debe
+permitir explícitamente el origen del portal; las Storage Rules no deben abrirse
+para resolver un error CORS.
+
+```bash
+# Desde la raíz y con gcloud/gsutil autenticado.
+gsutil cors set storage.cors.json gs://mi-proyecto-dev.firebasestorage.app
+```
+
+El archivo permite los puertos locales `3000` y `3100`. Para producción agrega
+el dominio HTTPS real del portal a `storage.cors.json` y vuelve a aplicar el
+comando. No uses `"*"`.
+
+### 5. Crea el primer administrador
+
+1. En Firebase Console crea el usuario en **Authentication → Users**.
+2. En `packages/api/scripts/setup-super-admin.mjs`, cambia
+   `SUPER_ADMIN_EMAIL` por ese correo.
+3. Con la API configurada, ejecuta:
+
+```bash
+pnpm --filter api setup:admin
+```
+
+El usuario debe cerrar sesión y volver a entrar para que Firebase emita un token
+con el nuevo rol.
+
+### 6. Inicia los servicios
+
+Usa tres terminales desde la raíz:
+
+```bash
+pnpm dev:api       # http://localhost:3001
+pnpm dev:portal    # http://localhost:3000
+pnpm dev:admin     # http://localhost:3002
+```
+
+Si usas otros puertos, actualiza las tres variables de URL y la política CORS
+del bucket antes de subir documentos.
+
+### 7. Recibe webhooks de Stripe localmente
+
+En otra terminal:
+
+```bash
+stripe listen --forward-to http://localhost:3001/webhooks/stripe
+```
+
+Copia el valor `whsec_...` que muestra Stripe CLI a
+`packages/api/.env` como `STRIPE_WEBHOOK_SECRET` y reinicia la API. Usa tarjetas
+de prueba de Stripe; nunca pruebes con llaves o tarjetas live en local.
+
+## Comandos diarios
+
+| Comando | Acción |
+| --- | --- |
+| `pnpm install` | Instala dependencias de todo el monorepo |
+| `pnpm typecheck` | Revisa los tipos de las apps y API |
+| `pnpm dev:portal` | Inicia el portal |
+| `pnpm dev:admin` | Inicia el panel administrativo |
+| `pnpm dev:api` | Inicia Serverless Offline |
+| `pnpm build:portal` | Compila portal para producción |
+| `pnpm build:admin` | Compila admin para producción |
+| `pnpm --filter api deploy:staging` | Despliega API a staging |
+| `pnpm --filter api deploy:prod` | Despliega API a producción |
+
+Ejecuta `pnpm typecheck` antes de abrir un pull request o desplegar.
+
+## Contexto para agentes
+
+El proyecto incluye `AGENTS.md` como entrada breve para Codex y agentes
+compatibles. Las referencias ampliadas viven en `docs/agent/` y se cargan bajo
+demanda para evitar consumir contexto innecesario. Las reglas específicas de
+portal, admin y backend están en sus respectivos `AGENTS.md`.
+
+```bash
+pnpm context:refresh  # actualiza el inventario determinista del proyecto
+pnpm context:check    # comprueba si el contexto está obsoleto
+```
+
+El contexto contiene sólo metadatos no sensibles. No incluye credenciales,
+tokens, PII ni URLs firmadas. Después de agregar rutas, colecciones, índices o
+módulos, ejecuta `context:refresh` y versiona los archivos actualizados.
+
+## Cómo modificar la plataforma
+
+### Cambios de interfaz
+
+- Portal: `apps/portal/src/app` y `apps/portal/src/components`.
+- Administración: `apps/admin/src/app` y `apps/admin/src/components`.
+- Estilos: Tailwind y componentes UI de cada app.
+- Textos multilingües: `apps/portal/messages` y el hook de traducciones.
+
+Los componentes que leen datos deben usar los tipos de `@unbj/shared`. Evita
+duplicar interfaces de registro en cada aplicación.
+
+### Cambios de backend
+
+1. Define o ajusta el contrato en `packages/shared/src` si afecta a más de una
+   app.
+2. Implementa el handler en `packages/api/src/handlers`.
+3. Añade la ruta HTTP en `packages/api/serverless.yml`.
+4. Valida la entrada con Zod, verifica autenticación/rol y devuelve errores
+   controlados.
+5. Actualiza el cliente API correspondiente y ejecuta `pnpm typecheck`.
+
+No importes Firebase Admin dentro de componentes de Next.js. El navegador sólo
+puede usar Firebase Client para Auth y las proyecciones de Firestore permitidas
+por reglas.
+
+### Cambios de datos e índices
+
+- Toda modificación de colecciones o consultas debe revisar
+  `firestore.rules` y `firestore.indexes.json`.
+- Para listas grandes usa cursor (`startAfter` + `limit`), no paginación en
+  memoria.
+- Despliega reglas e índices después de cambiarlos:
+
+```bash
+firebase deploy --only firestore:rules,firestore:indexes,storage
+```
+
+### Cambios de correo, pagos o archivos
+
+- Escapa datos de usuario en HTML de correo con los helpers existentes.
+- No devuelvas ni persistas URLs firmadas de larga duración. Solicítalas al
+  backend justo antes de usar un archivo.
+- No aceptes una ruta de Storage enviada por el cliente: la API genera la ruta
+  canónica y verifica tamaño/tipo.
+- Para Stripe, deja que el webhook sea la fuente de verdad del pago; no marques
+  pagos aprobados sólo con la respuesta del navegador.
+
+## Votaciones y documentos
+
+### Votaciones en tiempo real
+
+El portal no consulta la API cada pocos segundos. Solicita una sesión Firebase
+temporal y escucha dos proyecciones de lectura mínima:
+
+- `portal_live/active`: propuesta activa sin datos personales.
+- `portal_results/{pollId}`: resultados tras el cierre.
+
+El panel administrativo escucha `polls/active` para actualizar el conteo. Los
+votos siguen entrando por la API, que usa una transacción Firestore para impedir
+votos duplicados. Si cambias estos flujos, conserva el principio de que el
+cliente nunca escribe directamente los resultados.
+
+### Cartas
+
+El flujo es: API valida enlace y estado → emite URL firmada de 15 minutos →
+navegador sube el archivo → API confirma la ruta canónica y metadatos. El
+administrador solicita otra URL firmada de lectura al abrir una carta. Un error
+de CORS se corrige configurando el bucket, no relajando `storage.rules`.
+
+## Despliegue
+
+Se recomienda usar tres ambientes aislados: `dev`, `staging` y `prod`. Cada uno
+debe tener su propio proyecto Firebase, llaves Stripe/Resend, bucket y variables.
+
+### 1. Lista de verificación previa
+
+- [ ] `pnpm install --frozen-lockfile` y `pnpm typecheck` terminan correctamente.
+- [ ] Se rotaron o eliminaron de Git las llaves que hayan sido expuestas.
+- [ ] Firebase Auth, Firestore y Storage están habilitados en el ambiente.
+- [ ] Las reglas e índices de Firebase están desplegados.
+- [ ] El CORS del bucket contiene sólo los dominios reales del portal.
+- [ ] Stripe tiene un endpoint webhook HTTPS y `STRIPE_WEBHOOK_SECRET` correcto.
+- [ ] El remitente/dominio de Resend está verificado.
+- [ ] Los dominios portal/admin y la URL de API definitiva están decididos.
+
+### 2. Despliega Firebase
+
+Desde la raíz:
+
+```bash
+firebase use TU_PROYECTO_PRODUCCION
+firebase deploy --only firestore:rules,firestore:indexes,storage
+gsutil cors set storage.cors.json gs://TU_BUCKET
+```
+
+Antes del segundo comando, cambia los orígenes de `storage.cors.json` por los
+dominios de producción. La aplicación no estará lista para subir documentos si
+este paso se omite.
+
+### 3. Despliega la API en AWS
+
+Configura credenciales AWS con permisos mínimos para CloudFormation, Lambda,
+API Gateway, CloudWatch, IAM y X-Ray. Carga los secretos de staging/producción
+en el mecanismo que use tu pipeline; Serverless los lee como variables de
+entorno durante el despliegue.
+
+```bash
+cd packages/api
+pnpm deploy:staging
+# Después de probar:
+pnpm deploy:prod
+```
+
+Anota la URL de API Gateway que imprime Serverless. Configúrala como
+`NEXT_PUBLIC_API_URL` en ambos frontends y como origen permitido de CORS. También
+configura `NEXT_PUBLIC_PORTAL_URL` y `NEXT_PUBLIC_ADMIN_URL` con los dominios
+finales para que los enlaces de correo apunten al lugar correcto.
+
+En Stripe Dashboard crea el webhook:
+
+```text
+https://TU_API/webhooks/stripe
+```
+
+Suscríbelo al menos a los eventos de pago que utiliza el handler y guarda el
+secreto de firma entregado por Stripe como `STRIPE_WEBHOOK_SECRET`.
+
+### 4. Despliega portal y admin con AWS Amplify
+
+`amplify.yml` contiene dos aplicaciones del monorepo. En Amplify Console conecta
+el repositorio y configura una aplicación para `apps/portal` y otra para
+`apps/admin` (o usa el soporte monorepo de tu cuenta). En cada una configura las
+variables públicas correctas:
+
+```text
+NEXT_PUBLIC_API_URL=https://TU_API
+NEXT_PUBLIC_PORTAL_URL=https://portal.tu-dominio.com
+NEXT_PUBLIC_ADMIN_URL=https://admin.tu-dominio.com
+NEXT_PUBLIC_FIREBASE_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+```
+
+Asigna los dominios personalizados, espera el certificado TLS y confirma que el
+origen exacto de cada frontend está en `serverless.yml`/variables de CORS y en
+`storage.cors.json`. Haz una prueba completa: registro, pago, correo, acceso al
+portal, carga de carta, aprobación, check-in y votación.
+
+### 5. Controles posteriores al despliegue
+
+- Configura WAF/throttling delante de API Gateway.
+- Aplica IAM de mínimo privilegio y secretos en Secrets Manager/KMS.
+- Configura alarmas para errores, throttles, latencia p95/p99, fallos de webhook
+  y errores de correo.
+- Activa una política TTL en Firestore para la colección `rate_limits` usando el
+  campo `expiresAt`.
+- Ejecuta una prueba de carga con datos sintéticos antes del evento.
+
+## Seguridad y operación
+
+- Los enlaces de portal son capacidades: no los publiques, no los incluyas en
+  logs y usa siempre HTTPS. Los registros nuevos expiran a los 180 días.
+- La API impone límites de frecuencia para registro, pagos, cartas, votos y
+  reenvíos. WAF sigue siendo necesario como capa de borde en AWS.
+- `firestore.rules` y `storage.rules` son código de producción: revísalos como
+  cualquier cambio de backend.
+- No cambies CORS a `*` ni abras Storage para solucionar cargas de archivos.
+- Revisa dependencias con frecuencia y actualiza las versiones parcheadas.
+- Exportaciones CSV neutralizan fórmulas, pero trata los datos descargados como
+  información personal sensible.
+
+## Solución de problemas
+
+| Síntoma | Revisión recomendada |
+| --- | --- |
+| Error CORS al subir carta | Ejecuta `gsutil cors get gs://TU_BUCKET`, confirma el puerto/dominio y espera unos minutos antes de reintentar. |
+| `permission-denied` en votaciones | Despliega `firestore.rules`, vuelve a iniciar sesión y verifica el custom claim del admin o la sesión temporal del portal. |
+| El pago queda pendiente | Verifica que `stripe listen` o el webhook de producción esté activo y que `STRIPE_WEBHOOK_SECRET` coincida. |
+| API responde 401 en admin | Cierra sesión/vuelve a entrar después de asignar roles; comprueba el claim `role`. |
+| No llegan correos | Verifica `RESEND_API_KEY`, el dominio/remitente y revisa los logs de la Lambda. |
+| Falla una consulta de registros | Despliega `firestore.indexes.json`; Firebase mostrará un enlace al índice faltante en los logs. |
+| Cambios no aparecen en Next.js | Reinicia el proceso de portal/admin después de cambiar `.env.local`. |
+
+## Convenciones de contribución
+
+1. Trabaja en una rama por cambio.
+2. Mantén cambios de interfaz, contrato y handler coherentes en el mismo pull
+   request.
+3. Ejecuta `pnpm typecheck` y prueba manualmente el flujo afectado.
+4. Documenta nuevas variables, rutas, índices o migraciones en este archivo.
+5. Nunca subas secretos, archivos de cuenta de servicio, exports reales ni
+   datos de asistentes al repositorio.

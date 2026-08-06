@@ -1,0 +1,16 @@
+# Data and API reference
+
+The authoritative route inventory is `docs/agent/project-manifest.json` and the
+authoritative access policy is in `firestore.rules` and `storage.rules`.
+
+## Boundary rules
+
+- Protected API handlers verify Firebase ID tokens or portal capabilities.
+- Request bodies are schema-validated and ownership is checked server-side.
+- Firestore reads are bounded and indexed; list endpoints use cursor pagination.
+- Storage uploads use canonical backend paths and short-lived signed URLs.
+- Real-time voting uses read-only projection documents; clients do not write
+  poll results.
+
+When adding a route or collection, update its validation, authorization,
+index/rule requirements, client contract, and run `pnpm context:refresh`.

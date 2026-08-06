@@ -1,0 +1,43 @@
+# Agent instructions — <%= eventName %>
+
+This repository is an UNBJ Echo generated registration platform. Keep this file
+as the short entry point; load only the reference needed for the task.
+
+## Project identity
+
+- Project: `<%= projectName %>`
+- Event: `<%= eventName %>`
+- Archetype: `<%= archetype %>`
+- Languages: `<%= languages %>`
+- Enabled modules: `<%= modules.length ? modules.join(', ') : 'none' %>`
+
+## Start here
+
+1. Read `docs/agent/project-context.md` for generated metadata.
+2. Read `docs/agent/architecture.md` for system boundaries.
+3. Read `docs/agent/development.md` before changing code.
+4. Read `docs/agent/data-api.md` for routes, collections, rules, or contracts.
+5. Read `docs/agent/operations.md` for preview, validation, or deployment work.
+
+## Rules
+
+- Preserve unrelated user changes and inspect `git status` first.
+- Run `pnpm typecheck` after code changes; run `pnpm context:check` when context
+  or structure changed.
+- Keep Firebase access deny-by-default. Do not expose secrets, PII, capability
+  tokens, signed URLs, or `.env` values in code, logs, docs, or responses.
+- Validate authorization and ownership at the API boundary. Use Zod for input
+  and transactions for coupled Firestore updates.
+- Use cursor pagination and bounded queries. Prefer listeners for live projections
+  over high-frequency polling.
+- Do not change cloud state, delete generated directories, or rotate credentials
+  without explicit user approval and a named environment.
+
+## Scope routing
+
+- Portal work: read `apps/portal/AGENTS.md`.
+- Admin work: read `apps/admin/AGENTS.md`.
+- API/shared work: read `packages/AGENTS.md`.
+
+The human setup and deployment guide is in `README.md`; do not load it in full
+when a focused agent reference answers the task.

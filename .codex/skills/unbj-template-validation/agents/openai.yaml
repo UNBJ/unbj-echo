@@ -1,0 +1,4 @@
+interface:
+  display_name: "UNBJ Template Validation"
+  short_description: "Genera y valida cambios de plantilla"
+  default_prompt: "Use $unbj-template-validation to validate my UNBJ Echo template change."

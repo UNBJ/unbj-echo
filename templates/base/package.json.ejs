@@ -8,6 +8,8 @@
     "build:portal": "pnpm --filter portal build",
     "build:admin": "pnpm --filter admin build",
     "typecheck": "pnpm -r typecheck",
+    "context:refresh": "node scripts/context-refresh.mjs",
+    "context:check": "node scripts/context-refresh.mjs --check",
     "mock:corporate": "node scripts/mock-corporate-api.mjs"
   },
   "devDependencies": {

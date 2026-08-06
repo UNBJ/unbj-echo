@@ -1,0 +1,18 @@
+# Operations reference
+
+## Local preview
+
+- Portal: `http://localhost:3000`
+- Admin: `http://localhost:3002`
+- API: `http://localhost:3001`
+- Stripe: `stripe listen --forward-to http://localhost:3001/webhooks/stripe`
+
+Use `pnpm typecheck` for code validation. Use the human `README.md` for full
+Firebase, Storage CORS, AWS/Serverless, Amplify, and production setup steps.
+
+## Release guardrails
+
+Name the environment before any cloud command. Verify rules, indexes, exact
+CORS origins, webhook secrets, WAF/IAM/alarms, and required variables without
+printing their values. Require approval before Firebase deploy, `gsutil`,
+Serverless, Amplify, DNS, or credential changes.

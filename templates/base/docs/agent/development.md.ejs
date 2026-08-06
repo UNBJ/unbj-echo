@@ -1,0 +1,23 @@
+# Development reference
+
+## Change workflow
+
+1. Inspect `git status` and read the nearest `AGENTS.md`.
+2. Update `packages/shared` contracts first when a boundary changes.
+3. Implement API validation/auth/data changes before consuming them in apps.
+4. Preserve feature-flag behavior and localized message keys.
+5. Run `pnpm typecheck`; run `pnpm context:refresh` if structure changed.
+
+## Commands
+
+```bash
+pnpm install
+pnpm typecheck
+pnpm dev:api
+pnpm dev:portal
+pnpm dev:admin
+pnpm context:check
+```
+
+Do not copy secrets into frontend variables. Do not solve API, Firestore, or
+Storage errors by weakening authorization or rules.

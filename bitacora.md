@@ -6,6 +6,58 @@ Este archivo registra el historial de cambios, correcciones de tipado, integraci
 
 ## Historial de Cambios e Hitos
 
+### 📅 06 de Agosto, 2026 — Seguridad, rendimiento, tiempo real y documentación
+
+#### 1. Auditoría y remediación de seguridad
+
+* **Dependencias y cabeceras:** actualizadas las plantillas de Next.js/React a versiones parcheadas; se añadieron cabeceras de seguridad en portal, admin y respuestas de API.
+* **Acceso a datos:** versión inicial de `firestore.rules` e índices en `firestore.indexes.json`, integrados a `firebase.json`, con postura `deny-by-default`. El portal recibe un DTO explícito en vez de exponer el documento de registro completo.
+* **Enlaces y abuso:** los enlaces nuevos de portal incorporan expiración; se añadieron límites de frecuencia para registro, pagos, lecturas de portal, votos, carga/envío de carta y reenvíos administrativos.
+* **CORS y salidas:** CORS de API limitado a los orígenes configurados de portal/admin; escapado HTML en correos y neutralización de fórmulas en exportaciones CSV.
+* **Documentos privados:** Storage dejó de aceptar escrituras directas. Las cartas ahora usan URL firmada temporal, ruta canónica por registro, verificación de MIME/tamaño y URL temporal separada para la consulta administrativa.
+
+#### 2. Rendimiento y votaciones en tiempo real
+
+* **Fin del polling de votaciones:** el portal dejó de consultar votaciones cada tres segundos. Solicita una sesión Firebase temporal y escucha `portal_live/active` y `portal_results` con `onSnapshot`.
+* **Panel administrativo:** el contador de la votación activa también se actualiza por listener Firestore, sin polling de tres segundos.
+* **Protección de las proyecciones:** las reglas sólo exponen al portal datos mínimos de la votación y resultados cerrados; los votos y resultados siguen siendo mutados exclusivamente por la API con transacciones.
+* **Consultas administrativas:** el listado de registros usa cursores, límites e índices en lugar de leer la colección completa y paginar en memoria. Feature flags y estadísticas incorporan caché breve para reducir lecturas repetidas.
+* **Capacidad:** configuración base de memoria, timeout y tracing para Lambda; los handlers costosos de exportación/webhook reciben límites específicos.
+
+#### 3. Storage CORS y herramientas locales
+
+* Se añadió `storage.cors.json` a las plantillas y al preview, con orígenes explícitos para los puertos locales del portal. Se documentó que un error CORS no se resuelve abriendo Storage Rules.
+* Se instaló Google Cloud SDK (`gsutil` v5.37), se añadió su ruta a `~/.zshrc` y se aplicó la política CORS al bucket de preview `unbj-echo-cli-preview.firebasestorage.app`.
+* La política del bucket permite las cargas `PUT` por URL firmada desde `localhost:3000` y `localhost:3100`; antes de producción deben sustituirse/agregarse los dominios HTTPS definitivos y reaplicarse con `gsutil cors set`.
+
+#### 4. Documentación
+
+* **README de proyectos generados:** ampliado `templates/base/README.md.ejs` con requisitos, Firebase, variables de entorno separadas, Stripe local, CORS, administración inicial, arquitectura, modificaciones, votaciones, documentos, despliegue Firebase/AWS/Amplify, seguridad y resolución de problemas.
+* **README del CLI:** creado `README.md` en la raíz del repositorio. Documenta instalación y uso del generador, flags, arquetipos/módulos, arquitectura de plantillas, desarrollo/extensión, preview, validación y publicación.
+* Se actualizó `auditoria_seguridad_performance.md` con el estado de remediación y los controles de infraestructura aún requeridos para despliegue (WAF, IAM, secretos, alarmas, TTL y pruebas de carga).
+
+#### 5. Skills locales de Codex
+
+* Se crearon y versionaron tres skills en `.codex/skills/`, con metadatos de interfaz y referencias ligeras:
+  * `unbj-template-validation`: detecta generador, preview o monorepo generado y aplica validación escalonada; la matriz completa se reserva para cambios estructurales de generación.
+  * `unbj-preview-operations`: diagnostica y opera el preview de forma segura, protegiendo los puertos activos, los secretos y la regeneración destructiva.
+  * `unbj-security-release`: separa auditoría/remediación de seguridad del preflight y despliegue, con confirmación explícita por ambiente antes de cualquier cambio cloud.
+* Los tres skills reutilizan scripts existentes en lugar de duplicarlos, actualizan la bitácora tras cambios materiales y no exponen secretos.
+* Validación: `quick_validate.py` completó correctamente para los tres skills usando un entorno virtual temporal con PyYAML.
+
+#### 6. Validación
+
+* Se generaron proyectos completos de prueba con arquetipo `plenarias`, módulos e idiomas `es-en` y se ejecutó exitosamente `pnpm run typecheck` para API, portal y admin.
+* Se ejecutó `git diff --check` después de los cambios de código y documentación.
+
+#### 6. Contexto para agentes en proyectos generados
+
+* Se añadieron `AGENTS.md` raíz y archivos de alcance para portal, admin y packages, además de punteros mínimos `CLAUDE.md`/`GEMINI.md`.
+* Se agregaron referencias bajo demanda en `docs/agent/` y un `project-manifest.json` con metadatos no sensibles, workspaces, rutas, reglas Firestore e índices.
+* Se incorporaron `pnpm context:refresh` y `pnpm context:check`. El refresco es determinista, idempotente y no modifica la bitácora ni lee secretos; el check detecta contexto obsoleto.
+* El generador ejecuta el refresco al finalizar la generación para que un proyecto recién creado empiece con el manifiesto actualizado.
+* La documentación humana explica cómo usar estos archivos sin cargar el README completo en cada tarea del agente.
+
 ### 📅 05 de Agosto, 2026 — Reenvío administrativo de enlace de acceso
 
 #### 1. Recuperación de acceso desde el detalle de registro

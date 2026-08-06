@@ -1,0 +1,4 @@
+interface:
+  display_name: "UNBJ Security and Release"
+  short_description: "Audita y prepara releases seguros"
+  default_prompt: "Use $unbj-security-release to audit or prepare a secure UNBJ Echo release."
